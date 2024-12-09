@@ -1,0 +1,304 @@
+# oauth2-social
+
+###
+# group: auth / google
+# @name token
+POST https://oauth2.googleapis.com/token
+Authorization: Bearer {{token}}
+Content-Type: application/x-www-form-urlencoded
+
+code =
+ &
+client_id =
+ &
+client_secret =
+ &
+redirect_uri = http://localhost:8083/oauth2/redirect &
+grant_type = authorization_code
+
+###
+# group: auth / google
+# @name userinfo
+GET https://www.googleapis.com/oauth2/v1/userinfo
+
+###
+# group: auth / github
+# @name token
+POST https://github.com/login/oauth/access_token
+Authorization: Bearer {{token}}
+Content-Type: application/x-www-form-urlencoded
+
+client_id =  &
+client_secret =  &
+code =  &
+redirect_uri = http://localhost:8083/oauth2/github/redirect
+
+###
+# group: auth / github
+# @name userinfo
+GET https://api.github.com/user
+
+###
+# group: auth / github
+# @name emails
+GET https://api.github.com/user/emails
+Authorization: Bearer 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
+
+###
+# group: auth / linkedin
+# @name token
+POST https://www.linkedin.com/oauth/v2/accessToken
+Authorization: Bearer {{token}}
+Content-Type: application/x-www-form-urlencoded
+
+code =  &
+client_id =  &
+client_secret =  &
+redirect_uri = http://localhost:8083/oauth2/linkedin/redirect &
+grant_type = authorization_code
+
+> {%
+    // TODO: migrate to HTTP Client Response handler API
+    // const   response    =   pm.response
+    //         json        =   response.json()
+    // pm.test("Status code is 200", function () {
+    //     response.to.have.status(200)
+    //     pm.collectionVariables.set("linkedinAccessToken", json.access_token)
+    //     pm.collectionVariables.set("linkedinExpiresIn", json.expires_in)
+    //     pm.collectionVariables.set("linkedinScope", json.scope)
+    // })
+%}
+
+###
+# group: auth / linkedin
+# @name userinfo
+GET https://api.linkedin.com/v2/userinfo
+Authorization: Bearer {{set_token}}
+
+###
+# group: auth / facebook
+# @name token
+POST https://graph.facebook.com/oauth/access_token
+Authorization: Bearer {{token}}
+Content-Type: application/x-www-form-urlencoded
+
+client_id =  &
+client_secret =  &
+code =  &
+redirect_uri = http://localhost:8083/oauth2/facebook/redirect &
+grant_type = authorization_code
+
+> {%
+    // TODO: migrate to HTTP Client Response handler API
+    // const   response    =   pm.response
+    //         json        =   response.json()
+    // pm.test("Status code is 200", function () {
+    //     response.to.have.status(200)
+    //     pm.collectionVariables.set("facebookAccessToken", json.access_token)
+    //     pm.collectionVariables.set("facebookExpiresIn", json.expires_in)
+    //     pm.collectionVariables.set("facebookTokenType", json.token_type)
+    // })
+%}
+
+###
+# group: auth / facebook
+# @name userinfo
+GET https://graph.facebook.com/me?
+    fields=id,name,email,picture
+
+###
+# group: auth
+# @name login-user
+POST {{url}}/v1/auth/login
+#Authorization: Bearer OV6KcNL0OhqKKbkWmE9GCWziDrVzV162dI4HuvqEzUYeFRhuAILiBsWV9BrHP5EknEuF5D0dZAN0zLCKs5fSTemowPyWhCOjbYUeqWmsuwhRthIooTgmyCnYQXMmUKecci9ObZ2UdUuSnTFeI0L2PuyUIIRnmlY6jZjM2esjeuX1RmAjxgeoMQinRVow8tCCSc1qhrRQtpNp5sRHJ0yVbrWfIzYJ8dkGxlei3niBugAYXgxCXTAmqggsWL3Ieha8
+Content-Type: application/json
+
+{
+  "email": "anil1@senocak.com",
+  "password": "asenocak"
+}
+
+> {%
+    // TODO: migrate to HTTP Client Response handler API
+    // const   response    =   pm.response
+    //         json        =   response.json()
+    // pm.test("Status code is 200", function () {
+    //     response.to.have.status(200)
+    //     pm.collectionVariables.set("token", json.token)
+    //     pm.globals.set("token1Global", json.token)
+    //     pm.collectionVariables.set("refreshToken", json.refresh_token)
+    // })
+%}
+
+###
+# group: auth
+# @name login-admin
+POST {{url}}/v1/auth/login
+#Authorization: Bearer OV6KcNL0OhqKKbkWmE9GCWziDrVzV162dI4HuvqEzUYeFRhuAILiBsWV9BrHP5EknEuF5D0dZAN0zLCKs5fSTemowPyWhCOjbYUeqWmsuwhRthIooTgmyCnYQXMmUKecci9ObZ2UdUuSnTFeI0L2PuyUIIRnmlY6jZjM2esjeuX1RmAjxgeoMQinRVow8tCCSc1qhrRQtpNp5sRHJ0yVbrWfIzYJ8dkGxlei3niBugAYXgxCXTAmqggsWL3Ieha8
+Content-Type: application/json
+
+{
+  "email": "anil2@senocak.com",
+  "password": "asenocak"
+}
+
+> {%
+    // TODO: migrate to HTTP Client Response handler API
+    // const   response    =   pm.response
+    //         json        =   response.json()
+    // pm.test("Status code is 200", function () {
+    //     response.to.have.status(200)
+    //     pm.collectionVariables.set("token", json.token)
+    //     pm.globals.set("token2Global", json.token)
+    //     pm.collectionVariables.set("refreshToken", json.refreshToken)
+    // })
+%}
+
+###
+# group: auth
+# @name register
+POST {{url}}/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "senocakanil@gmail.com",
+  "password": "senocakanil"
+}
+
+> {%
+    // TODO: migrate to HTTP Client Response handler API
+    // pm.test("Status code is 201", function () {
+    //     response.to.have.status(201)
+    // })
+%}
+
+###
+# group: user
+# @name me
+GET {{url}}/v1/user/me
+Authorization: Bearer {{token}}
+
+###
+# group: user
+# @name me
+PATCH {{url}}/v1/user/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "name": "{{$randomFullName}}",
+    "password": "asenocak",
+    "password_confirmation": "asenocak",
+    "gender": "MALE",
+    "phone": "+905554443322",
+    "birthDate": "01-01-1994 12:00:00",
+    "introduction": "{{$randomLoremParagraph}}",
+    "cityId": "{{cityId}}",
+    "teachingLanguages": [
+        {
+            "code": "{{firstTopicLanguageCode}}",
+            "level": "beginner",
+            "topics": [
+                "{{firstTopicId}}"
+            ]
+        }
+    ],
+    "learningLanguages": [
+        {
+            "code": "{{secondTopicLanguageCode}}",
+            "level": "advanced",
+            "topics": [
+                "{{secondTopicId}}"
+            ]
+        }
+    ]
+}
+
+###
+# group: user
+# @name avatar
+PATCH {{url}}/v1/user/avatar
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="avatar"; filename="50844763_374679260028547_1673544666341819410_n.jpg"
+
+< /Users/tcasenocak/Desktop/50844763_374679260028547_1673544666341819410_n.jpg
+--WebAppBoundary
+
+> {%
+    // TODO: migrate to HTTP Client Response handler API
+    // const   response    =   pm.response
+    //         json        =   response.json()
+    // pm.test("Status code is 200", function () {
+    //     response.to.have.status(200)
+    //     var userId = pm.collectionVariables.get("userId")
+    //     pm.collectionVariables.set("avatar", userId+"/"+json.avatar)
+    // })
+%}
+
+###
+# group: user
+# @name introduction
+PATCH {{url}}/v1/user/introduction
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="introduction"; filename="videoplayback.mp4"
+
+< /Users/tcasenocak/Downloads/videoplayback.mp4
+--WebAppBoundary
+
+> {%
+    // TODO: migrate to HTTP Client Response handler API
+    // const   response    =   pm.response
+    //         json        =   response.json()
+    // pm.test("Status code is 200", function () {
+    //     response.to.have.status(200)
+    //     var userId = pm.collectionVariables.get("userId")
+    //     pm.collectionVariables.set("introductionVideo", userId+"/"+json.introductionVideo)
+    // })
+%}
+
+###
+# group: user
+# @name favorites
+PATCH {{url}}/v1/user/favorites
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "type": "ADD",
+  "username": "anilsenocak2"
+}
+
+> {%
+    // TODO: you can add here Response handler
+%}
+
+###
+# group: user
+# @name oauth2 delete
+DELETE {{url}}/v1/user/oauth2/google
+Authorization: Bearer {{token}}
+
+> {%
+    // TODO: you can add here Response handler
+%}
+
+###
+# group: shared
+# @name enums
+GET {{url}}/v1/shared/enums
+
+> {%
+    // TODO: you can add here Response handler
+%}
+
+###
+# group: shared
+# @name ping
+GET {{url}}/v1/shared?locale=tr
+Accept-Language: tr
