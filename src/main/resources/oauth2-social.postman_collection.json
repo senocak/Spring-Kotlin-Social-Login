@@ -1,0 +1,1096 @@
+{
+	"info": {
+		"_postman_id": "e9c25c8a-f403-403b-af23-6c8e0b8a156c",
+		"name": "oauth2-social",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7821151",
+		"_collection_link": "https://lively-comet-8198.postman.co/workspace/An%C4%B1l~d33d46fc-ebc0-4ccb-81ba-caceff009d2d/collection/7821151-e9c25c8a-f403-403b-af23-6c8e0b8a156c?action=share&source=collection_link&creator=7821151"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "google",
+					"item": [
+						{
+							"name": "token",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "code",
+											"value": "4/0AWtgzh5bCE-DCJBukhtmAkuhByLLExBo6w4B-mov6IGVUaa2oq0OBZ2fQ9VoC7CakGR7DQ",
+											"type": "default"
+										},
+										{
+											"key": "client_id",
+											"value": "300305842054-mu90cp06acb13q8j1lcrqms2rd5q2h8d.apps.googleusercontent.com",
+											"type": "default"
+										},
+										{
+											"key": "client_secret",
+											"value": "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",
+											"type": "default"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "http://localhost:8081/oauth2/redirect",
+											"type": "default"
+										},
+										{
+											"key": "grant_type",
+											"value": "authorization_code",
+											"type": "default"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://oauth2.googleapis.com/token",
+									"protocol": "https",
+									"host": [
+										"oauth2",
+										"googleapis",
+										"com"
+									],
+									"path": [
+										"token"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "userinfo",
+							"request": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "redirect_uri",
+											"value": "http://localhost:8081/oauth2/google/redirect",
+											"type": "string"
+										},
+										{
+											"key": "scope",
+											"value": "openid profile email",
+											"type": "string"
+										},
+										{
+											"key": "clientId",
+											"value": "300305842054-mu90cp06acb13q8j1lcrqms2rd5q2h8d.apps.googleusercontent.com",
+											"type": "string"
+										},
+										{
+											"key": "clientSecret",
+											"value": "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",
+											"type": "string"
+										},
+										{
+											"key": "accessTokenUrl",
+											"value": "https://oauth2.googleapis.com/token",
+											"type": "string"
+										},
+										{
+											"key": "authUrl",
+											"value": "https://accounts.google.com/o/oauth2/auth",
+											"type": "string"
+										},
+										{
+											"key": "tokenName",
+											"value": "google",
+											"type": "string"
+										},
+										{
+											"key": "addTokenTo",
+											"value": "header",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://www.googleapis.com/oauth2/v1/userinfo",
+									"protocol": "https",
+									"host": [
+										"www",
+										"googleapis",
+										"com"
+									],
+									"path": [
+										"oauth2",
+										"v1",
+										"userinfo"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "github",
+					"item": [
+						{
+							"name": "token",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "client_id",
+											"value": "1131682d67ffdbf647c2",
+											"type": "default"
+										},
+										{
+											"key": "client_secret",
+											"value": "688d0e87d3e5b6b1f57ab6d92bac6a3981a4454e",
+											"type": "default"
+										},
+										{
+											"key": "code",
+											"value": "c4cdfcd27795d3e71a2d",
+											"type": "default"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "http://localhost:8081/oauth2/github/redirect",
+											"type": "default"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://github.com/login/oauth/access_token",
+									"protocol": "https",
+									"host": [
+										"github",
+										"com"
+									],
+									"path": [
+										"login",
+										"oauth",
+										"access_token"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "userinfo",
+							"request": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "tokenName",
+											"value": "github",
+											"type": "string"
+										},
+										{
+											"key": "authUrl",
+											"value": "https://github.com/login/oauth/authorize",
+											"type": "string"
+										},
+										{
+											"key": "accessTokenUrl",
+											"value": "https://github.com/login/oauth/access_token",
+											"type": "string"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "http://localhost:8081/oauth2/github/redirect",
+											"type": "string"
+										},
+										{
+											"key": "scope",
+											"value": "openid user:email read:user",
+											"type": "string"
+										},
+										{
+											"key": "clientSecret",
+											"value": "688d0e87d3e5b6b1f57ab6d92bac6a3981a4454e",
+											"type": "string"
+										},
+										{
+											"key": "clientId",
+											"value": "1131682d67ffdbf647c2",
+											"type": "string"
+										},
+										{
+											"key": "addTokenTo",
+											"value": "header",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.github.com/user",
+									"protocol": "https",
+									"host": [
+										"api",
+										"github",
+										"com"
+									],
+									"path": [
+										"user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "emails",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "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",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.github.com/user/emails",
+									"protocol": "https",
+									"host": [
+										"api",
+										"github",
+										"com"
+									],
+									"path": [
+										"user",
+										"emails"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "linkedin",
+					"item": [
+						{
+							"name": "token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const   response    =   pm.response",
+											"        json        =   response.json()",
+											"pm.test(\"Status code is 200\", function () {",
+											"    response.to.have.status(200)",
+											"    pm.collectionVariables.set(\"linkedinAccessToken\", json.access_token)",
+											"    pm.collectionVariables.set(\"linkedinExpiresIn\", json.expires_in)",
+											"    pm.collectionVariables.set(\"linkedinScope\", json.scope)",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "code",
+											"value": "AQSa1IJZBClsL0MuM__Bkr0PjZD48klbOqtibMhK8fGduP0qvwIs8CrqyLE23sf8EYoQH4DPGz5OxvMXks7hD9v4oszGyfInZZKlfm08KDLWQBbEj2Gb6dirMhGXN6b-ynmc2pqTlaAkQOpCCbMrstRj56JWmnGmsTzUsNvsuvrXsgaGsRs0Nuuwd31TKVL26AY_2jj31SUx9lfq8a4",
+											"type": "default"
+										},
+										{
+											"key": "client_id",
+											"value": "77b8nywb5klf0i",
+											"type": "default"
+										},
+										{
+											"key": "client_secret",
+											"value": "GzY0858OWb3WfQkY",
+											"type": "default"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "http://localhost:8083/oauth2/linkedin/redirect",
+											"type": "default"
+										},
+										{
+											"key": "grant_type",
+											"value": "authorization_code",
+											"type": "default"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://www.linkedin.com/oauth/v2/accessToken",
+									"protocol": "https",
+									"host": [
+										"www",
+										"linkedin",
+										"com"
+									],
+									"path": [
+										"oauth",
+										"v2",
+										"accessToken"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "userinfo",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.linkedin.com/v2/userinfo",
+									"protocol": "https",
+									"host": [
+										"api",
+										"linkedin",
+										"com"
+									],
+									"path": [
+										"v2",
+										"userinfo"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "facebook",
+					"item": [
+						{
+							"name": "token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const   response    =   pm.response",
+											"        json        =   response.json()",
+											"pm.test(\"Status code is 200\", function () {",
+											"    response.to.have.status(200)",
+											"    pm.collectionVariables.set(\"facebookAccessToken\", json.access_token)",
+											"    pm.collectionVariables.set(\"facebookExpiresIn\", json.expires_in)",
+											"    pm.collectionVariables.set(\"facebookTokenType\", json.token_type)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "client_id",
+											"value": "1356336764909484",
+											"type": "text"
+										},
+										{
+											"key": "client_secret",
+											"value": "a938300027ca68ff8c63a5f6b13a3672",
+											"type": "text"
+										},
+										{
+											"key": "code",
+											"value": "AQBFGu7L8R4yag2iqjWmm_DYwRE3l7P34-zaBIZT-FMP27b0nExd_zDB7PVawF_ztPaa82gevm2beZNGKTz5iNCq8wA4KxM-BDTFdhmQCfVWWvmMqv0gsZJTepiBlO27ZUH5c5mSqTPyLIfl0NsUW_raaWFXg6xySYuQArIPEW7IYyz7WNT_ZjY0l084xf8e-PYDCLYeoRv7A-ysbNRYHRJYQBShs4qDdCWELLNwDiH4RchSU81pN_1NJ6p7iRY6UoE6C6yps1FpvSZ9DjAvjFAUyB-cpX60zB0Sn4Cqv9HKpjQB2XaiibZSDY-wxLAYXpE_WVJckqvSZzsaZ1zSluI8D0wCsD_owG26J4Y9YM4XyEKb3M6f2pMSY0ueSAKg4CMGcYrw3BVfZ4xLf-eOm8wt",
+											"type": "text"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "http://localhost:8081/oauth2/facebook/redirect",
+											"type": "text"
+										},
+										{
+											"key": "grant_type",
+											"value": "authorization_code",
+											"type": "default"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://graph.facebook.com/oauth/access_token",
+									"protocol": "https",
+									"host": [
+										"graph",
+										"facebook",
+										"com"
+									],
+									"path": [
+										"oauth",
+										"access_token"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "userinfo",
+							"request": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "authUrl",
+											"value": "https://www.facebook.com/v2.8/dialog/oauth?",
+											"type": "string"
+										},
+										{
+											"key": "accessTokenUrl",
+											"value": "https://graph.facebook.com/oauth/access_token",
+											"type": "string"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "http://localhost:8081/oauth2/facebook/redirect",
+											"type": "string"
+										},
+										{
+											"key": "tokenName",
+											"value": "facebook",
+											"type": "string"
+										},
+										{
+											"key": "clientSecret",
+											"value": "a938300027ca68ff8c63a5f6b13a3672",
+											"type": "string"
+										},
+										{
+											"key": "clientId",
+											"value": "1356336764909484",
+											"type": "string"
+										},
+										{
+											"key": "useBrowser",
+											"value": false,
+											"type": "boolean"
+										},
+										{
+											"key": "scope",
+											"value": "r_emailaddress,r_liteprofile",
+											"type": "string"
+										},
+										{
+											"key": "addTokenTo",
+											"value": "header",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://graph.facebook.com/me?fields=id,name,email,picture",
+									"protocol": "https",
+									"host": [
+										"graph",
+										"facebook",
+										"com"
+									],
+									"path": [
+										"me"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "id,name,email,picture"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "login-user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const   response    =   pm.response",
+									"        json        =   response.json()",
+									"pm.test(\"Status code is 200\", function () {",
+									"    response.to.have.status(200)",
+									"    pm.collectionVariables.set(\"token\", json.token)",
+									"    pm.globals.set(\"token1Global\", json.token)",
+									"    pm.collectionVariables.set(\"refreshToken\", json.refresh_token)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer OV6KcNL0OhqKKbkWmE9GCWziDrVzV162dI4HuvqEzUYeFRhuAILiBsWV9BrHP5EknEuF5D0dZAN0zLCKs5fSTemowPyWhCOjbYUeqWmsuwhRthIooTgmyCnYQXMmUKecci9ObZ2UdUuSnTFeI0L2PuyUIIRnmlY6jZjM2esjeuX1RmAjxgeoMQinRVow8tCCSc1qhrRQtpNp5sRHJ0yVbrWfIzYJ8dkGxlei3niBugAYXgxCXTAmqggsWL3Ieha8",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"anil1@senocak.com\",\n    \"password\": \"asenocak\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/auth/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login-admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const   response    =   pm.response",
+									"        json        =   response.json()",
+									"pm.test(\"Status code is 200\", function () {",
+									"    response.to.have.status(200)",
+									"    pm.collectionVariables.set(\"token\", json.token)",
+									"    pm.globals.set(\"token2Global\", json.token)",
+									"    pm.collectionVariables.set(\"refreshToken\", json.refreshToken)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer OV6KcNL0OhqKKbkWmE9GCWziDrVzV162dI4HuvqEzUYeFRhuAILiBsWV9BrHP5EknEuF5D0dZAN0zLCKs5fSTemowPyWhCOjbYUeqWmsuwhRthIooTgmyCnYQXMmUKecci9ObZ2UdUuSnTFeI0L2PuyUIIRnmlY6jZjM2esjeuX1RmAjxgeoMQinRVow8tCCSc1qhrRQtpNp5sRHJ0yVbrWfIzYJ8dkGxlei3niBugAYXgxCXTAmqggsWL3Ieha8",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"anil2@senocak.com\",\n    \"password\": \"asenocak\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/auth/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    response.to.have.status(201)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"senocakanil@gmail.com\",\n    \"password\": \"senocakanil\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/auth/register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/v1/user/me",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"user",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "me",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{$randomFullName}}\",\n    \"password\": \"asenocak\",\n    \"password_confirmation\": \"asenocak\",\n    \"gender\": \"MALE\",\n    \"phone\": \"+905554443322\",\n    \"birthDate\": \"01-01-1994 12:00:00\",\n    \"introduction\": \"{{$randomLoremParagraph}}\",\n    \"cityId\": \"{{cityId}}\",\n    \"teachingLanguages\": [\n        {\n            \"code\": \"{{firstTopicLanguageCode}}\",\n            \"level\": \"beginner\",\n            \"topics\": [\n                \"{{firstTopicId}}\"\n            ]\n        }\n    ],\n    \"learningLanguages\": [\n        {\n            \"code\": \"{{secondTopicLanguageCode}}\",\n            \"level\": \"advanced\",\n            \"topics\": [\n                \"{{secondTopicId}}\"\n            ]\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/user/me",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"user",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "avatar",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const   response    =   pm.response",
+									"        json        =   response.json()",
+									"pm.test(\"Status code is 200\", function () {",
+									"    response.to.have.status(200)",
+									"    var userId = pm.collectionVariables.get(\"userId\")",
+									"    pm.collectionVariables.set(\"avatar\", userId+\"/\"+json.avatar)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": "/Users/tcasenocak/Desktop/50844763_374679260028547_1673544666341819410_n.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/v1/user/avatar",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"user",
+								"avatar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "introduction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const   response    =   pm.response",
+									"        json        =   response.json()",
+									"pm.test(\"Status code is 200\", function () {",
+									"    response.to.have.status(200)",
+									"    var userId = pm.collectionVariables.get(\"userId\")",
+									"    pm.collectionVariables.set(\"introductionVideo\", userId+\"/\"+json.introductionVideo)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "introduction",
+									"type": "file",
+									"src": "/Users/tcasenocak/Downloads/videoplayback.mp4"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/v1/user/introduction",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"user",
+								"introduction"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "favorites",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"ADD\",\n    \"username\": \"anilsenocak2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/user/favorites",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"user",
+								"favorites"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "oauth2 delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/v1/user/oauth2/google",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"user",
+								"oauth2",
+								"google"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "shared",
+			"item": [
+				{
+					"name": "enums",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/v1/shared/enums",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"shared",
+								"enums"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ping",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "tr",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/v1/shared",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"shared"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "tr",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://92.205.16.92:8081",
+			"type": "default"
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "linkedinAccessToken",
+			"value": ""
+		},
+		{
+			"key": "linkedinExpiresIn",
+			"value": ""
+		},
+		{
+			"key": "linkedinScope",
+			"value": ""
+		},
+		{
+			"key": "facebookAccessToken",
+			"value": ""
+		},
+		{
+			"key": "facebookExpiresIn",
+			"value": ""
+		},
+		{
+			"key": "facebookTokenType",
+			"value": ""
+		},
+		{
+			"key": "randomDate",
+			"value": ""
+		},
+		{
+			"key": "randomPhoneNumber",
+			"value": ""
+		},
+		{
+			"key": "sid",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		}
+	]
+}
