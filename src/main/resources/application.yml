@@ -1,0 +1,126 @@
+server:
+  port: ${SERVER_PORT:8083}
+  servlet:
+    context-path: /
+  forward-headers-strategy: framework # CORS network error (URL scheme must be "http" or "https" for CORS request) solution. Ref: https://stackoverflow.com/a/73376127
+  compression:
+    enabled: true
+    min-response-size: 2KB
+    mime-types: video/mpeg4-generic, video/mpeg, video/mp4, video/ogg, video/3gpp, video/x-matroska
+  error:
+    whitelabel:
+      enabled: false
+spring:
+  application:
+    name: ${APP_NAME:social}-${random.uuid}
+  profiles:
+    active: ${PROFILE:local}
+  datasource:
+    url: jdbc:postgresql://${SERVER_IP:localhost}:${POSTGRESQL_PORT:5432}/${POSTGRESQL_DB:social}?currentSchema=${POSTGRESQL_SCHEMA:public}
+    username: ${POSTGRESQL_USER:postgres}
+    password: ${POSTGRESQL_PASSWORD:senocak}
+    hikari:
+      minimum-idle: 0 # The minimum connection pool size is 0
+      maximum-pool-size: 40 # it can grow to at most 40 connections
+      max-lifetime: 900000 # to retire pooled connections after 10 minutes
+      transaction-isolation: TRANSACTION_READ_COMMITTED # to optimize the number of gap locks held by db when traversing the clustered index for bulk updates or deletes.
+      # auto-commit: false
+      pool-name: SocialHikariCP
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: true
+        globally_quoted_identifiers: true
+        format_sql: true
+        use_sql_comments: true
+        highlight_sql: true
+        session:
+          events:
+            log:
+              LOG_QUERIES_SLOWER_THAN_MS: ${LOG_QUERIES_SLOWER_THAN_MS:10}
+    hibernate:
+      ddl-auto: update
+  messages:
+    basename: locales.messages
+    encoding: UTF-8
+    cache-duration: ${MESSAGES_CACHE_DURATION:-1}
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE:50MB}
+      max-request-size: ${MAX_REQUEST_SIZE:50MB}
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: ${GOOGLE_CLIENT_ID}
+            clientSecret: ${GOOGLE_CLIENT_SECRET}
+            redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/google/redirect}
+            scope:
+              - email
+              - profile
+          github:
+            clientId: ${GITHUB_CLIENT_ID}
+            clientSecret: ${GITHUB_CLIENT_SECRET}
+            redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/github/redirect}
+            scope:
+              - user:email
+              - read:user
+          linkedin:
+            clientId: ${LINKEDIN_CLIENT_ID}
+            clientSecret: ${LINKEDIN_CLIENT_SECRET}
+            redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/linkedin/redirect}
+            client-authentication-method: post
+            authorization-grant-type: authorization_code
+            scope: openid, profile, email
+            client-name: Linkedin
+          facebook:
+            clientId: ${FACEBOOK_CLIENT_ID}
+            clientSecret: ${FACEBOOK_CLIENT_SECRET}
+            redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/facebook/redirect}
+            scope:
+              - email
+              - public_profile
+        provider:
+          google:
+            tokenUri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
+            userInfoUri: ${GOOGLE_USER_INFO_URI:https://www.googleapis.com/oauth2/v1/userinfo}
+          github:
+            tokenUri: ${GITHUB_TOKEN_URI:https://github.com/login/oauth/access_token}
+            userInfoUri: ${GITHUB_USER_INFO_URI:https://api.github.com/user}
+            userEmailUri: ${GITHUB_USER_EMAIL_URI:https://api.github.com/user/emails}
+          linkedin:
+            authorization-uri: ${LINKEDIN_AUTH_URI:https://www.linkedin.com/oauth/v2/authorization}
+            tokenUri: ${LINKEDIN_TOKEN_URI:https://www.linkedin.com/oauth/v2/accessToken}
+            userInfoUri: ${LINKEDIN_USER_INFO_URI:https://api.linkedin.com/v2/userinfo?projection=(sub,email_verified,name,locale,given_name,family_name,email,picture)}
+          facebook:
+            tokenUri: ${FACEBOOK_TOKEN_URI:https://graph.facebook.com/oauth/access_token}
+            userInfoUri: ${FACEBOOK_USER_INFO_URI:https://graph.facebook.com/me?fields=id,name,email,picture}
+app:
+  jwtSecret: ${JWT_SECRET:sTvHbWsBDSCwW5ZnxpPEx7B5ad2Zx60p}
+  jwtExpirationInMs: '#{1 * 60 * 60}' # 1 hour in seconds
+  default-locale: ${APP_DEFAULT_LOCALE:en}
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: ${HIBERNATE_SQL_LEVEL:error}
+      springframework: ${SPRING_LEVEL:info}
+springdoc:
+  api-docs:
+    path: /v1/swagger
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    shutdown:
+      enabled: false
+    prometheus:
+      enabled: true
+    health:
+      probes:
+        enabled: true
+      show-details: always

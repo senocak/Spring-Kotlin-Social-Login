@@ -1,0 +1,32 @@
+package com.github.senocak.ratehighway.domain
+
+import com.github.senocak.ratehighway.util.RoleName
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import org.springframework.data.repository.PagingAndSortingRepository
+import org.springframework.stereotype.Repository
+import java.util.Optional
+import java.util.UUID
+
+@Repository
+interface RoleRepository: JpaRepository<Role, UUID>, PagingAndSortingRepository<Role, UUID> {
+    fun findByName(roleName: RoleName): Optional<Role>
+}
+
+@Repository
+interface UserRepository: JpaRepository<User, UUID>, PagingAndSortingRepository<User, UUID>, JpaSpecificationExecutor<User> {
+    fun findByEmail(email: String): User?
+    fun existsByEmail(email: String): Boolean
+}
+
+@Repository
+interface OAuthGoogleUserRepository: JpaRepository<OAuthGoogleUser, String>, JpaSpecificationExecutor<OAuthGoogleUser>
+
+@Repository
+interface OAuthGithubUserRepository: JpaRepository<OAuthGithubUser, String>, JpaSpecificationExecutor<OAuthGithubUser>
+
+@Repository
+interface OAuthLinkedinUserRepository: JpaRepository<OAuthLinkedinUser, String>, JpaSpecificationExecutor<OAuthLinkedinUser>
+
+@Repository
+interface OAuthFacebookUserRepository: JpaRepository<OAuthFacebookUser, String>, JpaSpecificationExecutor<OAuthFacebookUser>

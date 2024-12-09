@@ -1,0 +1,1 @@
+${Ansi.GREEN} https://github.com/PulseStack/Spring-Kotlin ${Ansi.RED} :: ${spring.application.name} ${spring-boot.formatted-version} ${Ansi.DEFAULT}
