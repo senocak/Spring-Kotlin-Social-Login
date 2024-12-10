@@ -94,6 +94,12 @@ spring:
             redirect-uri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/twitch/redirect}
             authorization-grant-type: client_credentials
             scope: channel:manage:polls, channel:read:polls, user:read:email, openid
+          slack:
+            client-id: ${SLACK_OAUTH_CLIENT_ID}
+            client-secret: ${SLACK_OAUTH_CLIENT_SECRET}
+            redirect-uri: ${SERVER_FQDN:https://localhost:${server.port}/oauth2/slack/redirect}
+            authorization-grant-type: client_credentials
+            scope: openid, email, profile, identity.basic
         provider:
           google:
             tokenUri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
@@ -119,6 +125,9 @@ spring:
           twitch:
             token-uri: https://id.twitch.tv/oauth2/token
             userInfoUri: ${SPOTIFY_USER_INFO_URI:https://api.twitch.tv/helix/users}
+          slack:
+            token-uri: https://slack.com/api/oauth.v2.access
+            userInfoUri: https://slack.com/api/openid.connect.userInfo
 app:
   jwtSecret: ${JWT_SECRET:sTvHbWsBDSCwW5ZnxpPEx7B5ad2Zx60p}
   jwtExpirationInMs: '#{1 * 60 * 60}' # 1 hour in seconds

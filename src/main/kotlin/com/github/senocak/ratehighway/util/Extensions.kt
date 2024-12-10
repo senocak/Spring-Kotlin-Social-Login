@@ -8,6 +8,7 @@ import com.github.senocak.ratehighway.domain.OAuthFacebookUser
 import com.github.senocak.ratehighway.domain.OAuthGithubUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
+import com.github.senocak.ratehighway.domain.OAuthSlackUser
 import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
 import com.github.senocak.ratehighway.domain.OAuthTwitchUser
 import com.github.senocak.ratehighway.domain.OAuthTwitterUser
@@ -17,6 +18,7 @@ import com.github.senocak.ratehighway.domain.dto.OAuthFacebookUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthGithubUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthGoogleUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthLinkedinUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthSlackUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthSpotifyUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthTwitchUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthTwitterUserResponse
@@ -51,6 +53,7 @@ fun User.toDTO(roles: Boolean = true): UserResponseDto {
     if (this.oAuthTwitterUser != null) dto.twitter = this.oAuthTwitterUser!!.toDTO()
     if (this.oAuthSpotifyUser != null) dto.spotify = this.oAuthSpotifyUser!!.toDTO()
     if (this.oAuthTwitchUser != null) dto.twitch = this.oAuthTwitchUser!!.toDTO()
+    if (this.oAuthSlackUser != null) dto.slack = this.oAuthSlackUser!!.toDTO()
     return dto
 }
 
@@ -146,6 +149,15 @@ fun OAuthTwitchUser.toDTO(): OAuthTwitchUserResponse =
             it.email = this.email
             it.display_name = this.display_name
             it.profile_image_url = this.profile_image_url
+        }
+
+fun OAuthSlackUser.toDTO(): OAuthSlackUserResponse =
+    OAuthSlackUserResponse()
+        .also {
+            it.email = this.email
+            it.name = "${this.given_name} ${this.family_name}"
+            it.picture = this.picture
+            it.localeSlack = this.locale
         }
 
 fun String.toUUID(): UUID = UUID.fromString(this)

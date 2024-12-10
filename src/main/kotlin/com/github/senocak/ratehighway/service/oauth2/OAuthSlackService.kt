@@ -1,11 +1,11 @@
 package com.github.senocak.ratehighway.service.oauth2
 
-import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
-import com.github.senocak.ratehighway.domain.OAuthTwitterUser
+import com.github.senocak.ratehighway.domain.OAuthSlackUser
+import com.github.senocak.ratehighway.domain.OAuthSlackUserRepository
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User
+import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
 import com.github.senocak.ratehighway.exception.ServerException
-import com.github.senocak.ratehighway.domain.OAuthTwitterUserRepository
 import com.github.senocak.ratehighway.security.JwtTokenProvider
 import com.github.senocak.ratehighway.service.MessageSourceService
 import com.github.senocak.ratehighway.service.RoleService
@@ -28,36 +28,36 @@ import org.springframework.web.client.RestTemplate
 import java.util.UUID
 
 @Service
-class OAuthTwitterService(
+class OAuthSlackService(
     @Qualifier(value = "restTemplateByPassSSL")
     private val restTemplate: RestTemplate,
-    private val oAuthTwitterUserRepository: OAuthTwitterUserRepository,
+    private val oAuthSlackUserRepository: OAuthSlackUserRepository,
     private val messageSourceService: MessageSourceService,
     private val jwtTokenProvider: JwtTokenProvider,
     private val userService: UserService,
     private val passwordEncoder: PasswordEncoder,
     private val roleService: RoleService,
     private val oAuth2ClientProperties: OAuth2ClientProperties
-): OAuthUserServiceImpl<OAuthTwitterUser, OAuthTwitterUserRepository>(
-    repository = oAuthTwitterUserRepository,
+): OAuthUserServiceImpl<OAuthSlackUser, OAuthSlackUserRepository>(
+    repository = oAuthSlackUserRepository,
     messageSourceService = messageSourceService,
     jwtTokenProvider = jwtTokenProvider,
     userService = userService,
     roleService = roleService,
     passwordEncoder = passwordEncoder
 ) {
-    private val registration: OAuth2ClientProperties.Registration = oAuth2ClientProperties.registration["twitter"] ?: throw Exception("Registration not found")
-    private val provider: OAuth2ClientProperties.Provider = oAuth2ClientProperties.provider["twitter"] ?: throw Exception("Provider not found")
+    private val registration: OAuth2ClientProperties.Registration = oAuth2ClientProperties.registration["slack"] ?: throw Exception("Registration not found")
+    private val provider: OAuth2ClientProperties.Provider = oAuth2ClientProperties.provider["slack"] ?: throw Exception("Provider not found")
 
-    override fun getClassName(): String? = OAuthTwitterUser::class.simpleName
+    override fun getClassName(): String? = OAuthSlackUser::class.simpleName
 
-    override fun getUser(entity: OAuthTwitterUser): User {
+    override fun getUser(entity: OAuthSlackUser): User {
         val userRole: Role? = roleService.findByName(roleName = RoleName.ROLE_USER)
         return User(email = entity.email!!, password = passwordEncoder.encode(entity.email!!), roles = mutableListOf(userRole!!))
     }
 
     /**
-     * Retrieves an OAuth token from Twitter using the provided authorization code.
+     * Retrieves an OAuth token from Slack using the provided authorization code.
      * @param code The authorization code to use for token retrieval.
      * @return An OAuthTokenResponse containing the access token and related information.
      */
@@ -65,47 +65,60 @@ class OAuthTwitterService(
         val headers: HttpHeaders = HttpHeaders()
             .also { h: HttpHeaders ->
                 h.contentType = MediaType.APPLICATION_FORM_URLENCODED
-                h.setBasicAuth(registration.clientId, registration.clientSecret)
             }
-
         val map: MultiValueMap<String, String> = LinkedMultiValueMap()
         map.add("code", code)
-        map.add("client_id", registration.clientSecret)
+        map.add("client_id", registration.clientId)
         map.add("redirect_uri", registration.redirectUri)
-        map.add("grant_type", "authorization_code")
-        map.add("code_verifier", "challenge")
-        map.add("scope", registration.scope.joinToString(separator = ","))
+        map.add("client_secret", registration.clientSecret)
 
-        val response: ResponseEntity<OAuthTokenResponse> = restTemplate.exchange(provider.tokenUri,
-            HttpMethod.POST, HttpEntity(map, headers), OAuthTokenResponse::class.java)
+        val response: ResponseEntity<SlackOAuthTokenResponse> = restTemplate.exchange(provider.tokenUri,
+            HttpMethod.POST, HttpEntity(map, headers), SlackOAuthTokenResponse::class.java)
 
-        return response.body ?:
+        val body: SlackOAuthTokenResponse = response.body ?:
             throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("null", getClassName())
         ).also { log.error("Body is returned as null, throwing ServerException") }
+        return OAuthTokenResponse(
+            id_token = body.authed_user?.id,
+            access_token = body.authed_user?.access_token,
+            scope = body.authed_user?.scope,
+            token_type = body.authed_user?.token_type,
+        )
+    }
+    private class SlackOAuthTokenResponse {
+        val ok: Boolean = false
+        val app_id: String? = null
+        val authed_user: AuthedUser? = null
+        val team: Team? = null
+        val is_enterprise_install: Boolean = false
+    }
+    private  class AuthedUser {
+        val id: String? = null
+        val scope: String? = null
+        val access_token: String? = null
+        val token_type: String? = null
+    }
+    private class Team {
+        val id: String? = null
     }
 
     /**
-     * Retrieves user information from Twitter using the provided access token.
+     * Retrieves user information from Slack using the provided access token.
      * @param accessToken The access token to use for user info retrieval.
-     * @return An OAuthTwitterUser object containing the user's information.
+     * @return An OAuthSlackUser object containing the user's information.
      */
-    fun getUserInfo(accessToken: String): OAuthTwitterUser {
+    fun getUserInfo(accessToken: String): OAuthSlackUser {
         val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(LinkedMultiValueMap(), createHeaderForToken(accessToken = accessToken))
-        val response: ResponseEntity<OAuthTwitterUserWrapper> = restTemplate.exchange(provider.userInfoUri,
-            HttpMethod.GET, entity, OAuthTwitterUserWrapper::class.java)
-        val body: OAuthTwitterUser = response.body?.data
+        val response: ResponseEntity<OAuthSlackUser> = restTemplate.exchange(provider.userInfoUri,
+            HttpMethod.GET, entity, OAuthSlackUser::class.java)
+        val body: OAuthSlackUser = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))
                 .also { log.error("Body is returned as null, throwing ServerException, $it") }
-        body.id = "${UUID.randomUUID()}"
-        body.email = body.username
+        body.id = body.sub
         return body
     }
 
-    internal class OAuthTwitterUserWrapper {
-        val data: OAuthTwitterUser? = null
-    }
-
-    val link: String = "https://x.com/i/oauth2/authorize?code_challenge=challenge&code_challenge_method=plain&response_type=code&client_id=${registration.clientId}&scope=${registration.scope.joinToString(separator = " ")}&state=${UUID.randomUUID()}&redirect_uri=${registration.redirectUri}"
+    val link: String = "https://slack.com/oauth/v2/authorize?client_id=${registration.clientId}&user_scope=${registration.scope.joinToString(separator = " ")}&redirect_uri=${registration.redirectUri}&state=${UUID.randomUUID()}"
 }

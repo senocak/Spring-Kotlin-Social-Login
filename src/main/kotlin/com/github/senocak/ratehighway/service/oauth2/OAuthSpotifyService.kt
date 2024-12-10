@@ -70,7 +70,6 @@ class OAuthSpotifyService(
         val map: MultiValueMap<String, String> = LinkedMultiValueMap()
         map.add("code", code)
         map.add("grant_type", "authorization_code")
-        //map.add("grant_type", registration.authorizationGrantType)
         map.add("redirect_uri", registration.redirectUri)
 
         val response: ResponseEntity<OAuthTokenResponse> = restTemplate.exchange(provider.tokenUri,

@@ -155,7 +155,6 @@ class OAuthSpotifyUserResponse: BaseDto() {
         "OAuthSpotifyUserResponse(email=$email, display_name=$display_name, country=$country)"
 }
 
-
 class OAuthTwitchUserResponse: BaseDto() {
     @Schema(example = "lorem@ipsum.com", description = "Email of the user", required = true, name = "email", type = "String")
     var email: String? = null
@@ -166,4 +165,24 @@ class OAuthTwitchUserResponse: BaseDto() {
     @Schema(example = "Anıl Şenocak", description = "Given name of the user", required = true, name = "given_name", type = "String")
     var profile_image_url: String? = null
 
+    override fun toString(): String =
+        "OAuthTwitchUserResponse(email=$email, display_name=$display_name, profile_image_url=$profile_image_url)"
+}
+
+class OAuthSlackUserResponse: BaseDto() {
+    @Schema(example = "lorem@ipsum.com", description = "Email of the user", required = true, name = "email", type = "String")
+    var email: String? = null
+
+    @Schema(example = "Lorem Ipsum", description = "Name of the user", required = true, name = "name", type = "String")
+    var name: String? = null
+
+    @Schema(example = "http://...", description = "Picture of the user", required = true, name = "given_name", type = "String")
+    var picture: String? = null
+
+    @Schema(example = "TR", description = "Locale of the user", required = true, name = "locale", type = "String")
+    @JsonProperty("locale")
+    var localeSlack: String? = null
+
+    override fun toString(): String =
+        "OAuthSlackUserResponse(email=$email, name=$name, picture=$picture, localeSlack=$localeSlack)"
 }

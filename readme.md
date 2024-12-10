@@ -60,3 +60,13 @@ Generate a new oauth application;
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
 - Visit: `http://localhost:8083/oauth2/authorize/twitch`
+
+### Slack
+Generate a new oauth application;
+- https://api.slack.com/apps/
+- For local use `http://localhost:8083/oauth2/slack/redirect` in `Authorization callback URL`
+- `8083` is your applications port
+- Put the `Client ID` and `Client secrets` to application.yml
+- Visit: `http://localhost:8083/oauth2/authorize/slack`
+
+

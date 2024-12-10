@@ -264,6 +264,23 @@ class OAuthTwitchUser: OAuthBaseUser() {
 }
 
 @Entity
+@Table(name = "slackUsers", uniqueConstraints = [
+    UniqueConstraint(columnNames = ["email"])
+])
+class OAuthSlackUser: OAuthBaseUser() {
+    @Column var sub: String? = null
+    @Column var email_verified: Boolean? = null
+    @Column var date_email_verified: Int? = null
+    @Column var name: String? = null
+    @Column var picture: String? = null
+    @Column var given_name: String? = null
+    @Column var family_name: String? = null
+    @Column var locale: String? = null
+    @JsonProperty("https://slack.com/team_name") @Column var slackTeamName: String? = null
+    @JsonProperty("https://slack.com/team_domain") @Column var slackTeamDomain: String? = null
+}
+
+@Entity
 @Table(name = "roles")
 class Role(@Column @Enumerated(EnumType.STRING) var name: RoleName? = null): BaseDomain()
 
@@ -290,4 +307,5 @@ class User(
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthTwitterUser: OAuthTwitterUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthSpotifyUser: OAuthSpotifyUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthTwitchUser: OAuthTwitchUser? = null,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthSlackUser: OAuthSlackUser? = null,
 ): BaseDomain()

@@ -6,6 +6,7 @@ import com.github.senocak.ratehighway.domain.OAuthFacebookUser
 import com.github.senocak.ratehighway.domain.OAuthGithubUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
+import com.github.senocak.ratehighway.domain.OAuthSlackUser
 import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
 import com.github.senocak.ratehighway.domain.OAuthTwitchUser
 import com.github.senocak.ratehighway.domain.OAuthTwitterUser
@@ -15,6 +16,7 @@ import com.github.senocak.ratehighway.service.oauth2.OAuthFacebookService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGithubService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGoogleService
 import com.github.senocak.ratehighway.service.oauth2.OAuthLinkedinService
+import com.github.senocak.ratehighway.service.oauth2.OAuthSlackService
 import com.github.senocak.ratehighway.service.oauth2.OAuthSpotifyService
 import com.github.senocak.ratehighway.service.oauth2.OAuthTwitchService
 import com.github.senocak.ratehighway.service.oauth2.OAuthTwitterService
@@ -46,6 +48,7 @@ class OAuth2Controller(
     private val oAuthTwitterService: OAuthTwitterService,
     private val oAuthSpotifyService: OAuthSpotifyService,
     private val oAuthTwitchService: OAuthTwitchService,
+    private val oAuthSlackService: OAuthSlackService,
 ): BaseController() {
     private val log: Logger by logger()
 
@@ -344,6 +347,48 @@ class OAuth2Controller(
         )
     }
 
+    @GetMapping("/slack")
+    fun slackLink(): String = oAuthSlackService.link
+
+    @GetMapping("/slack/redirect")
+    @Operation(summary = "Twitch redirect endpoint", tags = ["OAuth2"],
+        responses = [
+            ApiResponse(responseCode = "200", description = "successful operation",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = Map::class))]),
+            ApiResponse(responseCode = "500", description = "internal server error occurred",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = ExceptionDto::class))])
+        ]
+    )
+    fun slack(request: HttpServletRequest,
+       @Parameter(description = "State param") @RequestParam(required = false) state: String?,
+       @Parameter(description = "Code param") @RequestParam(required = false) code: String?,
+       @Parameter(description = "Error param") @RequestParam(value="error_code", required = false) error: String?,
+       @Parameter(description = "Error Description param") @RequestParam(value = "errorMessage", required = false) errorMessage: String?,
+    ): Map<String, Any> {
+        validateError(error = error, errorMessage = errorMessage)
+        validateResponse(code = code, state = state)
+        log.info("Started processing auth for facebook. Code: $code, state: $state")
+        val oAuthTokenResponse: OAuthTokenResponse = oAuthSlackService.getToken(code = code!!)
+        var oAuthSlackUser: OAuthSlackUser = oAuthSlackService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+
+        oAuthSlackUser = try {
+            oAuthSlackService.getByIdOrThrowException(id = oAuthSlackUser.id!!)
+        } catch (e: Exception) {
+            log.warn("oAuthSlackService is saved to db: $oAuthSlackUser")
+            oAuthSlackService.save(entity = oAuthSlackUser)
+        }
+        val oAuthUserResponse: UserResponseWrapperDto = oAuthSlackService.authenticate(
+            jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthSlackUser)
+
+        log.info("Finished processing auth for oAuthSlackService: $oAuthSlackUser")
+        return mapOf(
+            "state" to state!!,
+            "code" to code,
+            "oAuthTokenResponse" to oAuthTokenResponse,
+            "oAuthUserResponse" to oAuthUserResponse
+        )
+    }
+
     @GetMapping
     fun showAllLinks(): Map<String, String> = mapOf(
         "google" to oAuthGoogleService.link,
@@ -353,6 +398,7 @@ class OAuth2Controller(
         "x/twitter" to oAuthTwitterService.link,
         "spotify" to oAuthSpotifyService.link,
         "twitch" to oAuthTwitchService.link,
+        "slack" to oAuthSlackService.link,
     )
 
     /**

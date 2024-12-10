@@ -44,6 +44,9 @@ class UserResponseDto: BaseDto() {
     @Schema(required = false)
     var twitch: OAuthTwitchUserResponse? = null
 
+    @Schema(required = false)
+    var slack: OAuthSlackUserResponse? = null
+
     override fun toString(): String =
         "UserResponseDto(name=$name, email=$email, createdAt=$createdAt, roles=$roles, google=$google, github=$github," +
                 "linkedin=$linkedin, facebook=$facebook, twitter=$twitter, spotify=$spotify, twitch=$twitch)"
