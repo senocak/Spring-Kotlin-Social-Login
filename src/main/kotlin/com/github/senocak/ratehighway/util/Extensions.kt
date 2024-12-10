@@ -170,6 +170,7 @@ fun OAuthDropboxUser.toDTO(): OAuthDropboxUserResponse =
             it.name = this.name
             it.country = this.country
             it.localeSlack = this.locale
+            it.profile_photo_url = this.profile_photo_url
         }
 
 fun String.toUUID(): UUID = UUID.fromString(this)

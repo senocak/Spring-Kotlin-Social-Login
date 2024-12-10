@@ -287,6 +287,7 @@ class OAuthSlackUser: OAuthBaseUser() {
 class OAuthDropboxUser: OAuthBaseUser() {
     @Column var account_id: String? = null
     @Embedded var name: DropboxName? = null
+    @Column var profile_photo_url: String? = null
     @Column var email_verified: Boolean? = null
     @Column var disabled: Boolean? = null
     @Column var country: String? = null

@@ -197,6 +197,9 @@ class OAuthDropboxUserResponse: BaseDto() {
     @Schema(description = "Name of the user", required = true, name = "name", type = "DropboxName")
     var name: DropboxName? = null
 
+    @Schema(description = "Picture of the user", required = true, name = "profile_photo_url", type = "String")
+    var profile_photo_url: String? = null
+
     @Schema(example = "TR", description = "Country of the user", required = true, name = "country", type = "String")
     var country: String? = null
 
