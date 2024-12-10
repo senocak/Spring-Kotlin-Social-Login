@@ -192,6 +192,20 @@ class UserController(
                 }
                 user.oAuthTwitchUser!!.user = null
             }
+            OAuth2Services.SLACK -> {
+                if (user.oAuthSlackUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthSlackUser!!.user = null
+            }
+            OAuth2Services.DROPBOX -> {
+                if (user.oAuthDropboxUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthDropboxUser!!.user = null
+            }
         }
         userService.save(user = user)
         return ResponseEntity.noContent().build()

@@ -1,5 +1,6 @@
 package com.github.senocak.ratehighway.controller
 
+import com.github.senocak.ratehighway.domain.OAuthDropboxUser
 import com.github.senocak.ratehighway.domain.dto.ExceptionDto
 import com.github.senocak.ratehighway.domain.dto.UserResponseWrapperDto
 import com.github.senocak.ratehighway.domain.OAuthFacebookUser
@@ -12,6 +13,7 @@ import com.github.senocak.ratehighway.domain.OAuthTwitchUser
 import com.github.senocak.ratehighway.domain.OAuthTwitterUser
 import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
 import com.github.senocak.ratehighway.exception.ServerException
+import com.github.senocak.ratehighway.service.oauth2.OAuthDropboxService
 import com.github.senocak.ratehighway.service.oauth2.OAuthFacebookService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGithubService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGoogleService
@@ -49,6 +51,7 @@ class OAuth2Controller(
     private val oAuthSpotifyService: OAuthSpotifyService,
     private val oAuthTwitchService: OAuthTwitchService,
     private val oAuthSlackService: OAuthSlackService,
+    private val oAuthDropboxService: OAuthDropboxService,
 ): BaseController() {
     private val log: Logger by logger()
 
@@ -351,7 +354,7 @@ class OAuth2Controller(
     fun slackLink(): String = oAuthSlackService.link
 
     @GetMapping("/slack/redirect")
-    @Operation(summary = "Twitch redirect endpoint", tags = ["OAuth2"],
+    @Operation(summary = "Slack redirect endpoint", tags = ["OAuth2"],
         responses = [
             ApiResponse(responseCode = "200", description = "successful operation",
                 content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = Map::class))]),
@@ -389,6 +392,48 @@ class OAuth2Controller(
         )
     }
 
+    @GetMapping("/dropbox")
+    fun dropboxLink(): String = oAuthDropboxService.link
+
+    @GetMapping("/dropbox/redirect")
+    @Operation(summary = "Dropbox redirect endpoint", tags = ["OAuth2"],
+        responses = [
+            ApiResponse(responseCode = "200", description = "successful operation",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = Map::class))]),
+            ApiResponse(responseCode = "500", description = "internal server error occurred",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = ExceptionDto::class))])
+        ]
+    )
+    fun dropbox(request: HttpServletRequest,
+      @Parameter(description = "State param") @RequestParam(required = false) state: String?,
+      @Parameter(description = "Code param") @RequestParam(required = false) code: String?,
+      @Parameter(description = "Error param") @RequestParam(value="error_code", required = false) error: String?,
+      @Parameter(description = "Error Description param") @RequestParam(value = "errorMessage", required = false) errorMessage: String?,
+    ): Map<String, Any> {
+        validateError(error = error, errorMessage = errorMessage)
+        validateResponse(code = code, state = state)
+        log.info("Started processing auth for facebook. Code: $code, state: $state")
+        val oAuthTokenResponse: OAuthTokenResponse = oAuthDropboxService.getToken(code = code!!)
+        var oAuthDropboxUser: OAuthDropboxUser = oAuthDropboxService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+
+        oAuthDropboxUser = try {
+            oAuthDropboxService.getByIdOrThrowException(id = oAuthDropboxUser.id!!)
+        } catch (e: Exception) {
+            log.warn("oAuthDropboxService is saved to db: $oAuthDropboxUser")
+            oAuthDropboxService.save(entity = oAuthDropboxUser)
+        }
+        val oAuthUserResponse: UserResponseWrapperDto = oAuthDropboxService.authenticate(
+            jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthDropboxUser)
+
+        log.info("Finished processing auth for oAuthDropboxService: $oAuthDropboxUser")
+        return mapOf(
+            "state" to state!!,
+            "code" to code,
+            "oAuthTokenResponse" to oAuthTokenResponse,
+            "oAuthUserResponse" to oAuthUserResponse
+        )
+    }
+
     @GetMapping
     fun showAllLinks(): Map<String, String> = mapOf(
         "google" to oAuthGoogleService.link,
@@ -399,6 +444,7 @@ class OAuth2Controller(
         "spotify" to oAuthSpotifyService.link,
         "twitch" to oAuthTwitchService.link,
         "slack" to oAuthSlackService.link,
+        "dropbox" to oAuthDropboxService.link,
     )
 
     /**

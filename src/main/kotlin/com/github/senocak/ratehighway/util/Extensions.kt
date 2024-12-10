@@ -2,6 +2,7 @@ package com.github.senocak.ratehighway.util
 
 import ch.qos.logback.classic.Level
 import com.github.senocak.ratehighway.KotlinApplication
+import com.github.senocak.ratehighway.domain.OAuthDropboxUser
 import com.github.senocak.ratehighway.domain.dto.RoleResponse
 import com.github.senocak.ratehighway.domain.dto.UserResponseDto
 import com.github.senocak.ratehighway.domain.OAuthFacebookUser
@@ -14,6 +15,7 @@ import com.github.senocak.ratehighway.domain.OAuthTwitchUser
 import com.github.senocak.ratehighway.domain.OAuthTwitterUser
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User
+import com.github.senocak.ratehighway.domain.dto.OAuthDropboxUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthFacebookUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthGithubUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthGoogleUserResponse
@@ -54,6 +56,7 @@ fun User.toDTO(roles: Boolean = true): UserResponseDto {
     if (this.oAuthSpotifyUser != null) dto.spotify = this.oAuthSpotifyUser!!.toDTO()
     if (this.oAuthTwitchUser != null) dto.twitch = this.oAuthTwitchUser!!.toDTO()
     if (this.oAuthSlackUser != null) dto.slack = this.oAuthSlackUser!!.toDTO()
+    if (this.oAuthDropboxUser != null) dto.dropbox = this.oAuthDropboxUser!!.toDTO()
     return dto
 }
 
@@ -157,6 +160,15 @@ fun OAuthSlackUser.toDTO(): OAuthSlackUserResponse =
             it.email = this.email
             it.name = "${this.given_name} ${this.family_name}"
             it.picture = this.picture
+            it.localeSlack = this.locale
+        }
+
+fun OAuthDropboxUser.toDTO(): OAuthDropboxUserResponse =
+    OAuthDropboxUserResponse()
+        .also {
+            it.email = this.email
+            it.name = this.name
+            it.country = this.country
             it.localeSlack = this.locale
         }
 

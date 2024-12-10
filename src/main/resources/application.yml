@@ -100,6 +100,11 @@ spring:
             redirect-uri: ${SERVER_FQDN:https://localhost:${server.port}/oauth2/slack/redirect}
             authorization-grant-type: client_credentials
             scope: openid, email, profile, identity.basic
+          dropbox:
+            client-id: ${DROPBOX_OAUTH_CLIENT_ID}
+            client-secret: ${DROPBOX_OAUTH_CLIENT_SECRET}
+            redirect-uri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/dropbox/redirect}
+            authorization-grant-type: client_credentials
         provider:
           google:
             tokenUri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
@@ -128,6 +133,9 @@ spring:
           slack:
             token-uri: https://slack.com/api/oauth.v2.access
             userInfoUri: https://slack.com/api/openid.connect.userInfo
+          dropbox:
+            token-uri: https://api.dropbox.com/oauth2/token
+            userInfoUri: https://api.dropboxapi.com/2/users/get_current_account
 app:
   jwtSecret: ${JWT_SECRET:sTvHbWsBDSCwW5ZnxpPEx7B5ad2Zx60p}
   jwtExpirationInMs: '#{1 * 60 * 60}' # 1 hour in seconds

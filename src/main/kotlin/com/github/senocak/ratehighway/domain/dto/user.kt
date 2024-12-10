@@ -47,9 +47,13 @@ class UserResponseDto: BaseDto() {
     @Schema(required = false)
     var slack: OAuthSlackUserResponse? = null
 
+    @Schema(required = false)
+    var dropbox: OAuthDropboxUserResponse? = null
+
     override fun toString(): String =
         "UserResponseDto(name=$name, email=$email, createdAt=$createdAt, roles=$roles, google=$google, github=$github," +
-                "linkedin=$linkedin, facebook=$facebook, twitter=$twitter, spotify=$spotify, twitch=$twitch)"
+                "linkedin=$linkedin, facebook=$facebook, twitter=$twitter, spotify=$spotify, twitch=$twitch, slack=$slack," +
+                "dropbox=$dropbox)"
 }
 
 @JsonPropertyOrder("token", "refreshToken", "user")

@@ -281,6 +281,42 @@ class OAuthSlackUser: OAuthBaseUser() {
 }
 
 @Entity
+@Table(name = "dropboxUsers", uniqueConstraints = [
+    UniqueConstraint(columnNames = ["email"])
+])
+class OAuthDropboxUser: OAuthBaseUser() {
+    @Column var account_id: String? = null
+    @Embedded var name: DropboxName? = null
+    @Column var email_verified: Boolean? = null
+    @Column var disabled: Boolean? = null
+    @Column var country: String? = null
+    @Column var locale: String? = null
+    @Column var referral_link: String? = null
+    @Column var is_paired: Boolean? = null
+    @Embedded var account_type: DropboxAccountType? = null
+    @Embedded var root_info: DropboxRootInfo? = null
+}
+class DropboxName {
+    var given_name: String? = null
+    var surname: String? = null
+    var familiar_name: String? = null
+    var display_name: String? = null
+    var abbreviated_name: String? = null
+
+    override fun toString(): String =
+        "DropboxName(given_name=$given_name, surname=$surname, familiar_name=$familiar_name, display_name=$display_name," +
+                "abbreviated_name=$abbreviated_name)"
+}
+class DropboxAccountType {
+    @JsonProperty(".tag") var accountTypeTag: String? = null
+}
+class DropboxRootInfo {
+    @JsonProperty(".tag") var rootInfoTag: String? = null
+    var root_namespace_id: String? = null
+    var home_namespace_id: String? = null
+}
+
+@Entity
 @Table(name = "roles")
 class Role(@Column @Enumerated(EnumType.STRING) var name: RoleName? = null): BaseDomain()
 
@@ -308,4 +344,5 @@ class User(
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthSpotifyUser: OAuthSpotifyUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthTwitchUser: OAuthTwitchUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthSlackUser: OAuthSlackUser? = null,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthDropboxUser: OAuthDropboxUser? = null,
 ): BaseDomain()

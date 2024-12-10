@@ -69,4 +69,13 @@ Generate a new oauth application;
 - Put the `Client ID` and `Client secrets` to application.yml
 - Visit: `http://localhost:8083/oauth2/authorize/slack`
 
+### Dropbox
+Generate a new oauth application;
+- https://www.dropbox.com/developers/apps/
+- For local use `http://localhost:8083/oauth2/dropbox/redirect` in `Authorization callback URL`
+- `8083` is your applications port
+- Put the `Client ID` and `Client secrets` to application.yml
+- Visit: `http://localhost:8083/oauth2/authorize/dropbox`
+
+
 

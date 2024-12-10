@@ -2,6 +2,7 @@ package com.github.senocak.ratehighway.domain.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.github.senocak.ratehighway.domain.DropboxName
 import com.github.senocak.ratehighway.domain.LocaleResponse
 import io.swagger.v3.oas.annotations.media.Schema
 
@@ -12,6 +13,8 @@ data class OAuthTokenResponse(
     var token_type: String? = null,
     var id_token: String? = null,
     var refresh_token: String? = null,
+    var account_id: String? = null, // for slack
+    var uid: String? = null, // for dropbox
 )
 
 @JsonPropertyOrder("email", "name", "picture")
@@ -185,4 +188,22 @@ class OAuthSlackUserResponse: BaseDto() {
 
     override fun toString(): String =
         "OAuthSlackUserResponse(email=$email, name=$name, picture=$picture, localeSlack=$localeSlack)"
+}
+
+class OAuthDropboxUserResponse: BaseDto() {
+    @Schema(example = "lorem@ipsum.com", description = "Email of the user", required = true, name = "email", type = "String")
+    var email: String? = null
+
+    @Schema(description = "Name of the user", required = true, name = "name", type = "DropboxName")
+    var name: DropboxName? = null
+
+    @Schema(example = "TR", description = "Country of the user", required = true, name = "country", type = "String")
+    var country: String? = null
+
+    @Schema(example = "TR", description = "Locale of the user", required = true, name = "locale", type = "String")
+    @JsonProperty("locale")
+    var localeSlack: String? = null
+
+    override fun toString(): String =
+        "OAuthSlackUserResponse(email=$email, name=$name, country=$country, localeSlack=$localeSlack)"
 }

@@ -42,3 +42,6 @@ interface OAuthTwitchUserRepository: JpaRepository<OAuthTwitchUser, String>, Jpa
 
 @Repository
 interface OAuthSlackUserRepository: JpaRepository<OAuthSlackUser, String>, JpaSpecificationExecutor<OAuthSlackUser>
+
+@Repository
+interface OAuthDropboxUserRepository: JpaRepository<OAuthDropboxUser, String>, JpaSpecificationExecutor<OAuthDropboxUser>
