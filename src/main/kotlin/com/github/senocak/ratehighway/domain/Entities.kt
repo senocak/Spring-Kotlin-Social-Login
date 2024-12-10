@@ -153,6 +153,45 @@ class LocaleResponse {
 }
 
 @Entity
+@Table(name = "twitterUsers", uniqueConstraints = [
+    UniqueConstraint(columnNames = ["email"])
+])
+class OAuthTwitterUser: OAuthBaseUser() {
+    @Column var name: String? = null
+    @Column var description: String? = null
+    @Column var pinned_tweet_id: String? = null
+    @Column var verified_type: String? = null
+    @Column var created_at: String? = null
+    @Column var profile_image_url: String? = null
+    @Column var verified: Boolean? = null
+    @Column var username: String? = null
+    @Column var protected: Boolean? = null
+    @Column var most_recent_tweet_id: String? = null
+    @Column var receives_your_dm: Boolean? = null
+    @Embedded var public_metrics: PublicMetricsResponse? = null
+}
+
+class PublicMetricsResponse {
+    @Schema(example = "1", description = "Followers Count", required = true, name = "followers_count", type = "String")
+    var followers_count: Int? = null
+
+    @Schema(example = "1", description = "Following Count", required = true, name = "following_count", type = "String")
+    var following_count: Int? = null
+
+    @Schema(example = "1", description = "Tweet Count", required = true, name = "tweet_count", type = "String")
+    var tweet_count: Int? = null
+
+    @Schema(example = "1", description = "Listed Count", required = true, name = "listed_count", type = "String")
+    var listed_count: Int? = null
+
+    @Schema(example = "1", description = "Like Count", required = true, name = "like_count", type = "String")
+    var like_count: Int? = null
+
+    @Schema(example = "1", description = "Media Count", required = true, name = "media_count", type = "String")
+    var media_count: Int? = null
+}
+
+@Entity
 @Table(name = "roles")
 class Role(@Column @Enumerated(EnumType.STRING) var name: RoleName? = null): BaseDomain()
 
@@ -175,5 +214,6 @@ class User(
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthGoogleUser: OAuthGoogleUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthGithubUser: OAuthGithubUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthLinkedinUser: OAuthLinkedinUser? = null,
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthFacebookUser: OAuthFacebookUser? = null
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthFacebookUser: OAuthFacebookUser? = null,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthTwitterUser: OAuthTwitterUser? = null
 ): BaseDomain()

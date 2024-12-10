@@ -64,7 +64,7 @@ class OAuthGithubService(
      * @param code The authorization code to use for token retrieval.
      * @return An OAuthTokenResponse containing the access token and related information.
      */
-    fun getGithubToken(code: String): OAuthTokenResponse {
+    override fun getToken(code: String): OAuthTokenResponse {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
 

@@ -63,6 +63,7 @@ spring:
           github:
             clientId: ${GITHUB_CLIENT_ID}
             clientSecret: ${GITHUB_CLIENT_SECRET}
+            clientSecret: ${GITHUB_CLIENT_SECRET:67567f61113c6dfc4de0d71560d248b07e0f81e1}
             redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/github/redirect}
             scope:
               - user:email
@@ -82,6 +83,12 @@ spring:
             scope:
               - email
               - public_profile
+          twitter:
+            client-id: ${TWITTER_OAUTH_CLIENT_ID}
+            client-secret: ${TWITTER_OAUTH_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            redirect-uri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/twitter/redirect}
+            scope: users.read, tweet.read
         provider:
           google:
             tokenUri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
@@ -97,6 +104,10 @@ spring:
           facebook:
             tokenUri: ${FACEBOOK_TOKEN_URI:https://graph.facebook.com/oauth/access_token}
             userInfoUri: ${FACEBOOK_USER_INFO_URI:https://graph.facebook.com/me?fields=id,name,email,picture}
+          twitter:
+            authorization-uri: https://x.com/i/oauth2/authorize?code_challenge=challenge&code_challenge_method=plain
+            token-uri: https://api.x.com/2/oauth2/token
+            userInfoUri: ${TWITTER_USER_INFO_URI:https://api.x.com/2/users/me?user.fields=created_at,description,entities,id,location,most_recent_tweet_id,name,pinned_tweet_id,profile_image_url,protected,public_metrics,url,username,verified,verified_type,withheld,receives_your_dm}
 app:
   jwtSecret: ${JWT_SECRET:sTvHbWsBDSCwW5ZnxpPEx7B5ad2Zx60p}
   jwtExpirationInMs: '#{1 * 60 * 60}' # 1 hour in seconds

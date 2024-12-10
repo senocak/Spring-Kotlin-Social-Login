@@ -64,7 +64,7 @@ class OAuthFacebookService(
      * @param code The authorization code to use for token retrieval.
      * @return An OAuthTokenResponse containing the access token and related information.
      */
-    fun getFacebookToken(code: String): OAuthTokenResponse {
+    override fun getToken(code: String): OAuthTokenResponse {
         val headers: HttpHeaders = HttpHeaders().also { h: HttpHeaders -> h.contentType = MediaType.APPLICATION_FORM_URLENCODED }
 
         val map: MultiValueMap<String, String> = LinkedMultiValueMap()

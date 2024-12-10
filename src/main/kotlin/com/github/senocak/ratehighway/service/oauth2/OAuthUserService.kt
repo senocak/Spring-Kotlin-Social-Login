@@ -4,6 +4,7 @@ import com.github.senocak.ratehighway.domain.dto.UserResponseWrapperDto
 import com.github.senocak.ratehighway.domain.OAuthBaseUser
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User
+import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthTokenResponse
 import com.github.senocak.ratehighway.exception.NotFoundException
 import com.github.senocak.ratehighway.exception.ServerException
 import com.github.senocak.ratehighway.security.JwtTokenProvider
@@ -278,6 +279,8 @@ abstract class OAuthUserServiceImpl<E, R>(
      */
     abstract fun getUser(entity: E): User
 
+    abstract fun getToken(code: String): OAuthTokenResponse
+
     @Transactional(isolation = Isolation.SERIALIZABLE)
     open fun authenticate(jwtToken: String?, oAuthGoogleUser: E): UserResponseWrapperDto {
         val user: User?
@@ -325,9 +328,9 @@ abstract class OAuthUserServiceImpl<E, R>(
                     user = userService.save(user = User(email = email, roles = mutableListOf(userRole), password = passwordEncoder.encode(randomStringGenerator)))
                 }
                 oAuthGoogleUser.user = user
-                MDC.put("userId", "${user?.id}")
+                MDC.put("userId", "${user.id}")
                 save(entity = oAuthGoogleUser)
-                log.info("oAuthGoogleUser updated id:${oAuthGoogleUser.id}, user: ${user!!.id}")
+                log.info("oAuthGoogleUser updated id:${oAuthGoogleUser.id}, user: ${user.id}")
             }
         }
         return userService.generateUserWrapperResponse(userResponseDto = user!!.toDTO())

@@ -30,3 +30,6 @@ interface OAuthLinkedinUserRepository: JpaRepository<OAuthLinkedinUser, String>,
 
 @Repository
 interface OAuthFacebookUserRepository: JpaRepository<OAuthFacebookUser, String>, JpaSpecificationExecutor<OAuthFacebookUser>
+
+@Repository
+interface OAuthTwitterUserRepository: JpaRepository<OAuthTwitterUser, String>, JpaSpecificationExecutor<OAuthTwitterUser>

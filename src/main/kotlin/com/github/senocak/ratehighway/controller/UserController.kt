@@ -171,6 +171,13 @@ class UserController(
                 }
                 user.oAuthLinkedinUser!!.user = null
             }
+            OAuth2Services.TWITTER -> {
+                if (user.oAuthTwitterUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthTwitterUser!!.user = null
+            }
         }
         userService.save(user = user)
         return ResponseEntity.noContent().build()

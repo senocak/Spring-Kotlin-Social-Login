@@ -7,11 +7,13 @@ import com.github.senocak.ratehighway.domain.OAuthFacebookUser
 import com.github.senocak.ratehighway.domain.OAuthGithubUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
+import com.github.senocak.ratehighway.domain.OAuthTwitterUser
 import com.github.senocak.ratehighway.exception.ServerException
 import com.github.senocak.ratehighway.service.oauth2.OAuthFacebookService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGithubService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGoogleService
 import com.github.senocak.ratehighway.service.oauth2.OAuthLinkedinService
+import com.github.senocak.ratehighway.service.oauth2.OAuthTwitterService
 import com.github.senocak.ratehighway.util.OmaErrorMessageType
 import com.github.senocak.ratehighway.util.logger
 import io.swagger.v3.oas.annotations.Operation
@@ -37,6 +39,7 @@ class OAuth2Controller(
     private val oAuthGithubService: OAuthGithubService,
     private val oAuthLinkedinService: OAuthLinkedinService,
     private val oAuthFacebookService: OAuthFacebookService,
+    private val oAuthTwitterService: OAuthTwitterService,
 ): BaseController() {
     private val log: Logger by logger()
 
@@ -59,7 +62,7 @@ class OAuth2Controller(
     ): Map<String, Any> {
         validateResponse(code = code, state = state)
         log.info("Started processing auth for google. Code: $code, state: $state")
-        val oAuthTokenResponse: OAuthTokenResponse = oAuthGoogleService.getGoogleToken(code = code)
+        val oAuthTokenResponse: OAuthTokenResponse = oAuthGoogleService.getToken(code = code)
         var oAuthGoogleUser: OAuthGoogleUser = oAuthGoogleService.getGoogleUserInfo(accessToken = oAuthTokenResponse.access_token!!)
 
         oAuthGoogleUser = try {
@@ -98,7 +101,7 @@ class OAuth2Controller(
     ): Map<String, Any> {
         validateResponse(code = code, state = state)
         log.info("Started processing auth for github. Code: $code, state: $state")
-        val oAuthTokenResponse: OAuthTokenResponse = oAuthGithubService.getGithubToken(code = code)
+        val oAuthTokenResponse: OAuthTokenResponse = oAuthGithubService.getToken(code = code)
         val accessToken: String = oAuthTokenResponse.access_token!!
         var oAuthGithubUser: OAuthGithubUser = oAuthGithubService.getGithubUserInfo(accessToken = accessToken)
 
@@ -138,7 +141,7 @@ class OAuth2Controller(
         validateError(error = error, errorMessage = errorDescription)
         validateResponse(code = code, state = state)
         log.info("Started processing auth for linkedin. Code: $code, state: $state")
-        val oAuthTokenResponse: OAuthTokenResponse = oAuthLinkedinService.getLinkedinToken(code = code!!)
+        val oAuthTokenResponse: OAuthTokenResponse = oAuthLinkedinService.getToken(code = code!!)
         var oAuthLinkedinUser: OAuthLinkedinUser = oAuthLinkedinService.getLinkedinUserInfo(accessToken = oAuthTokenResponse.access_token!!)
 
         oAuthLinkedinUser = try {
@@ -177,7 +180,7 @@ class OAuth2Controller(
         validateError(error = error, errorMessage = errorMessage)
         validateResponse(code = code, state = state)
         log.info("Started processing auth for facebook. Code: $code, state: $state")
-        val oAuthTokenResponse: OAuthTokenResponse = oAuthFacebookService.getFacebookToken(code = code!!)
+        val oAuthTokenResponse: OAuthTokenResponse = oAuthFacebookService.getToken(code = code!!)
         var oAuthFacebookUser: OAuthFacebookUser = oAuthFacebookService.getFacebookUserInfo(accessToken = oAuthTokenResponse.access_token!!)
 
         oAuthFacebookUser = try {
@@ -190,6 +193,45 @@ class OAuth2Controller(
             jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthFacebookUser)
 
         log.info("Finished processing auth for OAuthFacebookUser: $oAuthFacebookUser")
+        return mapOf(
+            "state" to state!!,
+            "code" to code,
+            "oAuthTokenResponse" to oAuthTokenResponse,
+            "oAuthUserResponse" to oAuthUserResponse
+        )
+    }
+
+    @GetMapping("/twitter/redirect")
+    @Operation(summary = "Twitter redirect endpoint", tags = ["OAuth2"],
+        responses = [
+            ApiResponse(responseCode = "200", description = "successful operation",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = Map::class))]),
+            ApiResponse(responseCode = "500", description = "internal server error occurred",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = ExceptionDto::class))])
+        ]
+    )
+    fun twitter(request: HttpServletRequest,
+        @Parameter(description = "State param") @RequestParam(required = false) state: String?,
+        @Parameter(description = "Code param") @RequestParam(required = false) code: String?,
+        @Parameter(description = "Error param") @RequestParam(value="error_code", required = false) error: String?,
+        @Parameter(description = "Error Description param") @RequestParam(value = "errorMessage", required = false) errorMessage: String?,
+    ): Map<String, Any> {
+        validateError(error = error, errorMessage = errorMessage)
+        validateResponse(code = code, state = state)
+        log.info("Started processing auth for facebook. Code: $code, state: $state")
+        val oAuthTokenResponse: OAuthTokenResponse = oAuthTwitterService.getToken(code = code!!)
+        var oAuthTwitterUser: OAuthTwitterUser = oAuthTwitterService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+
+        oAuthTwitterUser = try {
+            oAuthTwitterService.getByIdOrThrowException(id = oAuthTwitterUser.id!!)
+        } catch (e: Exception) {
+            log.warn("OAuthTwitterUser is saved to db: $oAuthTwitterUser")
+            oAuthTwitterService.save(entity = oAuthTwitterUser)
+        }
+        val oAuthUserResponse: UserResponseWrapperDto = oAuthTwitterService.authenticate(
+            jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthTwitterUser)
+
+        log.info("Finished processing auth for OAuthTwitterUser: $oAuthTwitterUser")
         return mapOf(
             "state" to state!!,
             "code" to code,
