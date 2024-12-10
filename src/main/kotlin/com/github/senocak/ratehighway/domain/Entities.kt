@@ -1,10 +1,17 @@
 package com.github.senocak.ratehighway.domain
 
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.senocak.ratehighway.util.RoleName
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.persistence.AttributeConverter
 import jakarta.persistence.AttributeOverride
 import jakarta.persistence.AttributeOverrides
 import jakarta.persistence.Column
+import jakarta.persistence.Convert
+import jakarta.persistence.Converter
 import jakarta.persistence.Embeddable
 import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
@@ -189,6 +196,52 @@ class PublicMetricsResponse {
 
     @Schema(example = "1", description = "Media Count", required = true, name = "media_count", type = "String")
     var media_count: Int? = null
+}
+
+@Entity
+@Table(name = "spotifyUsers", uniqueConstraints = [
+    UniqueConstraint(columnNames = ["email"])
+])
+class OAuthSpotifyUser: OAuthBaseUser() {
+    @Column var country: String? = null
+    @Column var display_name: String? = null
+    @Embedded var explicit_content: ExplicitContent? = null
+    @Embedded var external_urls: ExternalUrl? = null
+    @Embedded var followers: Follower? = null
+    @Column var href: String? = null
+    @Column
+    @Convert(converter = ImageListConverter::class)
+    var images: List<Image>? = null
+    @Column var type: String? = null
+    @Column var product: String? = null
+    @Column var uri: String? = null
+}
+class ExplicitContent {
+    var filter_enabled: Boolean? = null
+    var filter_locked: Boolean? = null
+}
+class ExternalUrl {
+    var spotify: String? = null
+}
+class Follower {
+    @JsonProperty("href")
+    var follower_href: String? = null
+    var total: String? = null
+}
+class Image {
+    var height: String? = null
+    var url: String? = null
+    var width: String? = null
+}
+@Converter
+class ImageListConverter : AttributeConverter<List<Image>, String> {
+    private val objectMapper: ObjectMapper = jacksonObjectMapper()
+
+    override fun convertToDatabaseColumn(attribute: List<Image>?): String? =
+        attribute?.let { objectMapper.writeValueAsString(it) }
+
+    override fun convertToEntityAttribute(dbData: String): List<Image>? =
+        objectMapper.readValue(dbData, object : TypeReference<List<Image>?>() {})
 }
 
 @Entity

@@ -13,9 +13,8 @@ import com.github.senocak.ratehighway.service.RoleService
 import com.github.senocak.ratehighway.service.UserService
 import com.github.senocak.ratehighway.util.OmaErrorMessageType
 import com.github.senocak.ratehighway.util.RoleName
-import com.github.senocak.ratehighway.util.toUUID
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -27,6 +26,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
+import java.util.UUID
 
 @Service
 class OAuthFacebookService(
@@ -37,7 +37,8 @@ class OAuthFacebookService(
     private val jwtTokenProvider: JwtTokenProvider,
     private val userService: UserService,
     private val roleService: RoleService,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val oAuth2ClientProperties: OAuth2ClientProperties
 ): OAuthUserServiceImpl<OAuthFacebookUser, OAuthFacebookUserRepository>(
     repository = oAuthFacebookUserRepository,
     messageSourceService = messageSourceService,
@@ -46,11 +47,8 @@ class OAuthFacebookService(
     roleService = roleService,
     passwordEncoder = passwordEncoder
 ) {
-    @Value("\${spring.security.oauth2.client.registration.facebook.clientId}") private lateinit var facebookClientId: String
-    @Value("\${spring.security.oauth2.client.registration.facebook.clientSecret}") private lateinit var facebookClientSecret: String
-    @Value("\${spring.security.oauth2.client.registration.facebook.redirectUri}") private lateinit var facebookRedirectUri: String
-    @Value("\${spring.security.oauth2.client.provider.facebook.tokenUri}") private lateinit var facebookTokenUri: String
-    @Value("\${spring.security.oauth2.client.provider.facebook.userInfoUri}") private lateinit var facebookUserInfoUri: String
+    private val registration: OAuth2ClientProperties.Registration = oAuth2ClientProperties.registration["facebook"] ?: throw Exception("Registration not found")
+    private val provider: OAuth2ClientProperties.Provider = oAuth2ClientProperties.provider["facebook"] ?: throw Exception("Provider not found")
 
     override fun getClassName(): String? = OAuthFacebookUser::class.simpleName
 
@@ -69,12 +67,12 @@ class OAuthFacebookService(
 
         val map: MultiValueMap<String, String> = LinkedMultiValueMap()
         map.add("code", code)
-        map.add("client_id", facebookClientId)
-        map.add("client_secret", facebookClientSecret)
-        map.add("redirect_uri", facebookRedirectUri)
+        map.add("client_id", registration.clientId)
+        map.add("client_secret", registration.clientSecret)
+        map.add("redirect_uri", registration.redirectUri)
         map.add("grant_type", "authorization_code")
 
-        val response: ResponseEntity<OAuthTokenResponse> = restTemplate.exchange(facebookTokenUri,
+        val response: ResponseEntity<OAuthTokenResponse> = restTemplate.exchange(provider.tokenUri,
             HttpMethod.POST, HttpEntity(map, headers), OAuthTokenResponse::class.java)
 
         if (response.body == null) {
@@ -94,7 +92,7 @@ class OAuthFacebookService(
         val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(LinkedMultiValueMap(),
             createHeaderForToken(accessToken))
 
-        val response: ResponseEntity<JsonNode> = restTemplate.exchange(facebookUserInfoUri,
+        val response: ResponseEntity<JsonNode> = restTemplate.exchange(provider.userInfoUri,
             HttpMethod.GET, entity, JsonNode::class.java)
 
         val body: JsonNode = response.body
@@ -117,4 +115,10 @@ class OAuthFacebookService(
         }
         return oAuthFacebookUser
     }
+
+    val link: String
+        get() {
+            val direkt_access_token = "https://www.facebook.com/dialog/oauth?client_id=${registration.clientId}&redirect_uri=${registration.redirectUri}&response_type=token&scope=${registration.scope.joinToString(separator = ",") }}"
+            return "https://www.facebook.com/v4.0/dialog/oauth?client_id=${registration.clientId}&redirect_uri=${registration.redirectUri}&state=${UUID.randomUUID()}"
+        }
 }

@@ -13,7 +13,7 @@ import com.github.senocak.ratehighway.service.UserService
 import com.github.senocak.ratehighway.util.OmaErrorMessageType
 import com.github.senocak.ratehighway.util.RoleName
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -36,7 +36,8 @@ class OAuthTwitterService(
     private val jwtTokenProvider: JwtTokenProvider,
     private val userService: UserService,
     private val passwordEncoder: PasswordEncoder,
-    private val roleService: RoleService
+    private val roleService: RoleService,
+    private val oAuth2ClientProperties: OAuth2ClientProperties
 ): OAuthUserServiceImpl<OAuthTwitterUser, OAuthTwitterUserRepository>(
     repository = oAuthTwitterUserRepository,
     messageSourceService = messageSourceService,
@@ -45,12 +46,8 @@ class OAuthTwitterService(
     roleService = roleService,
     passwordEncoder = passwordEncoder
 ) {
-    @Value("\${spring.security.oauth2.client.registration.twitter.client-id}") private lateinit var twitterClientId: String
-    @Value("\${spring.security.oauth2.client.registration.twitter.client-secret}") private lateinit var twitterClientSecret: String
-    @Value("\${spring.security.oauth2.client.registration.twitter.redirect-uri}") private lateinit var twitterRedirectUri: String
-    @Value("\${spring.security.oauth2.client.registration.twitter.scope}") private lateinit var twitterScopes: List<String>
-    @Value("\${spring.security.oauth2.client.provider.twitter.token-uri}") private lateinit var twitterTokenUri: String
-    @Value("\${spring.security.oauth2.client.provider.twitter.userInfoUri}") private lateinit var twitterUserInfoUri: String
+    private val registration: OAuth2ClientProperties.Registration = oAuth2ClientProperties.registration["twitter"] ?: throw Exception("Registration not found")
+    private val provider: OAuth2ClientProperties.Provider = oAuth2ClientProperties.provider["twitter"] ?: throw Exception("Provider not found")
 
     override fun getClassName(): String? = OAuthTwitterUser::class.simpleName
 
@@ -68,18 +65,18 @@ class OAuthTwitterService(
         val headers: HttpHeaders = HttpHeaders()
             .also { h: HttpHeaders ->
                 h.contentType = MediaType.APPLICATION_FORM_URLENCODED
-                h.setBasicAuth(twitterClientId, twitterClientSecret)
+                h.setBasicAuth(registration.clientId, registration.clientSecret)
             }
 
         val map: MultiValueMap<String, String> = LinkedMultiValueMap()
         map.add("code", code)
-        map.add("client_id", twitterClientId)
-        map.add("redirect_uri", twitterRedirectUri)
+        map.add("client_id", registration.clientSecret)
+        map.add("redirect_uri", registration.redirectUri)
         map.add("grant_type", "authorization_code")
         map.add("code_verifier", "challenge")
-        map.add("scope", twitterScopes.joinToString(separator = ","))
+        map.add("scope", registration.scope.joinToString(separator = ","))
 
-        val response: ResponseEntity<OAuthTokenResponse> = restTemplate.exchange(twitterTokenUri,
+        val response: ResponseEntity<OAuthTokenResponse> = restTemplate.exchange(provider.tokenUri,
             HttpMethod.POST, HttpEntity(map, headers), OAuthTokenResponse::class.java)
 
         return response.body ?:
@@ -95,7 +92,7 @@ class OAuthTwitterService(
      */
     fun getUserInfo(accessToken: String): OAuthTwitterUser {
         val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(LinkedMultiValueMap(), createHeaderForToken(accessToken = accessToken))
-        val response: ResponseEntity<OAuthTwitterUserWrapper> = restTemplate.exchange(twitterUserInfoUri,
+        val response: ResponseEntity<OAuthTwitterUserWrapper> = restTemplate.exchange(provider.userInfoUri,
             HttpMethod.GET, entity, OAuthTwitterUserWrapper::class.java)
         val body: OAuthTwitterUser = response.body?.data
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
@@ -109,4 +106,6 @@ class OAuthTwitterService(
     internal class OAuthTwitterUserWrapper {
         val data: OAuthTwitterUser? = null
     }
+
+    val link: String = "https://x.com/i/oauth2/authorize?code_challenge=challenge&code_challenge_method=plain&response_type=code&client_id=${registration.clientId}&scope=${registration.scope.joinToString(separator = " ")}&state=${UUID.randomUUID()}&redirect_uri=${registration.redirectUri}"
 }

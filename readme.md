@@ -1,5 +1,10 @@
 # Getting Started
 
+### All Implementations
+`
+http://localhost:8083/oauth2
+`
+
 ### Github
 Generate a new oauth application;
 - https://github.com/settings/developers
@@ -39,4 +44,12 @@ Generate a new oauth application;
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
 - Visit: `http://localhost:8083/oauth2/authorize/twitter`
+
+### Spotify
+Generate a new oauth application;
+- https://developer.spotify.com/dashboard/create
+- For local use `http://localhost:8083/oauth2/spotify/redirect` in `Authorization callback URL`
+- `8083` is your applications port
+- Put the `Client ID` and `Client secrets` to application.yml
+- Visit: `http://localhost:8083/oauth2/authorize/spotify`
 

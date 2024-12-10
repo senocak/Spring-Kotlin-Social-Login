@@ -57,17 +57,13 @@ spring:
             clientId: ${GOOGLE_CLIENT_ID}
             clientSecret: ${GOOGLE_CLIENT_SECRET}
             redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/google/redirect}
-            scope:
-              - email
-              - profile
+            scope: email,profile
           github:
             clientId: ${GITHUB_CLIENT_ID}
             clientSecret: ${GITHUB_CLIENT_SECRET}
             clientSecret: ${GITHUB_CLIENT_SECRET:67567f61113c6dfc4de0d71560d248b07e0f81e1}
             redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/github/redirect}
-            scope:
-              - user:email
-              - read:user
+            scope: read:user,user:email
           linkedin:
             clientId: ${LINKEDIN_CLIENT_ID}
             clientSecret: ${LINKEDIN_CLIENT_SECRET}
@@ -80,15 +76,19 @@ spring:
             clientId: ${FACEBOOK_CLIENT_ID}
             clientSecret: ${FACEBOOK_CLIENT_SECRET}
             redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/facebook/redirect}
-            scope:
-              - email
-              - public_profile
+            scope: email, public_profile
           twitter:
             client-id: ${TWITTER_OAUTH_CLIENT_ID}
             client-secret: ${TWITTER_OAUTH_CLIENT_SECRET}
             authorization-grant-type: authorization_code
             redirect-uri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/twitter/redirect}
             scope: users.read, tweet.read
+          spotify:
+            client-id: ${SPOTIFY_OAUTH_CLIENT_ID}
+            client-secret: ${SPOTIFY_OAUTH_CLIENT_SECRET}
+            redirect-uri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/spotify/redirect}
+            authorization-grant-type: client_credentials
+            scope: user-read-private, user-read-email, playlist-read-private, playlist-modify-private
         provider:
           google:
             tokenUri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
@@ -108,6 +108,9 @@ spring:
             authorization-uri: https://x.com/i/oauth2/authorize?code_challenge=challenge&code_challenge_method=plain
             token-uri: https://api.x.com/2/oauth2/token
             userInfoUri: ${TWITTER_USER_INFO_URI:https://api.x.com/2/users/me?user.fields=created_at,description,entities,id,location,most_recent_tweet_id,name,pinned_tweet_id,profile_image_url,protected,public_metrics,url,username,verified,verified_type,withheld,receives_your_dm}
+          spotify:
+            token-uri: https://accounts.spotify.com/api/token
+            userInfoUri: ${SPOTIFY_USER_INFO_URI:https://api.spotify.com/v1/me}
 app:
   jwtSecret: ${JWT_SECRET:sTvHbWsBDSCwW5ZnxpPEx7B5ad2Zx60p}
   jwtExpirationInMs: '#{1 * 60 * 60}' # 1 hour in seconds
@@ -127,10 +130,6 @@ management:
       exposure:
         include: "*"
   endpoint:
-    shutdown:
-      enabled: false
-    prometheus:
-      enabled: true
     health:
       probes:
         enabled: true

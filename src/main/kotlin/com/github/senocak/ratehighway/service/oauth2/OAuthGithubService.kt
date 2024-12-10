@@ -15,6 +15,7 @@ import com.github.senocak.ratehighway.util.OmaErrorMessageType
 import com.github.senocak.ratehighway.util.RoleName
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -36,7 +37,8 @@ class OAuthGithubService(
     private val jwtTokenProvider: JwtTokenProvider,
     private val userService: UserService,
     private val passwordEncoder: PasswordEncoder,
-    private val roleService: RoleService
+    private val roleService: RoleService,
+    private val oAuth2ClientProperties: OAuth2ClientProperties
 ): OAuthUserServiceImpl<OAuthGithubUser, OAuthGithubUserRepository>(
     repository = oAuthGithubUserRepository,
     messageSourceService = messageSourceService,
@@ -45,11 +47,8 @@ class OAuthGithubService(
     roleService = roleService,
     passwordEncoder = passwordEncoder
 ) {
-    @Value("\${spring.security.oauth2.client.registration.github.clientId}") private lateinit var githubClientId: String
-    @Value("\${spring.security.oauth2.client.registration.github.clientSecret}") private lateinit var githubClientSecret: String
-    @Value("\${spring.security.oauth2.client.registration.github.redirectUri}") private lateinit var githubRedirectUri: String
-    @Value("\${spring.security.oauth2.client.provider.github.tokenUri}") private lateinit var githubTokenUri: String
-    @Value("\${spring.security.oauth2.client.provider.github.userInfoUri}") private lateinit var githubUserInfoUri: String
+    private val registration: OAuth2ClientProperties.Registration = oAuth2ClientProperties.registration["github"] ?: throw Exception("Registration not found")
+    private val provider: OAuth2ClientProperties.Provider = oAuth2ClientProperties.provider["github"] ?: throw Exception("Provider not found")
     @Value("\${spring.security.oauth2.client.provider.github.userEmailUri}") private lateinit var githubEmailUri: String
 
     override fun getClassName(): String? = OAuthGithubUser::class.simpleName
@@ -70,11 +69,11 @@ class OAuthGithubService(
 
         val map: MultiValueMap<String, String> = LinkedMultiValueMap()
         map.add("code", code)
-        map.add("client_id", githubClientId)
-        map.add("client_secret", githubClientSecret)
-        map.add("redirect_uri", githubRedirectUri)
+        map.add("client_id", registration.clientId)
+        map.add("client_secret", registration.clientSecret)
+        map.add("redirect_uri", registration.redirectUri)
 
-        val response: ResponseEntity<String> = restTemplate.exchange(githubTokenUri,
+        val response: ResponseEntity<String> = restTemplate.exchange(provider.tokenUri,
             HttpMethod.POST, HttpEntity(map, headers), String::class.java)
 
         if (response.body == null) {
@@ -97,7 +96,7 @@ class OAuthGithubService(
      * @return An OAuthGithubUser object containing the user's information.
      */
     fun getGithubUserInfo(accessToken: String): OAuthGithubUser {
-        val response: ResponseEntity<OAuthGithubUser> = restTemplate.exchange(githubUserInfoUri,
+        val response: ResponseEntity<OAuthGithubUser> = restTemplate.exchange(provider.userInfoUri,
             HttpMethod.GET, HttpEntity(LinkedMultiValueMap<String, String>(),
                 createHeaderForToken(accessToken)), OAuthGithubUser::class.java)
 
@@ -135,4 +134,7 @@ class OAuthGithubService(
         }
         return null
     }
+
+    val link: String
+        get() = "https://github.com/login?client_id=${registration.clientId}&return_to=/login/oauth/authorize?client_id=${registration.clientId}&redirect_uri=${registration.redirectUri}&response_type=code&scope=${registration.scope.joinToString(separator = " ")}&state=i7heCBa70vIHTBJ23zAtS5s8u0ERlApyOce3xZaeTug%3D"
 }

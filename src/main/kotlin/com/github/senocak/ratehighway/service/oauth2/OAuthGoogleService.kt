@@ -13,7 +13,7 @@ import com.github.senocak.ratehighway.service.UserService
 import com.github.senocak.ratehighway.util.OmaErrorMessageType
 import com.github.senocak.ratehighway.util.RoleName
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
+import java.util.UUID
 
 @Service
 class OAuthGoogleService(
@@ -35,7 +36,8 @@ class OAuthGoogleService(
     private val jwtTokenProvider: JwtTokenProvider,
     private val userService: UserService,
     private val passwordEncoder: PasswordEncoder,
-    private val roleService: RoleService
+    private val roleService: RoleService,
+    private val oAuth2ClientProperties: OAuth2ClientProperties
 ): OAuthUserServiceImpl<OAuthGoogleUser, OAuthGoogleUserRepository>(
     repository = oAuthGoogleUserRepository,
     messageSourceService = messageSourceService,
@@ -44,11 +46,8 @@ class OAuthGoogleService(
     roleService = roleService,
     passwordEncoder = passwordEncoder
 ) {
-    @Value("\${spring.security.oauth2.client.registration.google.clientId}") private lateinit var googleClientId: String
-    @Value("\${spring.security.oauth2.client.registration.google.clientSecret}") private lateinit var googleClientSecret: String
-    @Value("\${spring.security.oauth2.client.registration.google.redirectUri}") private lateinit var googleRedirectUri: String
-    @Value("\${spring.security.oauth2.client.provider.google.tokenUri}") private lateinit var googleTokenUri: String
-    @Value("\${spring.security.oauth2.client.provider.google.userInfoUri}") private lateinit var googleUserInfoUri: String
+    private val registration: OAuth2ClientProperties.Registration = oAuth2ClientProperties.registration["google"] ?: throw Exception("Registration not found")
+    private val provider: OAuth2ClientProperties.Provider = oAuth2ClientProperties.provider["google"] ?: throw Exception("Provider not found")
 
     override fun getClassName(): String? = OAuthGoogleUser::class.simpleName
 
@@ -68,12 +67,12 @@ class OAuthGoogleService(
 
         val map: MultiValueMap<String, String> = LinkedMultiValueMap()
         map.add("code", code)
-        map.add("client_id", googleClientId)
-        map.add("client_secret", googleClientSecret)
-        map.add("redirect_uri", googleRedirectUri)
+        map.add("client_id", registration.clientId)
+        map.add("client_secret", registration.clientSecret)
+        map.add("redirect_uri", registration.redirectUri)
         map.add("grant_type", "authorization_code")
 
-        val response: ResponseEntity<OAuthTokenResponse> = restTemplate.exchange(googleTokenUri,
+        val response: ResponseEntity<OAuthTokenResponse> = restTemplate.exchange(provider.tokenUri,
             HttpMethod.POST, HttpEntity(map, headers), OAuthTokenResponse::class.java)
 
         if (response.body == null) {
@@ -91,11 +90,13 @@ class OAuthGoogleService(
      */
     fun getGoogleUserInfo(accessToken: String): OAuthGoogleUser {
         val response: ResponseEntity<OAuthGoogleUser> = restTemplate.getForEntity(
-            "$googleUserInfoUri?alt=json&access_token=$accessToken", OAuthGoogleUser::class.java)
-
+            "${provider.userInfoUri}?alt=json&access_token=$accessToken", OAuthGoogleUser::class.java)
         return response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))
                 .also { log.error("Body is returned as null, throwing ServerException $it") }
     }
+
+    val link: String
+        get() = "https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?response_type=code&client_id=${registration.clientId}&scope=${registration.scope.joinToString(separator = " ")}&state=${UUID.randomUUID()}&redirect_uri=${registration.redirectUri}&service=lso&o2v=2&ddm=1&flowName=GeneralOAuthFlow"
 }

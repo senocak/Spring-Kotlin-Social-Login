@@ -38,9 +38,8 @@ class WebSecurityConfig(
                 authorize(pattern = "/api/v1/swagger/**", access = permitAll)
                 authorize(pattern = "/api/v1/shared/**", access = permitAll)
                 authorize(pattern = "/swagger**/**", access = permitAll)
-                authorize(pattern = "/ott**/**", access = permitAll)
+                authorize(pattern = "/oauth2/**", access = permitAll)
                 authorize(pattern = "/*.html", access = permitAll)
-                authorize(method = HttpMethod.GET, pattern = "/oauth2/*/redirect", access = permitAll)
                 authorize(matches = anyRequest, access = authenticated)
             }
             oauth2Login {

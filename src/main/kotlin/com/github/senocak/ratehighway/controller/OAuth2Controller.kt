@@ -7,12 +7,14 @@ import com.github.senocak.ratehighway.domain.OAuthFacebookUser
 import com.github.senocak.ratehighway.domain.OAuthGithubUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
+import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
 import com.github.senocak.ratehighway.domain.OAuthTwitterUser
 import com.github.senocak.ratehighway.exception.ServerException
 import com.github.senocak.ratehighway.service.oauth2.OAuthFacebookService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGithubService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGoogleService
 import com.github.senocak.ratehighway.service.oauth2.OAuthLinkedinService
+import com.github.senocak.ratehighway.service.oauth2.OAuthSpotifyService
 import com.github.senocak.ratehighway.service.oauth2.OAuthTwitterService
 import com.github.senocak.ratehighway.util.OmaErrorMessageType
 import com.github.senocak.ratehighway.util.logger
@@ -40,8 +42,12 @@ class OAuth2Controller(
     private val oAuthLinkedinService: OAuthLinkedinService,
     private val oAuthFacebookService: OAuthFacebookService,
     private val oAuthTwitterService: OAuthTwitterService,
+    private val oAuthSpotifyService: OAuthSpotifyService,
 ): BaseController() {
     private val log: Logger by logger()
+
+    @GetMapping("/google")
+    fun googleLink(): String = oAuthGoogleService.link
 
     @GetMapping("/google/redirect")
     @Operation(summary = "Google redirect endpoint", tags = ["OAuth2"],
@@ -86,6 +92,9 @@ class OAuth2Controller(
         )
     }
 
+    @GetMapping("/github")
+    fun githubLink(): String = oAuthGithubService.link
+
     @GetMapping("/github/redirect")
     @Operation(summary = "Github redirect endpoint", tags = ["OAuth2"],
         responses = [
@@ -97,7 +106,7 @@ class OAuth2Controller(
     )
     fun github(request: HttpServletRequest,
         @Parameter(description = "Code param") @RequestParam code: String,
-        @Parameter(description = "State param") @RequestParam state: String
+        @Parameter(description = "State param") @RequestParam(required = false) state: String?
     ): Map<String, Any> {
         validateResponse(code = code, state = state)
         log.info("Started processing auth for github. Code: $code, state: $state")
@@ -116,12 +125,14 @@ class OAuth2Controller(
 
         log.info("Finished processing auth for github. Response: $oAuthUserResponse")
         return mapOf(
-            "state" to state,
             "code" to code,
             "oAuthTokenResponse" to oAuthTokenResponse,
             "oAuthUserResponse" to oAuthUserResponse
         )
     }
+
+    @GetMapping("/linkedin")
+    fun linkedinLink(): String = oAuthLinkedinService.link
 
     @GetMapping("/linkedin/redirect")
     @Operation(summary = "Linkedin redirect endpoint", tags = ["OAuth2"],
@@ -162,6 +173,9 @@ class OAuth2Controller(
         )
     }
 
+    @GetMapping("/facebook")
+    fun facebookLink(): String = oAuthFacebookService.link
+
     @GetMapping("/facebook/redirect")
     @Operation(summary = "Facebook redirect endpoint", tags = ["OAuth2"],
         responses = [
@@ -200,6 +214,9 @@ class OAuth2Controller(
             "oAuthUserResponse" to oAuthUserResponse
         )
     }
+
+    @GetMapping("/twitter")
+    fun twitterLink(): String = oAuthTwitterService.link
 
     @GetMapping("/twitter/redirect")
     @Operation(summary = "Twitter redirect endpoint", tags = ["OAuth2"],
@@ -240,6 +257,58 @@ class OAuth2Controller(
         )
     }
 
+    @GetMapping("/spotify")
+    fun spotifyLink(): String = oAuthSpotifyService.link
+
+    @GetMapping("/spotify/redirect")
+    @Operation(summary = "Spotify redirect endpoint", tags = ["OAuth2"],
+        responses = [
+            ApiResponse(responseCode = "200", description = "successful operation",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = Map::class))]),
+            ApiResponse(responseCode = "500", description = "internal server error occurred",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = ExceptionDto::class))])
+        ]
+    )
+    fun spotify(request: HttpServletRequest,
+        @Parameter(description = "State param") @RequestParam(required = false) state: String?,
+        @Parameter(description = "Code param") @RequestParam(required = false) code: String?,
+        @Parameter(description = "Error param") @RequestParam(value="error_code", required = false) error: String?,
+        @Parameter(description = "Error Description param") @RequestParam(value = "errorMessage", required = false) errorMessage: String?,
+    ): Map<String, Any> {
+        validateError(error = error, errorMessage = errorMessage)
+        validateResponse(code = code, state = state)
+        log.info("Started processing auth for facebook. Code: $code, state: $state")
+        val oAuthTokenResponse: OAuthTokenResponse = oAuthSpotifyService.getToken(code = code!!)
+        var oAuthSpotifyUser: OAuthSpotifyUser = oAuthSpotifyService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+
+        oAuthSpotifyUser = try {
+            oAuthSpotifyService.getByIdOrThrowException(id = oAuthSpotifyUser.id!!)
+        } catch (e: Exception) {
+            log.warn("OAuthSpotifyUser is saved to db: $oAuthSpotifyUser")
+            oAuthSpotifyService.save(entity = oAuthSpotifyUser)
+        }
+        val oAuthUserResponse: UserResponseWrapperDto = oAuthSpotifyService.authenticate(
+            jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthSpotifyUser)
+
+        log.info("Finished processing auth for OAuthSpotifyUser: $oAuthSpotifyUser")
+        return mapOf(
+            "state" to state!!,
+            "code" to code,
+            "oAuthTokenResponse" to oAuthTokenResponse,
+            "oAuthUserResponse" to oAuthUserResponse
+        )
+    }
+
+    @GetMapping
+    fun showAllLinks(): Map<String, String> = mapOf(
+        "google" to oAuthGoogleService.link,
+        "github" to oAuthGithubService.link,
+        "linkedin" to oAuthLinkedinService.link,
+        "facebook" to oAuthFacebookService.link,
+        "x/twitter" to oAuthTwitterService.link,
+        "spotify" to oAuthSpotifyService.link,
+    )
+
     /**
      * Validates the response received from the server by checking if the required parameters code and state are present.
      * If either of them is missing, it logs an error and throws a custom ServerException indicating the mandatory input missing.
@@ -249,10 +318,11 @@ class OAuth2Controller(
      * @throws ServerException If either code or state is null.
      */
     private fun validateResponse(code: String?, state: String?) {
-        if (code == null || state == null) {
-            log.error("code:$code or state:$state is null!")
+        if (code == null && state == null) {
+            val msg = "code and state is null!"
+            log.error(msg)
             throw ServerException(omaErrorMessageType = OmaErrorMessageType.MANDATORY_INPUT_MISSING,
-                statusCode = HttpStatus.FORBIDDEN, variables = arrayOf(code, state))
+                statusCode = HttpStatus.FORBIDDEN, variables = arrayOf(msg))
         }
     }
 

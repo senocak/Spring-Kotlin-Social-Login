@@ -6,4 +6,5 @@ data class OAuthTokenResponse(
     var scope: String? = null,
     var token_type: String? = null,
     var id_token: String? = null,
+    var refresh_token: String? = null,
 )
