@@ -1,12 +1,12 @@
 package com.github.senocak.ratehighway.service.oauth2
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthTokenResponse
 import com.github.senocak.ratehighway.domain.OAuthGithubUser
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User
 import com.github.senocak.ratehighway.exception.ServerException
 import com.github.senocak.ratehighway.domain.OAuthGithubUserRepository
+import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
 import com.github.senocak.ratehighway.security.JwtTokenProvider
 import com.github.senocak.ratehighway.service.MessageSourceService
 import com.github.senocak.ratehighway.service.RoleService

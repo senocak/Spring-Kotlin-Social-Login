@@ -4,7 +4,7 @@ import com.github.senocak.ratehighway.domain.dto.UserResponseWrapperDto
 import com.github.senocak.ratehighway.domain.OAuthBaseUser
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User
-import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthTokenResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
 import com.github.senocak.ratehighway.exception.NotFoundException
 import com.github.senocak.ratehighway.exception.ServerException
 import com.github.senocak.ratehighway.security.JwtTokenProvider

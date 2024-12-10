@@ -1,6 +1,6 @@
 package com.github.senocak.ratehighway.service.oauth2
 
-import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthTokenResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User

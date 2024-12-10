@@ -1,11 +1,12 @@
 package com.github.senocak.ratehighway.service.oauth2
 
-import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
-import com.github.senocak.ratehighway.domain.OAuthTwitterUser
+import com.fasterxml.jackson.databind.JsonNode
+import com.github.senocak.ratehighway.domain.OAuthTwitchUser
+import com.github.senocak.ratehighway.domain.OAuthTwitchUserRepository
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User
+import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
 import com.github.senocak.ratehighway.exception.ServerException
-import com.github.senocak.ratehighway.domain.OAuthTwitterUserRepository
 import com.github.senocak.ratehighway.security.JwtTokenProvider
 import com.github.senocak.ratehighway.service.MessageSourceService
 import com.github.senocak.ratehighway.service.RoleService
@@ -28,36 +29,36 @@ import org.springframework.web.client.RestTemplate
 import java.util.UUID
 
 @Service
-class OAuthTwitterService(
+class OAuthTwitchService(
     @Qualifier(value = "restTemplateByPassSSL")
     private val restTemplate: RestTemplate,
-    private val oAuthTwitterUserRepository: OAuthTwitterUserRepository,
+    private val oAuthTwitchUserRepository: OAuthTwitchUserRepository,
     private val messageSourceService: MessageSourceService,
     private val jwtTokenProvider: JwtTokenProvider,
     private val userService: UserService,
     private val passwordEncoder: PasswordEncoder,
     private val roleService: RoleService,
     private val oAuth2ClientProperties: OAuth2ClientProperties
-): OAuthUserServiceImpl<OAuthTwitterUser, OAuthTwitterUserRepository>(
-    repository = oAuthTwitterUserRepository,
+): OAuthUserServiceImpl<OAuthTwitchUser, OAuthTwitchUserRepository>(
+    repository = oAuthTwitchUserRepository,
     messageSourceService = messageSourceService,
     jwtTokenProvider = jwtTokenProvider,
     userService = userService,
     roleService = roleService,
     passwordEncoder = passwordEncoder
 ) {
-    private val registration: OAuth2ClientProperties.Registration = oAuth2ClientProperties.registration["twitter"] ?: throw Exception("Registration not found")
-    private val provider: OAuth2ClientProperties.Provider = oAuth2ClientProperties.provider["twitter"] ?: throw Exception("Provider not found")
+    private val registration: OAuth2ClientProperties.Registration = oAuth2ClientProperties.registration["twitch"] ?: throw Exception("Registration not found")
+    private val provider: OAuth2ClientProperties.Provider = oAuth2ClientProperties.provider["twitch"] ?: throw Exception("Provider not found")
 
-    override fun getClassName(): String? = OAuthTwitterUser::class.simpleName
+    override fun getClassName(): String? = OAuthTwitchUser::class.simpleName
 
-    override fun getUser(entity: OAuthTwitterUser): User {
+    override fun getUser(entity: OAuthTwitchUser): User {
         val userRole: Role? = roleService.findByName(roleName = RoleName.ROLE_USER)
         return User(email = entity.email!!, password = passwordEncoder.encode(entity.email!!), roles = mutableListOf(userRole!!))
     }
 
     /**
-     * Retrieves an OAuth token from Twitter using the provided authorization code.
+     * Retrieves an OAuth token from Twitch using the provided authorization code.
      * @param code The authorization code to use for token retrieval.
      * @return An OAuthTokenResponse containing the access token and related information.
      */
@@ -67,22 +68,28 @@ class OAuthTwitterService(
                 h.contentType = MediaType.APPLICATION_FORM_URLENCODED
                 h.setBasicAuth(registration.clientId, registration.clientSecret)
             }
-
         val map: MultiValueMap<String, String> = LinkedMultiValueMap()
         map.add("code", code)
-        map.add("client_id", registration.clientSecret)
-        map.add("redirect_uri", registration.redirectUri)
+        map.add("client_id", registration.clientId)
+        map.add("client_secret", registration.clientSecret)
         map.add("grant_type", "authorization_code")
-        map.add("code_verifier", "challenge")
-        map.add("scope", registration.scope.joinToString(separator = ","))
+        map.add("redirect_uri", registration.redirectUri)
 
-        val response: ResponseEntity<OAuthTokenResponse> = restTemplate.exchange(provider.tokenUri,
-            HttpMethod.POST, HttpEntity(map, headers), OAuthTokenResponse::class.java)
+        val response: ResponseEntity<JsonNode> = restTemplate.exchange(provider.tokenUri,
+            HttpMethod.POST, HttpEntity(map, headers), JsonNode::class.java)
 
-        return response.body ?:
+        val body: JsonNode = response.body ?:
             throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("null", getClassName())
         ).also { log.error("Body is returned as null, throwing ServerException") }
+        return OAuthTokenResponse(
+            access_token = body["access_token"].asText(),
+            expires_in = body["expires_in"].asLong(),
+            scope = body["scope"].toList().joinToString { it.asText() },
+            token_type = body["token_type"].asText(),
+            id_token = body["id_token"].asText(),
+            refresh_token = body["refresh_token"].asText()
+        )
     }
 
     /**
@@ -90,22 +97,22 @@ class OAuthTwitterService(
      * @param accessToken The access token to use for user info retrieval.
      * @return An OAuthLinkedinUser object containing the user's information.
      */
-    fun getUserInfo(accessToken: String): OAuthTwitterUser {
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(LinkedMultiValueMap(), createHeaderForToken(accessToken = accessToken))
-        val response: ResponseEntity<OAuthTwitterUserWrapper> = restTemplate.exchange(provider.userInfoUri,
-            HttpMethod.GET, entity, OAuthTwitterUserWrapper::class.java)
-        val body: OAuthTwitterUser = response.body?.data
+    fun getUserInfo(accessToken: String): OAuthTwitchUser {
+        val headers: HttpHeaders = createHeaderForToken(accessToken = accessToken)
+            .also { h: HttpHeaders ->
+                h.add("client-id", registration.clientId)
+            }
+        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(LinkedMultiValueMap(), headers)
+        val response: ResponseEntity<OAuthTwitchUserWrapper> = restTemplate.exchange(provider.userInfoUri,
+            HttpMethod.GET, entity, OAuthTwitchUserWrapper::class.java)
+        val body: OAuthTwitchUserWrapper = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))
                 .also { log.error("Body is returned as null, throwing ServerException, $it") }
-        body.id = "${UUID.randomUUID()}"
-        body.email = body.username
-        return body
+        return body.data.first()
     }
 
-    internal class OAuthTwitterUserWrapper {
-        val data: OAuthTwitterUser? = null
-    }
+    internal class OAuthTwitchUserWrapper(val data: List<OAuthTwitchUser>)
 
-    val link: String = "https://x.com/i/oauth2/authorize?code_challenge=challenge&code_challenge_method=plain&response_type=code&client_id=${registration.clientId}&scope=${registration.scope.joinToString(separator = " ")}&state=${UUID.randomUUID()}&redirect_uri=${registration.redirectUri}"
+    val link: String = "https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${registration.clientId}&redirect_uri=${registration.redirectUri}&scope=${registration.scope.joinToString(separator = " ")}&state=${UUID.randomUUID()}&nonce=${UUID.randomUUID()}"
 }

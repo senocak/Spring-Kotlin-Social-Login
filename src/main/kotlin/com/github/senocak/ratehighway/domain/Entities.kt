@@ -176,6 +176,9 @@ class OAuthTwitterUser: OAuthBaseUser() {
     @Column var most_recent_tweet_id: String? = null
     @Column var receives_your_dm: Boolean? = null
     @Embedded var public_metrics: PublicMetricsResponse? = null
+
+    override fun toString(): String =
+        "OAuthTwitterUser(name=$name, description=$description, pinned_tweet_id=$pinned_tweet_id, verified_type=$verified_type, created_at=$created_at, profile_image_url=$profile_image_url, verified=$verified, username=$username, protected=$protected, most_recent_tweet_id=$most_recent_tweet_id, receives_your_dm=$receives_your_dm, public_metrics=$public_metrics)"
 }
 
 class PublicMetricsResponse {
@@ -245,6 +248,22 @@ class ImageListConverter : AttributeConverter<List<Image>, String> {
 }
 
 @Entity
+@Table(name = "twitchUsers", uniqueConstraints = [
+    UniqueConstraint(columnNames = ["email"])
+])
+class OAuthTwitchUser: OAuthBaseUser() {
+    @Column var login: String? = null
+    @Column var display_name: String? = null
+    @Column var type: String? = null
+    @Column var broadcaster_type: String? = null
+    @Column var description: String? = null
+    @Column var profile_image_url: String? = null
+    @Column var offline_image_url: String? = null
+    @Column var view_count: Int? = null
+    @Column var created_at: String? = null
+}
+
+@Entity
 @Table(name = "roles")
 class Role(@Column @Enumerated(EnumType.STRING) var name: RoleName? = null): BaseDomain()
 
@@ -268,5 +287,7 @@ class User(
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthGithubUser: OAuthGithubUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthLinkedinUser: OAuthLinkedinUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthFacebookUser: OAuthFacebookUser? = null,
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthTwitterUser: OAuthTwitterUser? = null
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthTwitterUser: OAuthTwitterUser? = null,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthSpotifyUser: OAuthSpotifyUser? = null,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthTwitchUser: OAuthTwitchUser? = null,
 ): BaseDomain()

@@ -2,10 +2,6 @@ package com.github.senocak.ratehighway.domain.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
-import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthFacebookUserResponse
-import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthGithubUserResponse
-import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthGoogleUserResponse
-import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthLinkedinUserResponse
 import com.github.senocak.ratehighway.domain.User
 import com.github.senocak.ratehighway.util.PasswordMatches
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -39,8 +35,18 @@ class UserResponseDto: BaseDto() {
     @Schema(required = false)
     var facebook: OAuthFacebookUserResponse? = null
 
-    override fun toString(): String = "UserResponseDto(name=$name, email=$email, createdAt=$createdAt, roles=$roles," +
-            "google=$google, github=$github, linkedin=$linkedin, facebook=$facebook)"
+    @Schema(required = false)
+    var twitter: OAuthTwitterUserResponse? = null
+
+    @Schema(required = false)
+    var spotify: OAuthSpotifyUserResponse? = null
+
+    @Schema(required = false)
+    var twitch: OAuthTwitchUserResponse? = null
+
+    override fun toString(): String =
+        "UserResponseDto(name=$name, email=$email, createdAt=$createdAt, roles=$roles, google=$google, github=$github," +
+                "linkedin=$linkedin, facebook=$facebook, twitter=$twitter, spotify=$spotify, twitch=$twitch)"
 }
 
 @JsonPropertyOrder("token", "refreshToken", "user")

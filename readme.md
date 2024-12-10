@@ -37,7 +37,7 @@ Generate a new oauth application;
 - Put the `Client ID` and `Client secrets` to application.yml
 - Visit: `http://localhost:8083/oauth2/authorize/facebook`
 
-### X
+### X/Twitter
 Generate a new oauth application;
 - https://developer.x.com/en/portal/projects-and-apps
 - For local use `http://localhost:8083/oauth2/twitter/redirect` in `Authorization callback URL`
@@ -53,3 +53,10 @@ Generate a new oauth application;
 - Put the `Client ID` and `Client secrets` to application.yml
 - Visit: `http://localhost:8083/oauth2/authorize/spotify`
 
+### Twitch
+Generate a new oauth application;
+- https://dev.twitch.tv/console/apps
+- For local use `http://localhost:8083/oauth2/twitch/redirect` in `Authorization callback URL`
+- `8083` is your applications port
+- Put the `Client ID` and `Client secrets` to application.yml
+- Visit: `http://localhost:8083/oauth2/authorize/twitch`

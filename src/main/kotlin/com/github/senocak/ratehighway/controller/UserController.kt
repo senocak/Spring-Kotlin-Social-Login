@@ -178,6 +178,20 @@ class UserController(
                 }
                 user.oAuthTwitterUser!!.user = null
             }
+            OAuth2Services.SPOTIFY -> {
+                if (user.oAuthSpotifyUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthSpotifyUser!!.user = null
+            }
+            OAuth2Services.TWITCH -> {
+                if (user.oAuthTwitchUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthTwitchUser!!.user = null
+            }
         }
         userService.save(user = user)
         return ResponseEntity.noContent().build()

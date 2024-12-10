@@ -4,7 +4,7 @@ import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
 import com.github.senocak.ratehighway.domain.OAuthSpotifyUserRepository
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User
-import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthTokenResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
 import com.github.senocak.ratehighway.exception.ServerException
 import com.github.senocak.ratehighway.security.JwtTokenProvider
 import com.github.senocak.ratehighway.service.MessageSourceService
@@ -70,6 +70,7 @@ class OAuthSpotifyService(
         val map: MultiValueMap<String, String> = LinkedMultiValueMap()
         map.add("code", code)
         map.add("grant_type", "authorization_code")
+        //map.add("grant_type", registration.authorizationGrantType)
         map.add("redirect_uri", registration.redirectUri)
 
         val response: ResponseEntity<OAuthTokenResponse> = restTemplate.exchange(provider.tokenUri,

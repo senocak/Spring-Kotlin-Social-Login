@@ -36,3 +36,6 @@ interface OAuthTwitterUserRepository: JpaRepository<OAuthTwitterUser, String>, J
 
 @Repository
 interface OAuthSpotifyUserRepository: JpaRepository<OAuthSpotifyUser, String>, JpaSpecificationExecutor<OAuthSpotifyUser>
+
+@Repository
+interface OAuthTwitchUserRepository: JpaRepository<OAuthTwitchUser, String>, JpaSpecificationExecutor<OAuthTwitchUser>

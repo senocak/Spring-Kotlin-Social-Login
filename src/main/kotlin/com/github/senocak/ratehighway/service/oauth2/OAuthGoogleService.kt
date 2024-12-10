@@ -1,11 +1,11 @@
 package com.github.senocak.ratehighway.service.oauth2
 
-import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthTokenResponse
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User
 import com.github.senocak.ratehighway.exception.ServerException
 import com.github.senocak.ratehighway.domain.OAuthGoogleUserRepository
+import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
 import com.github.senocak.ratehighway.security.JwtTokenProvider
 import com.github.senocak.ratehighway.service.MessageSourceService
 import com.github.senocak.ratehighway.service.RoleService

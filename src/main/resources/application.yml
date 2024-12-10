@@ -61,7 +61,6 @@ spring:
           github:
             clientId: ${GITHUB_CLIENT_ID}
             clientSecret: ${GITHUB_CLIENT_SECRET}
-            clientSecret: ${GITHUB_CLIENT_SECRET:67567f61113c6dfc4de0d71560d248b07e0f81e1}
             redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/github/redirect}
             scope: read:user,user:email
           linkedin:
@@ -89,6 +88,12 @@ spring:
             redirect-uri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/spotify/redirect}
             authorization-grant-type: client_credentials
             scope: user-read-private, user-read-email, playlist-read-private, playlist-modify-private
+          twitch:
+            client-id: ${TWITCH_OAUTH_CLIENT_ID}
+            client-secret: ${TWITCH_OAUTH_CLIENT_SECRET}
+            redirect-uri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/twitch/redirect}
+            authorization-grant-type: client_credentials
+            scope: channel:manage:polls, channel:read:polls, user:read:email, openid
         provider:
           google:
             tokenUri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
@@ -111,6 +116,9 @@ spring:
           spotify:
             token-uri: https://accounts.spotify.com/api/token
             userInfoUri: ${SPOTIFY_USER_INFO_URI:https://api.spotify.com/v1/me}
+          twitch:
+            token-uri: https://id.twitch.tv/oauth2/token
+            userInfoUri: ${SPOTIFY_USER_INFO_URI:https://api.twitch.tv/helix/users}
 app:
   jwtSecret: ${JWT_SECRET:sTvHbWsBDSCwW5ZnxpPEx7B5ad2Zx60p}
   jwtExpirationInMs: '#{1 * 60 * 60}' # 1 hour in seconds

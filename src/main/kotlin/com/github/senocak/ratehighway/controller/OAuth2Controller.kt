@@ -2,19 +2,21 @@ package com.github.senocak.ratehighway.controller
 
 import com.github.senocak.ratehighway.domain.dto.ExceptionDto
 import com.github.senocak.ratehighway.domain.dto.UserResponseWrapperDto
-import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthTokenResponse
 import com.github.senocak.ratehighway.domain.OAuthFacebookUser
 import com.github.senocak.ratehighway.domain.OAuthGithubUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
 import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
+import com.github.senocak.ratehighway.domain.OAuthTwitchUser
 import com.github.senocak.ratehighway.domain.OAuthTwitterUser
+import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
 import com.github.senocak.ratehighway.exception.ServerException
 import com.github.senocak.ratehighway.service.oauth2.OAuthFacebookService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGithubService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGoogleService
 import com.github.senocak.ratehighway.service.oauth2.OAuthLinkedinService
 import com.github.senocak.ratehighway.service.oauth2.OAuthSpotifyService
+import com.github.senocak.ratehighway.service.oauth2.OAuthTwitchService
 import com.github.senocak.ratehighway.service.oauth2.OAuthTwitterService
 import com.github.senocak.ratehighway.util.OmaErrorMessageType
 import com.github.senocak.ratehighway.util.logger
@@ -43,6 +45,7 @@ class OAuth2Controller(
     private val oAuthFacebookService: OAuthFacebookService,
     private val oAuthTwitterService: OAuthTwitterService,
     private val oAuthSpotifyService: OAuthSpotifyService,
+    private val oAuthTwitchService: OAuthTwitchService,
 ): BaseController() {
     private val log: Logger by logger()
 
@@ -299,6 +302,48 @@ class OAuth2Controller(
         )
     }
 
+    @GetMapping("/twitch")
+    fun twitchLink(): String = oAuthTwitchService.link
+
+    @GetMapping("/twitch/redirect")
+    @Operation(summary = "Twitch redirect endpoint", tags = ["OAuth2"],
+        responses = [
+            ApiResponse(responseCode = "200", description = "successful operation",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = Map::class))]),
+            ApiResponse(responseCode = "500", description = "internal server error occurred",
+                content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = Schema(implementation = ExceptionDto::class))])
+        ]
+    )
+    fun twitch(request: HttpServletRequest,
+        @Parameter(description = "State param") @RequestParam(required = false) state: String?,
+        @Parameter(description = "Code param") @RequestParam(required = false) code: String?,
+        @Parameter(description = "Error param") @RequestParam(value="error_code", required = false) error: String?,
+        @Parameter(description = "Error Description param") @RequestParam(value = "errorMessage", required = false) errorMessage: String?,
+    ): Map<String, Any> {
+        validateError(error = error, errorMessage = errorMessage)
+        validateResponse(code = code, state = state)
+        log.info("Started processing auth for facebook. Code: $code, state: $state")
+        val oAuthTokenResponse: OAuthTokenResponse = oAuthTwitchService.getToken(code = code!!)
+        var oAuthTwitchUser: OAuthTwitchUser = oAuthTwitchService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+
+        oAuthTwitchUser = try {
+            oAuthTwitchService.getByIdOrThrowException(id = oAuthTwitchUser.id!!)
+        } catch (e: Exception) {
+            log.warn("OAuthTwitchUser is saved to db: $oAuthTwitchUser")
+            oAuthTwitchService.save(entity = oAuthTwitchUser)
+        }
+        val oAuthUserResponse: UserResponseWrapperDto = oAuthTwitchService.authenticate(
+            jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthTwitchUser)
+
+        log.info("Finished processing auth for OAuthTwitchUser: $oAuthTwitchUser")
+        return mapOf(
+            "state" to state!!,
+            "code" to code,
+            "oAuthTokenResponse" to oAuthTokenResponse,
+            "oAuthUserResponse" to oAuthUserResponse
+        )
+    }
+
     @GetMapping
     fun showAllLinks(): Map<String, String> = mapOf(
         "google" to oAuthGoogleService.link,
@@ -307,6 +352,7 @@ class OAuth2Controller(
         "facebook" to oAuthFacebookService.link,
         "x/twitter" to oAuthTwitterService.link,
         "spotify" to oAuthSpotifyService.link,
+        "twitch" to oAuthTwitchService.link,
     )
 
     /**

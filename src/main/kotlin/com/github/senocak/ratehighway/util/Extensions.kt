@@ -2,19 +2,24 @@ package com.github.senocak.ratehighway.util
 
 import ch.qos.logback.classic.Level
 import com.github.senocak.ratehighway.KotlinApplication
-import com.github.senocak.ratehighway.domain.LocaleResponse
 import com.github.senocak.ratehighway.domain.dto.RoleResponse
 import com.github.senocak.ratehighway.domain.dto.UserResponseDto
-import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthFacebookUserResponse
-import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthGithubUserResponse
-import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthGoogleUserResponse
-import com.github.senocak.ratehighway.domain.dto.oauth2.OAuthLinkedinUserResponse
 import com.github.senocak.ratehighway.domain.OAuthFacebookUser
 import com.github.senocak.ratehighway.domain.OAuthGithubUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
+import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
+import com.github.senocak.ratehighway.domain.OAuthTwitchUser
+import com.github.senocak.ratehighway.domain.OAuthTwitterUser
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User
+import com.github.senocak.ratehighway.domain.dto.OAuthFacebookUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthGithubUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthGoogleUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthLinkedinUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthSpotifyUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthTwitchUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthTwitterUserResponse
 import com.github.senocak.ratehighway.exception.ServerException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -43,6 +48,9 @@ fun User.toDTO(roles: Boolean = true): UserResponseDto {
     if (this.oAuthGithubUser != null) dto.github = this.oAuthGithubUser!!.toDTO()
     if (this.oAuthLinkedinUser != null) dto.linkedin = this.oAuthLinkedinUser!!.toDTO()
     if (this.oAuthFacebookUser != null) dto.facebook = this.oAuthFacebookUser!!.toDTO()
+    if (this.oAuthTwitterUser != null) dto.twitter = this.oAuthTwitterUser!!.toDTO()
+    if (this.oAuthSpotifyUser != null) dto.spotify = this.oAuthSpotifyUser!!.toDTO()
+    if (this.oAuthTwitchUser != null) dto.twitch = this.oAuthTwitchUser!!.toDTO()
     return dto
 }
 
@@ -57,63 +65,88 @@ fun Role.toDTO(): RoleResponse = RoleResponse(name = this.name!!)
  *
  * @return An OAuthGithubUserResponse object that represents the input OAuthGithubUser object.
  */
-fun OAuthGithubUser.toDTO(): OAuthGithubUserResponse {
-    val dto = OAuthGithubUserResponse()
-    dto.name = this.name
-    dto.email = this.email
-    dto.username = this.login
-    dto.url = this.html_url
-    return dto
-}
+fun OAuthGithubUser.toDTO(): OAuthGithubUserResponse =
+    OAuthGithubUserResponse()
+        .also {
+            it.name = this.name
+            it.email = this.email
+            it.username = this.login
+            it.url = this.html_url
+        }
 
 /**
  * Converts an OAuthLinkedinUser object to an OAuthLinkedinUserResponse object.
- *
  * @return An OAuthLinkedinUserResponse object that represents the input OAuthLinkedinUser object.
  */
-fun OAuthLinkedinUser.toDTO(): OAuthLinkedinUserResponse {
-    val dto = OAuthLinkedinUserResponse()
-    dto.sub = this.sub
-    dto.name = this.name
-    dto.givenName = this.given_name
-    dto.familyName = this.family_name
-    dto.email = this.email
-    dto.emailVerified = this.email_verified
-    dto.picture = this.picture
-    dto.localeData = this.locale
-    return dto
-}
+fun OAuthLinkedinUser.toDTO(): OAuthLinkedinUserResponse =
+    OAuthLinkedinUserResponse()
+        .also {
+            it.sub = this.sub
+            it.name = this.name
+            it.givenName = this.given_name
+            it.familyName = this.family_name
+            it.email = this.email
+            it.emailVerified = this.email_verified
+            it.picture = this.picture
+            it.localeData = this.locale
+        }
 
 /**
  * Converts an OAuthFacebookUser object to an OAuthFacebookUserResponse object.
- *
  * @return An OAuthFacebookUserResponse object that represents the input OAuthFacebookUser object.
  */
-fun OAuthFacebookUser.toDTO(): OAuthFacebookUserResponse {
-    val dto = OAuthFacebookUserResponse()
-    dto.email = this.email
-    dto.name = this.name
-    dto.picture = this.picture
-    return dto
-}
+fun OAuthFacebookUser.toDTO(): OAuthFacebookUserResponse =
+    OAuthFacebookUserResponse()
+        .also {
+            it.email = this.email
+            it.name = this.name
+            it.picture = this.picture
+        }
 
 /**
  * Converts an OAuthGoogleUser object to an OAuthGoogleUserResponse object.
- *
  * @return An OAuthGoogleUserResponse object that represents the input OAuthGoogleUser object.
  */
-fun OAuthGoogleUser.toDTO(): OAuthGoogleUserResponse {
-    val dto = OAuthGoogleUserResponse()
-    dto.email = this.email
-    dto.verified_email = this.verified_email
-    dto.name = this.name
-    dto.given_name = this.given_name
-    dto.link = this.link
-    dto.picture = this.picture
-    dto.locale_user = this.locale
-    dto.hd = this.hd
-    return dto
-}
+fun OAuthGoogleUser.toDTO(): OAuthGoogleUserResponse =
+    OAuthGoogleUserResponse()
+        .also {
+            it.email = this.email
+            it.verified_email = this.verified_email
+            it.name = this.name
+            it.given_name = this.given_name
+            it.link = this.link
+            it.picture = this.picture
+            it.locale_user = this.locale
+            it.hd = this.hd
+        }
+
+fun OAuthTwitterUser.toDTO(): OAuthTwitterUserResponse =
+    OAuthTwitterUserResponse()
+        .also {
+            it.email = this.email
+            it.name = this.name
+            it.description = this.description
+            it.username = this.username
+            it.verified_type = this.verified_type
+            it.profile_image_url = this.profile_image_url
+            it.protected = this.protected
+        }
+
+fun OAuthSpotifyUser.toDTO(): OAuthSpotifyUserResponse =
+    OAuthSpotifyUserResponse()
+        .also {
+            it.email = this.email
+            it.display_name = this.display_name
+            it.country = this.country
+        }
+
+fun OAuthTwitchUser.toDTO(): OAuthTwitchUserResponse =
+    OAuthTwitchUserResponse()
+        .also {
+            it.email = this.email
+            it.display_name = this.display_name
+            it.profile_image_url = this.profile_image_url
+        }
 
 fun String.toUUID(): UUID = UUID.fromString(this)
 
