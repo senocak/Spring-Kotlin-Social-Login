@@ -33,9 +33,7 @@ import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
-import java.util.Date
 import java.util.Optional
-import java.util.UUID
 import kotlin.collections.ArrayList
 
 interface OAuthUserService<E, R> {
@@ -282,6 +280,7 @@ abstract class OAuthUserServiceImpl<E, R>(
     abstract fun getToken(code: String): OAuthTokenResponse
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
+    // TODO: implement other users
     open fun authenticate(jwtToken: String?, oAuthGoogleUser: E): UserResponseWrapperDto {
         val user: User?
         if (jwtToken != null) {

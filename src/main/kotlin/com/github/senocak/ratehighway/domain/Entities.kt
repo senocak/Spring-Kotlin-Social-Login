@@ -23,6 +23,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
+import jakarta.persistence.Lob
 import jakarta.persistence.ManyToMany
 import jakarta.persistence.MappedSuperclass
 import jakarta.persistence.OneToOne
@@ -318,6 +319,21 @@ class DropboxRootInfo {
 }
 
 @Entity
+@Table(name = "instagramUsers", uniqueConstraints = [
+    UniqueConstraint(columnNames = ["email"])
+])
+class OAuthInstagramUser: OAuthBaseUser() {
+    @Column @JsonProperty("user_id") var instagram_user_id: String? = null
+    @Column var username: String? = null
+    @Column var name: String? = null
+    @Column var account_type: String? = null
+    @Column @Lob var profile_picture_url: String? = null
+    @Column var followers_count: Int? = null
+    @Column var follows_count: Int? = null
+    @Column var media_count: Int? = null
+}
+
+@Entity
 @Table(name = "roles")
 class Role(@Column @Enumerated(EnumType.STRING) var name: RoleName? = null): BaseDomain()
 
@@ -346,4 +362,5 @@ class User(
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthTwitchUser: OAuthTwitchUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthSlackUser: OAuthSlackUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthDropboxUser: OAuthDropboxUser? = null,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthInstagramUser: OAuthInstagramUser? = null,
 ): BaseDomain()

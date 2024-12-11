@@ -206,6 +206,13 @@ class UserController(
                 }
                 user.oAuthDropboxUser!!.user = null
             }
+            OAuth2Services.INSTAGRAM -> {
+                if (user.oAuthInstagramUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthInstagramUser!!.user = null
+            }
         }
         userService.save(user = user)
         return ResponseEntity.noContent().build()

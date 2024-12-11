@@ -77,5 +77,10 @@ Generate a new oauth application;
 - Put the `Client ID` and `Client secrets` to application.yml
 - Visit: `http://localhost:8083/oauth2/authorize/dropbox`
 
-
-
+### Instagram
+Generate a new oauth application;
+- https://developers.facebook.com/apps
+- For local use `http://localhost:8083/oauth2/instagram/redirect` in `Authorization callback URL`
+- `8083` is your applications port
+- Put the `Client ID` and `Client secrets` to application.yml
+- Visit: `http://localhost:8083/oauth2/authorize/instagram`

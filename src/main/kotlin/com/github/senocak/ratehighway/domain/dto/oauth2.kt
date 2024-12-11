@@ -15,6 +15,8 @@ data class OAuthTokenResponse(
     var refresh_token: String? = null,
     var account_id: String? = null, // for slack
     var uid: String? = null, // for dropbox
+    var user_id: String? = null, // for instagram
+    var permissions: List<String>? = null, // for instagram
 )
 
 @JsonPropertyOrder("email", "name", "picture")
@@ -209,4 +211,21 @@ class OAuthDropboxUserResponse: BaseDto() {
 
     override fun toString(): String =
         "OAuthSlackUserResponse(email=$email, name=$name, country=$country, localeSlack=$localeSlack)"
+}
+
+class OAuthInstagramUserResponse: BaseDto() {
+    @Schema(example = "lorem@ipsum.com", description = "Email of the user", required = true, name = "email", type = "String")
+    var email: String? = null
+
+    @Schema(description = "Name of the user", required = true, name = "name", type = "DropboxName")
+    var name: String? = null
+
+    @Schema(description = "Picture of the user", required = true, name = "profile_picture_url", type = "String")
+    var profile_picture_url: String? = null
+
+    @Schema(example = "lorem", description = "Username of the user", required = true, name = "username", type = "String")
+    var username: String? = null
+
+    override fun toString(): String =
+        "OAuthInstagramUserResponse(email=$email, name=$name, profile_picture_url=$profile_picture_url, username=$username)"
 }

@@ -45,3 +45,6 @@ interface OAuthSlackUserRepository: JpaRepository<OAuthSlackUser, String>, JpaSp
 
 @Repository
 interface OAuthDropboxUserRepository: JpaRepository<OAuthDropboxUser, String>, JpaSpecificationExecutor<OAuthDropboxUser>
+
+@Repository
+interface OAuthInstagramUserRepository: JpaRepository<OAuthInstagramUser, String>, JpaSpecificationExecutor<OAuthInstagramUser>

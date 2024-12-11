@@ -8,6 +8,7 @@ import com.github.senocak.ratehighway.domain.dto.UserResponseDto
 import com.github.senocak.ratehighway.domain.OAuthFacebookUser
 import com.github.senocak.ratehighway.domain.OAuthGithubUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
+import com.github.senocak.ratehighway.domain.OAuthInstagramUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
 import com.github.senocak.ratehighway.domain.OAuthSlackUser
 import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
@@ -19,6 +20,7 @@ import com.github.senocak.ratehighway.domain.dto.OAuthDropboxUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthFacebookUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthGithubUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthGoogleUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthInstagramUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthLinkedinUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthSlackUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthSpotifyUserResponse
@@ -57,6 +59,7 @@ fun User.toDTO(roles: Boolean = true): UserResponseDto {
     if (this.oAuthTwitchUser != null) dto.twitch = this.oAuthTwitchUser!!.toDTO()
     if (this.oAuthSlackUser != null) dto.slack = this.oAuthSlackUser!!.toDTO()
     if (this.oAuthDropboxUser != null) dto.dropbox = this.oAuthDropboxUser!!.toDTO()
+    if (this.oAuthInstagramUser != null) dto.instagram = this.oAuthInstagramUser!!.toDTO()
     return dto
 }
 
@@ -171,6 +174,15 @@ fun OAuthDropboxUser.toDTO(): OAuthDropboxUserResponse =
             it.country = this.country
             it.localeSlack = this.locale
             it.profile_photo_url = this.profile_photo_url
+        }
+
+fun OAuthInstagramUser.toDTO(): OAuthInstagramUserResponse =
+    OAuthInstagramUserResponse()
+        .also {
+            it.email = this.email
+            it.name = this.name
+            it.profile_picture_url = this.profile_picture_url
+            it.username = this.username
         }
 
 fun String.toUUID(): UUID = UUID.fromString(this)
