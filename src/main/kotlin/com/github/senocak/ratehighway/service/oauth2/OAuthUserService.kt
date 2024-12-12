@@ -281,14 +281,14 @@ abstract class OAuthUserServiceImpl<E, R>(
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     // TODO: implement other users
-    open fun authenticate(jwtToken: String?, oAuthGoogleUser: E): UserResponseWrapperDto {
+    open fun authenticate(jwtToken: String?, oAuthUser: E): UserResponseWrapperDto {
         val user: User?
         if (jwtToken != null) {
             jwtTokenProvider.validateToken(token = jwtToken)
             user = userService.findByEmail(email = jwtTokenProvider.getSubjectFromJWT(token = jwtToken))
             MDC.put("userId", "${user.id}")
             if(user.oAuthGoogleUser != null) {
-                if(user.oAuthGoogleUser!!.id != oAuthGoogleUser.id) {
+                if(user.oAuthGoogleUser!!.id != oAuthUser.id) {
                     val message: String = messageSourceService.get(code = "this_account_is_linked_to_another_account")
                     log.error(message)
                     throw ServerException(omaErrorMessageType = OmaErrorMessageType.BASIC_INVALID_INPUT,
@@ -299,18 +299,18 @@ abstract class OAuthUserServiceImpl<E, R>(
                 throw ServerException(omaErrorMessageType = OmaErrorMessageType.BASIC_INVALID_INPUT,
                     statusCode = HttpStatus.FORBIDDEN, variables = arrayOf(message))
             }
-            if (oAuthGoogleUser.user != user) {
-                oAuthGoogleUser.user = user
-                save(entity = oAuthGoogleUser)
+            if (oAuthUser.user != user) {
+                oAuthUser.user = user
+                save(entity = oAuthUser)
             }
         }else{
-            if (oAuthGoogleUser.user != null) {
-                user = oAuthGoogleUser.user
+            if (oAuthUser.user != null) {
+                user = oAuthUser.user
                 MDC.put("userId", "${user?.id}")
             }else {
-                val email: String? = oAuthGoogleUser.email
+                val email: String? = oAuthUser.email
                 if (email == null) {
-                    log.error("Email field can not be null to authenticate for user: ${oAuthGoogleUser.id}")
+                    log.error("Email field can not be null to authenticate for user: ${oAuthUser.id}")
                     throw NotFoundException(variables = arrayOf(messageSourceService.get(code = "oauth2_email_not_found")))
                 }
                 if (userService.existsByEmail(email = email)) {
@@ -326,10 +326,10 @@ abstract class OAuthUserServiceImpl<E, R>(
                     val randomStringGenerator: String = RandomStringGenerator(length = 10).next()
                     user = userService.save(user = User(email = email, roles = mutableListOf(userRole), password = passwordEncoder.encode(randomStringGenerator)))
                 }
-                oAuthGoogleUser.user = user
+                oAuthUser.user = user
                 MDC.put("userId", "${user.id}")
-                save(entity = oAuthGoogleUser)
-                log.info("oAuthGoogleUser updated id:${oAuthGoogleUser.id}, user: ${user.id}")
+                save(entity = oAuthUser)
+                log.info("oAuthGoogleUser updated id:${oAuthUser.id}, user: ${user.id}")
             }
         }
         return userService.generateUserWrapperResponse(userResponseDto = user!!.toDTO())

@@ -1,5 +1,6 @@
 package com.github.senocak.ratehighway.controller
 
+import com.github.senocak.ratehighway.domain.OAuthDiscordUser
 import com.github.senocak.ratehighway.domain.OAuthDropboxUser
 import com.github.senocak.ratehighway.domain.dto.UserResponseWrapperDto
 import com.github.senocak.ratehighway.domain.OAuthFacebookUser
@@ -14,6 +15,7 @@ import com.github.senocak.ratehighway.domain.OAuthTwitchUser
 import com.github.senocak.ratehighway.domain.OAuthTwitterUser
 import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
 import com.github.senocak.ratehighway.exception.ServerException
+import com.github.senocak.ratehighway.service.oauth2.OAuthDiscordService
 import com.github.senocak.ratehighway.service.oauth2.OAuthDropboxService
 import com.github.senocak.ratehighway.service.oauth2.OAuthFacebookService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGithubService
@@ -53,6 +55,7 @@ class OAuth2Controller(
     private val oAuthDropboxService: OAuthDropboxService,
     private val oAuthInstagramService: OAuthInstagramService,
     private val oAuthPaypalService: OAuthPaypalService,
+    private val oAuthDiscordService: OAuthDiscordService,
 ): BaseController() {
     private val log: Logger by logger()
 
@@ -69,6 +72,7 @@ class OAuth2Controller(
         "dropbox" to oAuthDropboxService.link,
         "instagram" to oAuthInstagramService.link,
         "paypal" to oAuthPaypalService.link,
+        "discord" to oAuthDiscordService.link,
     )
 
     @GetMapping("/{service}")
@@ -140,7 +144,7 @@ class OAuth2Controller(
                     oAuthGithubService.save(entity = oAuthGithubUser)
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthGithubService.authenticate(
-                    jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthGithubUser)
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthGithubUser)
                 log.info("Finished processing auth for github. Response: $oAuthUserResponse")
                 return mapOf(
                     "code" to code,
@@ -159,7 +163,7 @@ class OAuth2Controller(
                     oAuthLinkedinService.save(entity = oAuthLinkedinUser)
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthLinkedinService.authenticate(
-                    jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthLinkedinUser)
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthLinkedinUser)
 
                 log.info("Finished processing auth for linkedin")
                 return mapOf(
@@ -179,7 +183,7 @@ class OAuth2Controller(
                     oAuthFacebookService.save(entity = oAuthFacebookUser)
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthFacebookService.authenticate(
-                    jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthFacebookUser)
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthFacebookUser)
 
                 log.info("Finished processing auth for OAuthFacebookUser: $oAuthFacebookUser")
                 return mapOf(
@@ -200,7 +204,7 @@ class OAuth2Controller(
                     oAuthTwitterService.save(entity = oAuthTwitterUser)
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthTwitterService.authenticate(
-                    jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthTwitterUser)
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthTwitterUser)
 
                 log.info("Finished processing auth for OAuthTwitterUser: $oAuthTwitterUser")
                 return mapOf(
@@ -221,7 +225,7 @@ class OAuth2Controller(
                     oAuthSpotifyService.save(entity = oAuthSpotifyUser)
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthSpotifyService.authenticate(
-                    jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthSpotifyUser)
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthSpotifyUser)
 
                 log.info("Finished processing auth for OAuthSpotifyUser: $oAuthSpotifyUser")
                 return mapOf(
@@ -242,7 +246,7 @@ class OAuth2Controller(
                     oAuthTwitchService.save(entity = oAuthTwitchUser)
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthTwitchService.authenticate(
-                    jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthTwitchUser)
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthTwitchUser)
 
                 log.info("Finished processing auth for OAuthTwitchUser: $oAuthTwitchUser")
                 return mapOf(
@@ -263,7 +267,7 @@ class OAuth2Controller(
                     oAuthSlackService.save(entity = oAuthSlackUser)
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthSlackService.authenticate(
-                    jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthSlackUser)
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthSlackUser)
 
                 log.info("Finished processing auth for oAuthSlackService: $oAuthSlackUser")
                 return mapOf(
@@ -284,7 +288,7 @@ class OAuth2Controller(
                     oAuthDropboxService.save(entity = oAuthDropboxUser)
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthDropboxService.authenticate(
-                    jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthDropboxUser)
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthDropboxUser)
 
                 log.info("Finished processing auth for oAuthDropboxService: $oAuthDropboxUser")
                 return mapOf(
@@ -304,7 +308,7 @@ class OAuth2Controller(
                     oAuthInstagramService.save(entity = oAuthInstagramUser)
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthInstagramService.authenticate(
-                    jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthInstagramUser)
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthInstagramUser)
 
                 log.info("Finished processing auth for oAuthInstagramService: $oAuthInstagramUser")
                 return mapOf(
@@ -324,9 +328,28 @@ class OAuth2Controller(
                     oAuthPaypalService.save(entity = oAuthInstagramUser)
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthPaypalService.authenticate(
-                    jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthInstagramUser)
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthInstagramUser)
 
                 log.info("Finished processing auth for oAuthPaypalService: $oAuthInstagramUser")
+                return mapOf(
+                    "code" to code,
+                    "oAuthTokenResponse" to oAuthTokenResponse,
+                    "oAuthUserResponse" to oAuthUserResponse
+                )
+            }
+            OAuth2Services.DISCORD -> {
+                val oAuthTokenResponse: OAuthTokenResponse = oAuthDiscordService.getToken(code = code!!)
+                var oAuthDiscordUser: OAuthDiscordUser = oAuthDiscordService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                oAuthDiscordUser = try {
+                    oAuthDiscordService.getByIdOrThrowException(id = oAuthDiscordUser.id!!)
+                } catch (e: Exception) {
+                    log.warn("oAuthDiscordService is saved to db: $oAuthDiscordUser")
+                    oAuthDiscordService.save(entity = oAuthDiscordUser)
+                }
+                val oAuthUserResponse: UserResponseWrapperDto = oAuthDiscordService.authenticate(
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthDiscordUser)
+
+                log.info("Finished processing auth for oAuthDiscordService: $oAuthDiscordUser")
                 return mapOf(
                     "code" to code,
                     "oAuthTokenResponse" to oAuthTokenResponse,

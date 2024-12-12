@@ -2,6 +2,7 @@ package com.github.senocak.ratehighway.util
 
 import ch.qos.logback.classic.Level
 import com.github.senocak.ratehighway.KotlinApplication
+import com.github.senocak.ratehighway.domain.OAuthDiscordUser
 import com.github.senocak.ratehighway.domain.OAuthDropboxUser
 import com.github.senocak.ratehighway.domain.dto.RoleResponse
 import com.github.senocak.ratehighway.domain.dto.UserResponseDto
@@ -17,6 +18,7 @@ import com.github.senocak.ratehighway.domain.OAuthTwitchUser
 import com.github.senocak.ratehighway.domain.OAuthTwitterUser
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User
+import com.github.senocak.ratehighway.domain.dto.OAuthDiscordUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthDropboxUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthFacebookUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthGithubUserResponse
@@ -63,6 +65,7 @@ fun User.toDTO(roles: Boolean = true): UserResponseDto {
     if (this.oAuthDropboxUser != null) dto.dropbox = this.oAuthDropboxUser!!.toDTO()
     if (this.oAuthInstagramUser != null) dto.instagram = this.oAuthInstagramUser!!.toDTO()
     if (this.oAuthPaypalUser != null) dto.paypal = this.oAuthPaypalUser!!.toDTO()
+    if (this.oAuthDiscordUser != null) dto.discord = this.oAuthDiscordUser!!.toDTO()
     return dto
 }
 
@@ -197,6 +200,17 @@ fun OAuthPaypalUser.toDTO(): OAuthPaypalUserResponse =
             it.verified = this.verified
             it.email_verified = this.email_verified
             it.address = this.address
+        }
+
+fun OAuthDiscordUser.toDTO(): OAuthDiscordUserResponse =
+    OAuthDiscordUserResponse()
+        .also {
+            it.username = this.username
+            it.email = this.email
+            it.global_name = this.global_name
+            it.verified = this.verified
+            it.avatar = this.avatar
+            it.mfa_enabled = this.mfa_enabled
         }
 
 fun String.toUUID(): UUID = UUID.fromString(this)

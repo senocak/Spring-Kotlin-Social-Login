@@ -75,10 +75,17 @@ Generate a new oauth application;
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
 
-### paypal
+### Paypal
 Generate a new oauth application;
 - https://developer.paypal.com/dashboard/applications/sandbox
 - For local use `http://localhost:8083/oauth2/paypal/redirect` in `Authorization callback URL`
+- `8083` is your applications port
+- Put the `Client ID` and `Client secrets` to application.yml
+
+### Discord
+Generate a new oauth application;
+- https://discord.com/developers/applications/
+- For local use `http://localhost:8083/oauth2/discord/redirect` in `Authorization callback URL`
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
 

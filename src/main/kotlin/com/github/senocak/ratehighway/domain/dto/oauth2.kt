@@ -238,7 +238,7 @@ class OAuthPaypalUserResponse: BaseDto() {
     @Schema(example = "lorem@ipsum.com", description = "Email of the user", required = true, name = "email", type = "String")
     var email: String? = null
 
-    @Schema(description = "Name of the user", required = true, name = "name", type = "DropboxName")
+    @Schema(description = "Name of the user", required = true, name = "name", type = "String")
     var name: String? = null
 
     @Schema(example = "true", description = "Verified of the user", required = true, name = "verified", type = "String")
@@ -252,4 +252,27 @@ class OAuthPaypalUserResponse: BaseDto() {
 
     override fun toString(): String =
         "OAuthPaypalUserResponse(sub=$sub, email=$email, name=$name, verified=$verified, email_verified=$email_verified, address=$address)"
+}
+
+class OAuthDiscordUserResponse: BaseDto() {
+    @Schema(example = "lorem", description = "Username of the user", required = true, name = "username", type = "String")
+    var username: String? = null
+
+    @Schema(example = "lorem@ipsum.com", description = "Email of the user", required = true, name = "email", type = "String")
+    var email: String? = null
+
+    @Schema(description = "Name of the user", required = true, name = "name", type = "String")
+    var global_name: String? = null
+
+    @Schema(description = "Avatar of the user", required = true, name = "avatar", type = "String")
+    var avatar: String? = null
+
+    @Schema(example = "true", description = "Verified of the user", required = true, name = "verified", type = "Boolean")
+    var verified: Boolean? = null
+
+    @Schema(example = "true", description = "Mfa enabled of the user", required = true, name = "mfa_enabled", type = "Boolean")
+    var mfa_enabled: Boolean? = null
+
+    override fun toString(): String =
+        "OAuthDiscordUserResponse(username=$username, email=$email, global_name=$global_name, avatar=$avatar, verified=$verified, mfa_enabled=$mfa_enabled)"
 }

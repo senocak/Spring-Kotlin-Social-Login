@@ -117,6 +117,12 @@ spring:
             authorization-grant-type: client_credentials
             redirectUri: ${SERVER_FQDN:https://localhost:${server.port}/oauth2/instagram/redirect}
             scope: openid, profile, email, address
+          discord:
+            clientId: ${DISCORD_CLIENT_ID}
+            clientSecret: ${DISCORD_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/discord/redirect}
+            scope: identify, email, openid
         provider:
           google:
             tokenUri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
@@ -133,27 +139,30 @@ spring:
             tokenUri: ${FACEBOOK_TOKEN_URI:https://graph.facebook.com/oauth/access_token}
             userInfoUri: ${FACEBOOK_USER_INFO_URI:https://graph.facebook.com/me?fields=id,name,email,picture}
           twitter:
-            authorization-uri: https://x.com/i/oauth2/authorize?code_challenge=challenge&code_challenge_method=plain
-            token-uri: https://api.x.com/2/oauth2/token
+            authorization-uri: ${TWITTER_AUTH_URI:https://x.com/i/oauth2/authorize?code_challenge=challenge&code_challenge_method=plain}
+            token-uri: ${TWITTER_TOKEN_URI:https://api.x.com/2/oauth2/token}
             userInfoUri: ${TWITTER_USER_INFO_URI:https://api.x.com/2/users/me?user.fields=created_at,description,entities,id,location,most_recent_tweet_id,name,pinned_tweet_id,profile_image_url,protected,public_metrics,url,username,verified,verified_type,withheld,receives_your_dm}
           spotify:
-            token-uri: https://accounts.spotify.com/api/token
+            token-uri: ${SPOTIFY_TOKEN_URI:https://accounts.spotify.com/api/token}
             userInfoUri: ${SPOTIFY_USER_INFO_URI:https://api.spotify.com/v1/me}
           twitch:
-            token-uri: https://id.twitch.tv/oauth2/token
-            userInfoUri: ${SPOTIFY_USER_INFO_URI:https://api.twitch.tv/helix/users}
+            token-uri: ${TWITCH_TOKEN_URI:https://id.twitch.tv/oauth2/token}
+            userInfoUri: ${TWITCH_USER_INFO_URI:https://api.twitch.tv/helix/users}
           slack:
-            token-uri: https://slack.com/api/oauth.v2.access
-            userInfoUri: https://slack.com/api/openid.connect.userInfo
+            token-uri: ${SLACK_TOKEN_URI:https://slack.com/api/oauth.v2.access}
+            userInfoUri: ${SLACK_USER_INFO_URI:https://slack.com/api/openid.connect.userInfo}
           dropbox:
-            token-uri: https://api.dropbox.com/oauth2/token
-            userInfoUri: https://api.dropboxapi.com/2/users/get_current_account
+            token-uri: ${DROPBOX_TOKEN_URI:https://api.dropbox.com/oauth2/token}
+            userInfoUri: ${DROPBOX_USER_INFO_URI:https://api.dropboxapi.com/2/users/get_current_account}
           instagram:
             tokenUri: ${INSTAGRAM_TOKEN_URI:https://api.instagram.com/oauth/access_token}
             userInfoUri: ${INSTAGRAM_USER_INFO_URI:https://graph.instagram.com/v21.0/me?fields=user_id,username,name,account_type,profile_picture_url,followers_count,follows_count,media_count}
           paypal:
             tokenUri: ${PAYPAL_TOKEN_URI:https://api-m.sandbox.paypal.com/v1/oauth2/token}
             userInfoUri: ${PAYPAL_USER_INFO_URI:https://api-m.sandbox.paypal.com/v1/oauth2/token/userinfo?schema=openid}
+          discord:
+            tokenUri: ${DISCORD_TOKEN_URI:https://discord.com/api/oauth2/token}
+            userInfoUri: ${DISCORD_USER_INFO_URI:https://discord.com/api/users/@me}
 app:
   jwtSecret: ${JWT_SECRET:sTvHbWsBDSCwW5ZnxpPEx7B5ad2Zx60p}
   jwtExpirationInMs: '#{1 * 60 * 60}' # 1 hour in seconds

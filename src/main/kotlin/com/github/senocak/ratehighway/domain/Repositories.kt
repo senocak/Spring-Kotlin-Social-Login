@@ -51,3 +51,6 @@ interface OAuthInstagramUserRepository: JpaRepository<OAuthInstagramUser, String
 
 @Repository
 interface OAuthPaypalUserRepository: JpaRepository<OAuthPaypalUser, String>, JpaSpecificationExecutor<OAuthPaypalUser>
+
+@Repository
+interface OAuthDiscordUserRepository: JpaRepository<OAuthDiscordUser, String>, JpaSpecificationExecutor<OAuthDiscordUser>

@@ -220,6 +220,13 @@ class UserController(
                 }
                 user.oAuthPaypalUser!!.user = null
             }
+            OAuth2Services.DISCORD -> {
+                if (user.oAuthDiscordUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthDiscordUser!!.user = null
+            }
         }
         userService.save(user = user)
         return ResponseEntity.noContent().build()

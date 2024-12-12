@@ -365,6 +365,29 @@ class PayPalAddress {
 }
 
 @Entity
+@Table(name = "discordUsers", uniqueConstraints = [
+    UniqueConstraint(columnNames = ["email"])
+])
+class OAuthDiscordUser: OAuthBaseUser() {
+    @Column var username: String? = null
+    @Column var avatar: String? = null
+    @Column var discriminator: String? = null
+    @Column var public_flags: Int? = null
+    @Column var flags: Int? = null
+    @Column var banner: String? = null
+    @Column var accent_color: Int? = null
+    @Column var global_name: String? = null
+    @Column var avatar_decoration_data: String? = null
+    @Column var banner_color: String? = null
+    @Column var clan: String? = null
+    @Column var primary_guild: String? = null
+    @Column var mfa_enabled: Boolean? = null
+    @Column var locale: String? = null
+    @Column var premium_type: Int? = null
+    @Column var verified: Boolean? = null
+}
+
+@Entity
 @Table(name = "roles")
 class Role(@Column @Enumerated(EnumType.STRING) var name: RoleName? = null): BaseDomain()
 
@@ -395,4 +418,5 @@ class User(
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthDropboxUser: OAuthDropboxUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthInstagramUser: OAuthInstagramUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthPaypalUser: OAuthPaypalUser? = null,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthDiscordUser: OAuthDiscordUser? = null,
 ): BaseDomain()
