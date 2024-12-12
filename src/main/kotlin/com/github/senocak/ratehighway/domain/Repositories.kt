@@ -48,3 +48,6 @@ interface OAuthDropboxUserRepository: JpaRepository<OAuthDropboxUser, String>, J
 
 @Repository
 interface OAuthInstagramUserRepository: JpaRepository<OAuthInstagramUser, String>, JpaSpecificationExecutor<OAuthInstagramUser>
+
+@Repository
+interface OAuthPaypalUserRepository: JpaRepository<OAuthPaypalUser, String>, JpaSpecificationExecutor<OAuthPaypalUser>

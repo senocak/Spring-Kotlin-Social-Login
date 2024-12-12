@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.github.senocak.ratehighway.domain.DropboxName
 import com.github.senocak.ratehighway.domain.LocaleResponse
+import com.github.senocak.ratehighway.domain.PayPalAddress
 import io.swagger.v3.oas.annotations.media.Schema
 
 data class OAuthTokenResponse(
@@ -228,4 +229,27 @@ class OAuthInstagramUserResponse: BaseDto() {
 
     override fun toString(): String =
         "OAuthInstagramUserResponse(email=$email, name=$name, profile_picture_url=$profile_picture_url, username=$username)"
+}
+
+class OAuthPaypalUserResponse: BaseDto() {
+    @Schema(example = "sub", description = "Sub of the user", required = true, name = "sub", type = "String")
+    var sub: String? = null
+
+    @Schema(example = "lorem@ipsum.com", description = "Email of the user", required = true, name = "email", type = "String")
+    var email: String? = null
+
+    @Schema(description = "Name of the user", required = true, name = "name", type = "DropboxName")
+    var name: String? = null
+
+    @Schema(example = "true", description = "Verified of the user", required = true, name = "verified", type = "String")
+    var verified: String? = null
+
+    @Schema(example = "true", description = "Email verified of the user", required = true, name = "email_verified", type = "String")
+    var email_verified: String? = null
+
+    @Schema(description = "address of the user", required = true, name = "address", type = "PayPalAddress")
+    var address: PayPalAddress? = null
+
+    override fun toString(): String =
+        "OAuthPaypalUserResponse(sub=$sub, email=$email, name=$name, verified=$verified, email_verified=$email_verified, address=$address)"
 }

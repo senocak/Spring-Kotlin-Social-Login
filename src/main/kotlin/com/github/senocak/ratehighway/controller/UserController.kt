@@ -213,6 +213,13 @@ class UserController(
                 }
                 user.oAuthInstagramUser!!.user = null
             }
+            OAuth2Services.PAYPAL -> {
+                if (user.oAuthPaypalUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthPaypalUser!!.user = null
+            }
         }
         userService.save(user = user)
         return ResponseEntity.noContent().build()

@@ -7,6 +7,7 @@ import com.github.senocak.ratehighway.domain.OAuthGithubUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
 import com.github.senocak.ratehighway.domain.OAuthInstagramUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
+import com.github.senocak.ratehighway.domain.OAuthPaypalUser
 import com.github.senocak.ratehighway.domain.OAuthSlackUser
 import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
 import com.github.senocak.ratehighway.domain.OAuthTwitchUser
@@ -19,6 +20,7 @@ import com.github.senocak.ratehighway.service.oauth2.OAuthGithubService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGoogleService
 import com.github.senocak.ratehighway.service.oauth2.OAuthInstagramService
 import com.github.senocak.ratehighway.service.oauth2.OAuthLinkedinService
+import com.github.senocak.ratehighway.service.oauth2.OAuthPaypalService
 import com.github.senocak.ratehighway.service.oauth2.OAuthSlackService
 import com.github.senocak.ratehighway.service.oauth2.OAuthSpotifyService
 import com.github.senocak.ratehighway.service.oauth2.OAuthTwitchService
@@ -50,6 +52,7 @@ class OAuth2Controller(
     private val oAuthSlackService: OAuthSlackService,
     private val oAuthDropboxService: OAuthDropboxService,
     private val oAuthInstagramService: OAuthInstagramService,
+    private val oAuthPaypalService: OAuthPaypalService,
 ): BaseController() {
     private val log: Logger by logger()
 
@@ -65,7 +68,12 @@ class OAuth2Controller(
         "slack" to oAuthSlackService.link,
         "dropbox" to oAuthDropboxService.link,
         "instagram" to oAuthInstagramService.link,
+        "paypal" to oAuthPaypalService.link,
     )
+
+    @GetMapping("/{service}")
+    fun authorize(@PathVariable service: String): String =
+        links()[service] ?: throw Exception("Service not found")
 
     @GetMapping("/{service}/redirect")
     fun redirect(request: HttpServletRequest,
@@ -299,6 +307,26 @@ class OAuth2Controller(
                     jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthInstagramUser)
 
                 log.info("Finished processing auth for oAuthInstagramService: $oAuthInstagramUser")
+                return mapOf(
+                    "code" to code,
+                    "oAuthTokenResponse" to oAuthTokenResponse,
+                    "oAuthUserResponse" to oAuthUserResponse
+                )
+            }
+            OAuth2Services.PAYPAL -> {
+                var oAuthTokenResponse: OAuthTokenResponse = oAuthPaypalService.getToken(code = code!!)
+                oAuthTokenResponse = oAuthPaypalService.getTokenByRefreshToken(refreshToken = oAuthTokenResponse.refresh_token!!)
+                var oAuthInstagramUser: OAuthPaypalUser = oAuthPaypalService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                oAuthInstagramUser = try {
+                    oAuthPaypalService.getByIdOrThrowException(id = oAuthInstagramUser.id!!)
+                } catch (e: Exception) {
+                    log.warn("oAuthPaypalService is saved to db: $oAuthInstagramUser")
+                    oAuthPaypalService.save(entity = oAuthInstagramUser)
+                }
+                val oAuthUserResponse: UserResponseWrapperDto = oAuthPaypalService.authenticate(
+                    jwtToken = request.getHeader("Authorization"), oAuthGoogleUser = oAuthInstagramUser)
+
+                log.info("Finished processing auth for oAuthPaypalService: $oAuthInstagramUser")
                 return mapOf(
                     "code" to code,
                     "oAuthTokenResponse" to oAuthTokenResponse,

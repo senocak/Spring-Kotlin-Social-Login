@@ -11,7 +11,6 @@ Generate a new oauth application;
 - For local use `http://localhost:8083/oauth2/github/redirect` in `Authorization callback URL` 
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
-- Visit: `http://localhost:8083/oauth2/authorize/github`
 
 ### Google
 Generate a new oauth application;
@@ -19,7 +18,6 @@ Generate a new oauth application;
 - For local use `http://localhost:8083/oauth2/google/redirect` in `Authorization callback URL` 
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
-- Visit: `http://localhost:8083/oauth2/authorize/google`
 
 ### Linkedin
 Generate a new oauth application;
@@ -27,7 +25,6 @@ Generate a new oauth application;
 - For local use `http://localhost:8083/oauth2/linkedin/redirect` in `Authorization callback URL` 
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
-- Visit: `http://localhost:8083/oauth2/authorize/linkedin`
 
 ### Facebook
 Generate a new oauth application;
@@ -35,7 +32,6 @@ Generate a new oauth application;
 - For local use `http://localhost:8083/oauth2/facebook/redirect` in `Authorization callback URL`
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
-- Visit: `http://localhost:8083/oauth2/authorize/facebook`
 
 ### X/Twitter
 Generate a new oauth application;
@@ -43,7 +39,6 @@ Generate a new oauth application;
 - For local use `http://localhost:8083/oauth2/twitter/redirect` in `Authorization callback URL`
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
-- Visit: `http://localhost:8083/oauth2/authorize/twitter`
 
 ### Spotify
 Generate a new oauth application;
@@ -51,7 +46,6 @@ Generate a new oauth application;
 - For local use `http://localhost:8083/oauth2/spotify/redirect` in `Authorization callback URL`
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
-- Visit: `http://localhost:8083/oauth2/authorize/spotify`
 
 ### Twitch
 Generate a new oauth application;
@@ -59,7 +53,6 @@ Generate a new oauth application;
 - For local use `http://localhost:8083/oauth2/twitch/redirect` in `Authorization callback URL`
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
-- Visit: `http://localhost:8083/oauth2/authorize/twitch`
 
 ### Slack
 Generate a new oauth application;
@@ -67,7 +60,6 @@ Generate a new oauth application;
 - For local use `http://localhost:8083/oauth2/slack/redirect` in `Authorization callback URL`
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
-- Visit: `http://localhost:8083/oauth2/authorize/slack`
 
 ### Dropbox
 Generate a new oauth application;
@@ -75,7 +67,6 @@ Generate a new oauth application;
 - For local use `http://localhost:8083/oauth2/dropbox/redirect` in `Authorization callback URL`
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
-- Visit: `http://localhost:8083/oauth2/authorize/dropbox`
 
 ### Instagram
 Generate a new oauth application;
@@ -83,4 +74,14 @@ Generate a new oauth application;
 - For local use `http://localhost:8083/oauth2/instagram/redirect` in `Authorization callback URL`
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
-- Visit: `http://localhost:8083/oauth2/authorize/instagram`
+
+### paypal
+Generate a new oauth application;
+- https://developer.paypal.com/dashboard/applications/sandbox
+- For local use `http://localhost:8083/oauth2/paypal/redirect` in `Authorization callback URL`
+- `8083` is your applications port
+- Put the `Client ID` and `Client secrets` to application.yml
+
+
+
+> Visit: `http://localhost:8083/oauth2/<service-name>`

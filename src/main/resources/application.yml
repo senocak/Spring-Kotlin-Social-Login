@@ -111,6 +111,12 @@ spring:
             authorization-grant-type: client_credentials
             redirectUri: ${SERVER_FQDN:https://localhost:${server.port}/oauth2/instagram/redirect}
             scope: instagram_business_basic
+          paypal:
+            clientId: ${PAYPAL_CLIENT_ID}
+            clientSecret: ${PAYPAL_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            redirectUri: ${SERVER_FQDN:https://localhost:${server.port}/oauth2/instagram/redirect}
+            scope: openid, profile, email, address
         provider:
           google:
             tokenUri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
@@ -145,6 +151,9 @@ spring:
           instagram:
             tokenUri: ${INSTAGRAM_TOKEN_URI:https://api.instagram.com/oauth/access_token}
             userInfoUri: ${INSTAGRAM_USER_INFO_URI:https://graph.instagram.com/v21.0/me?fields=user_id,username,name,account_type,profile_picture_url,followers_count,follows_count,media_count}
+          paypal:
+            tokenUri: ${PAYPAL_TOKEN_URI:https://api-m.sandbox.paypal.com/v1/oauth2/token}
+            userInfoUri: ${PAYPAL_USER_INFO_URI:https://api-m.sandbox.paypal.com/v1/oauth2/token/userinfo?schema=openid}
 app:
   jwtSecret: ${JWT_SECRET:sTvHbWsBDSCwW5ZnxpPEx7B5ad2Zx60p}
   jwtExpirationInMs: '#{1 * 60 * 60}' # 1 hour in seconds

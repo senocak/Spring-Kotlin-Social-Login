@@ -10,6 +10,7 @@ import com.github.senocak.ratehighway.domain.OAuthGithubUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
 import com.github.senocak.ratehighway.domain.OAuthInstagramUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
+import com.github.senocak.ratehighway.domain.OAuthPaypalUser
 import com.github.senocak.ratehighway.domain.OAuthSlackUser
 import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
 import com.github.senocak.ratehighway.domain.OAuthTwitchUser
@@ -22,6 +23,7 @@ import com.github.senocak.ratehighway.domain.dto.OAuthGithubUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthGoogleUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthInstagramUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthLinkedinUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthPaypalUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthSlackUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthSpotifyUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthTwitchUserResponse
@@ -60,6 +62,7 @@ fun User.toDTO(roles: Boolean = true): UserResponseDto {
     if (this.oAuthSlackUser != null) dto.slack = this.oAuthSlackUser!!.toDTO()
     if (this.oAuthDropboxUser != null) dto.dropbox = this.oAuthDropboxUser!!.toDTO()
     if (this.oAuthInstagramUser != null) dto.instagram = this.oAuthInstagramUser!!.toDTO()
+    if (this.oAuthPaypalUser != null) dto.paypal = this.oAuthPaypalUser!!.toDTO()
     return dto
 }
 
@@ -183,6 +186,17 @@ fun OAuthInstagramUser.toDTO(): OAuthInstagramUserResponse =
             it.name = this.name
             it.profile_picture_url = this.profile_picture_url
             it.username = this.username
+        }
+
+fun OAuthPaypalUser.toDTO(): OAuthPaypalUserResponse =
+    OAuthPaypalUserResponse()
+        .also {
+            it.sub = this.sub
+            it.email = this.email
+            it.name = this.name
+            it.verified = this.verified
+            it.email_verified = this.email_verified
+            it.address = this.address
         }
 
 fun String.toUUID(): UUID = UUID.fromString(this)

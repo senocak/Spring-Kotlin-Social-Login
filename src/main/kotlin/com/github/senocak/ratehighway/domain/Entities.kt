@@ -334,6 +334,37 @@ class OAuthInstagramUser: OAuthBaseUser() {
 }
 
 @Entity
+@Table(name = "paypalUsers", uniqueConstraints = [
+    UniqueConstraint(columnNames = ["email"])
+])
+class OAuthPaypalUser: OAuthBaseUser() {
+    @Column @JsonProperty("user_id") var paypal_user_id: String? = null
+    @Column var sub: String? = null
+    @Column var name: String? = null
+    @Column var given_name: String? = null
+    @Column var middle_name: String? = null
+    @Column var family_name: String? = null
+    @Column var picture: String? = null
+    @Column var gender: String? = null
+    @Column var birthdate: String? = null
+    @Column var zoneinfo: String? = null
+    @Column var locale: String? = null
+    @Column var phone_number: String? = null
+    @Column var verified: String? = null
+    @Column var email_verified: String? = null
+    @Embedded var address: PayPalAddress? = null
+    @Column var account_type: String? = null
+    @Column var age_range: String? = null
+}
+class PayPalAddress {
+    val postal_code: String? = null
+    val country: String? = null
+    val state: String? = null
+    val street1: String? = null
+    val city: String? = null
+}
+
+@Entity
 @Table(name = "roles")
 class Role(@Column @Enumerated(EnumType.STRING) var name: RoleName? = null): BaseDomain()
 
@@ -363,4 +394,5 @@ class User(
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthSlackUser: OAuthSlackUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthDropboxUser: OAuthDropboxUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthInstagramUser: OAuthInstagramUser? = null,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthPaypalUser: OAuthPaypalUser? = null,
 ): BaseDomain()
