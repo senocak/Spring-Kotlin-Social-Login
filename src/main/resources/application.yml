@@ -123,6 +123,12 @@ spring:
             authorization-grant-type: client_credentials
             redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/discord/redirect}
             scope: identify, email, openid
+          okta:
+            clientId: ${OKTA_CLIENT_ID}
+            clientSecret: ${OKTA_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/okta/redirect}
+            scope: okta.users.read.self
         provider:
           google:
             tokenUri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
@@ -163,6 +169,10 @@ spring:
           discord:
             tokenUri: ${DISCORD_TOKEN_URI:https://discord.com/api/oauth2/token}
             userInfoUri: ${DISCORD_USER_INFO_URI:https://discord.com/api/users/@me}
+          okta:
+            domain: ${OKTA_DOMAIN:https://trial-7049139.okta.com/}
+            tokenUri: ${OKTA_TOKEN_URI:${spring.security.oauth2.client.provider.okta.domain}/oauth2/v1/token}
+            userInfoUri: ${OKTA_USER_INFO_URI:${spring.security.oauth2.client.provider.okta.domain}/api/v1/users/me}
 app:
   jwtSecret: ${JWT_SECRET:sTvHbWsBDSCwW5ZnxpPEx7B5ad2Zx60p}
   jwtExpirationInMs: '#{1 * 60 * 60}' # 1 hour in seconds

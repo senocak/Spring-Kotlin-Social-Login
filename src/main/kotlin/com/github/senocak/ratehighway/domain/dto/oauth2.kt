@@ -276,3 +276,16 @@ class OAuthDiscordUserResponse: BaseDto() {
     override fun toString(): String =
         "OAuthDiscordUserResponse(username=$username, email=$email, global_name=$global_name, avatar=$avatar, verified=$verified, mfa_enabled=$mfa_enabled)"
 }
+
+class OAuthOktaUserResponse: BaseDto() {
+    @Schema(example = "lorem@ipsum.com", description = "Email of the user", required = true, name = "email", type = "String")
+    var email: String? = null
+
+    @Schema(description = "Name of the user", required = true, name = "name", type = "String")
+    var name: String? = null
+
+    @Schema(example = "ACTIVE", description = "Status of the user", required = true, name = "status", type = "String")
+    var status: String? = null
+
+    override fun toString(): String = "OAuthOktaUserResponse(email=$email, name=$name, status=$status)"
+}

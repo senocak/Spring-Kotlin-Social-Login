@@ -8,6 +8,7 @@ import com.github.senocak.ratehighway.domain.OAuthGithubUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
 import com.github.senocak.ratehighway.domain.OAuthInstagramUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
+import com.github.senocak.ratehighway.domain.OAuthOktaUser
 import com.github.senocak.ratehighway.domain.OAuthPaypalUser
 import com.github.senocak.ratehighway.domain.OAuthSlackUser
 import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
@@ -22,6 +23,7 @@ import com.github.senocak.ratehighway.service.oauth2.OAuthGithubService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGoogleService
 import com.github.senocak.ratehighway.service.oauth2.OAuthInstagramService
 import com.github.senocak.ratehighway.service.oauth2.OAuthLinkedinService
+import com.github.senocak.ratehighway.service.oauth2.OAuthOktaService
 import com.github.senocak.ratehighway.service.oauth2.OAuthPaypalService
 import com.github.senocak.ratehighway.service.oauth2.OAuthSlackService
 import com.github.senocak.ratehighway.service.oauth2.OAuthSpotifyService
@@ -56,6 +58,7 @@ class OAuth2Controller(
     private val oAuthInstagramService: OAuthInstagramService,
     private val oAuthPaypalService: OAuthPaypalService,
     private val oAuthDiscordService: OAuthDiscordService,
+    private val oAuthOktaService: OAuthOktaService,
 ): BaseController() {
     private val log: Logger by logger()
 
@@ -73,6 +76,7 @@ class OAuth2Controller(
         "instagram" to oAuthInstagramService.link,
         "paypal" to oAuthPaypalService.link,
         "discord" to oAuthDiscordService.link,
+        "okta" to oAuthOktaService.link,
     )
 
     @GetMapping("/{service}")
@@ -350,6 +354,25 @@ class OAuth2Controller(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthDiscordUser)
 
                 log.info("Finished processing auth for oAuthDiscordService: $oAuthDiscordUser")
+                return mapOf(
+                    "code" to code,
+                    "oAuthTokenResponse" to oAuthTokenResponse,
+                    "oAuthUserResponse" to oAuthUserResponse
+                )
+            }
+            OAuth2Services.OKTA -> {
+                val oAuthTokenResponse: OAuthTokenResponse = oAuthOktaService.getToken(code = code!!)
+                var oAuthOktaUser: OAuthOktaUser = oAuthOktaService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                oAuthOktaUser = try {
+                    oAuthOktaService.getByIdOrThrowException(id = oAuthOktaUser.id!!)
+                } catch (e: Exception) {
+                    log.warn("oAuthOktaService is saved to db: $oAuthOktaUser")
+                    oAuthOktaService.save(entity = oAuthOktaUser)
+                }
+                val oAuthUserResponse: UserResponseWrapperDto = oAuthOktaService.authenticate(
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthOktaUser)
+
+                log.info("Finished processing auth for oAuthOktaService: $oAuthOktaUser")
                 return mapOf(
                     "code" to code,
                     "oAuthTokenResponse" to oAuthTokenResponse,

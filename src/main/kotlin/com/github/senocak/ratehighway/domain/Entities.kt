@@ -388,6 +388,16 @@ class OAuthDiscordUser: OAuthBaseUser() {
 }
 
 @Entity
+@Table(name = "oktaUsers", uniqueConstraints = [
+    UniqueConstraint(columnNames = ["email"])
+])
+class OAuthOktaUser: OAuthBaseUser() {
+    @Column var status: String? = null
+    @Column var firstName: String? = null
+    @Column var lastName: String? = null
+}
+
+@Entity
 @Table(name = "roles")
 class Role(@Column @Enumerated(EnumType.STRING) var name: RoleName? = null): BaseDomain()
 
@@ -419,4 +429,5 @@ class User(
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthInstagramUser: OAuthInstagramUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthPaypalUser: OAuthPaypalUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthDiscordUser: OAuthDiscordUser? = null,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthOktaUser: OAuthOktaUser? = null,
 ): BaseDomain()

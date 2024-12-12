@@ -227,6 +227,13 @@ class UserController(
                 }
                 user.oAuthDiscordUser!!.user = null
             }
+            OAuth2Services.OKTA -> {
+                if (user.oAuthOktaUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthOktaUser!!.user = null
+            }
         }
         userService.save(user = user)
         return ResponseEntity.noContent().build()

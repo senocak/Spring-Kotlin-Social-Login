@@ -11,6 +11,7 @@ import com.github.senocak.ratehighway.domain.OAuthGithubUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
 import com.github.senocak.ratehighway.domain.OAuthInstagramUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
+import com.github.senocak.ratehighway.domain.OAuthOktaUser
 import com.github.senocak.ratehighway.domain.OAuthPaypalUser
 import com.github.senocak.ratehighway.domain.OAuthSlackUser
 import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
@@ -25,6 +26,7 @@ import com.github.senocak.ratehighway.domain.dto.OAuthGithubUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthGoogleUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthInstagramUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthLinkedinUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthOktaUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthPaypalUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthSlackUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthSpotifyUserResponse
@@ -66,6 +68,7 @@ fun User.toDTO(roles: Boolean = true): UserResponseDto {
     if (this.oAuthInstagramUser != null) dto.instagram = this.oAuthInstagramUser!!.toDTO()
     if (this.oAuthPaypalUser != null) dto.paypal = this.oAuthPaypalUser!!.toDTO()
     if (this.oAuthDiscordUser != null) dto.discord = this.oAuthDiscordUser!!.toDTO()
+    if (this.oAuthOktaUser != null) dto.okta = this.oAuthOktaUser!!.toDTO()
     return dto
 }
 
@@ -211,6 +214,14 @@ fun OAuthDiscordUser.toDTO(): OAuthDiscordUserResponse =
             it.verified = this.verified
             it.avatar = this.avatar
             it.mfa_enabled = this.mfa_enabled
+        }
+
+fun OAuthOktaUser.toDTO(): OAuthOktaUserResponse =
+    OAuthOktaUserResponse()
+        .also {
+            it.email = this.email
+            it.name = "${this.firstName} ${this.lastName}"
+            it.status = this.status
         }
 
 fun String.toUUID(): UUID = UUID.fromString(this)

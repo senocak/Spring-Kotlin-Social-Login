@@ -43,7 +43,8 @@ enum class OAuth2Services(val service: String) {
     DROPBOX(service = "dropbox"),
     INSTAGRAM(service = "instagram"),
     PAYPAL(service = "paypal"),
-    DISCORD(service = "discord");
+    DISCORD(service = "discord"),
+    OKTA(service = "okta");
 
     companion object {
         fun fromString(service: String): OAuth2Services {
