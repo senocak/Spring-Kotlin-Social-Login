@@ -13,6 +13,7 @@ import com.github.senocak.ratehighway.domain.OAuthInstagramUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
 import com.github.senocak.ratehighway.domain.OAuthOktaUser
 import com.github.senocak.ratehighway.domain.OAuthPaypalUser
+import com.github.senocak.ratehighway.domain.OAuthRedditUser
 import com.github.senocak.ratehighway.domain.OAuthSlackUser
 import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
 import com.github.senocak.ratehighway.domain.OAuthTwitchUser
@@ -28,6 +29,7 @@ import com.github.senocak.ratehighway.domain.dto.OAuthInstagramUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthLinkedinUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthOktaUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthPaypalUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthRedditUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthSlackUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthSpotifyUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthTwitchUserResponse
@@ -69,6 +71,7 @@ fun User.toDTO(roles: Boolean = true): UserResponseDto {
     if (this.oAuthPaypalUser != null) dto.paypal = this.oAuthPaypalUser!!.toDTO()
     if (this.oAuthDiscordUser != null) dto.discord = this.oAuthDiscordUser!!.toDTO()
     if (this.oAuthOktaUser != null) dto.okta = this.oAuthOktaUser!!.toDTO()
+    if (this.oAuthRedditUser != null) dto.reddit = this.oAuthRedditUser!!.toDTO()
     return dto
 }
 
@@ -222,6 +225,14 @@ fun OAuthOktaUser.toDTO(): OAuthOktaUserResponse =
             it.email = this.email
             it.name = "${this.firstName} ${this.lastName}"
             it.status = this.status
+        }
+
+fun OAuthRedditUser.toDTO(): OAuthRedditUserResponse =
+    OAuthRedditUserResponse()
+        .also {
+            it.email = this.id
+            it.name = this.name
+            it.verified = this.verified
         }
 
 fun String.toUUID(): UUID = UUID.fromString(this)

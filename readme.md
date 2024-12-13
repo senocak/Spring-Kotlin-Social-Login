@@ -89,6 +89,14 @@ Generate a new oauth application;
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
 
+### Reddit
+Generate a new oauth application;
+- https://www.reddit.com/prefs/apps
+- For local use `http://localhost:8083/oauth2/reddit/redirect` in `Authorization callback URL`
+- `8083` is your applications port
+- Put the `Client ID` and `Client secrets` to application.yml
+- Also: https://github.com/reddit-archive/reddit/wiki/oauth2
+
 
 
 > Visit: `http://localhost:8083/oauth2/<service-name>`

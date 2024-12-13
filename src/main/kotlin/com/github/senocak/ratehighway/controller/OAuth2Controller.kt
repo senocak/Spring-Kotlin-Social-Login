@@ -10,6 +10,7 @@ import com.github.senocak.ratehighway.domain.OAuthInstagramUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
 import com.github.senocak.ratehighway.domain.OAuthOktaUser
 import com.github.senocak.ratehighway.domain.OAuthPaypalUser
+import com.github.senocak.ratehighway.domain.OAuthRedditUser
 import com.github.senocak.ratehighway.domain.OAuthSlackUser
 import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
 import com.github.senocak.ratehighway.domain.OAuthTwitchUser
@@ -25,6 +26,7 @@ import com.github.senocak.ratehighway.service.oauth2.OAuthInstagramService
 import com.github.senocak.ratehighway.service.oauth2.OAuthLinkedinService
 import com.github.senocak.ratehighway.service.oauth2.OAuthOktaService
 import com.github.senocak.ratehighway.service.oauth2.OAuthPaypalService
+import com.github.senocak.ratehighway.service.oauth2.OAuthRedditService
 import com.github.senocak.ratehighway.service.oauth2.OAuthSlackService
 import com.github.senocak.ratehighway.service.oauth2.OAuthSpotifyService
 import com.github.senocak.ratehighway.service.oauth2.OAuthTwitchService
@@ -59,6 +61,7 @@ class OAuth2Controller(
     private val oAuthPaypalService: OAuthPaypalService,
     private val oAuthDiscordService: OAuthDiscordService,
     private val oAuthOktaService: OAuthOktaService,
+    private val oAuthRedditService: OAuthRedditService,
 ): BaseController() {
     private val log: Logger by logger()
 
@@ -77,6 +80,7 @@ class OAuth2Controller(
         "paypal" to oAuthPaypalService.link,
         "discord" to oAuthDiscordService.link,
         "okta" to oAuthOktaService.link,
+        "reddit" to oAuthRedditService.link,
     )
 
     @GetMapping("/{service}")
@@ -373,6 +377,25 @@ class OAuth2Controller(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthOktaUser)
 
                 log.info("Finished processing auth for oAuthOktaService: $oAuthOktaUser")
+                return mapOf(
+                    "code" to code,
+                    "oAuthTokenResponse" to oAuthTokenResponse,
+                    "oAuthUserResponse" to oAuthUserResponse
+                )
+            }
+            OAuth2Services.REDDIT -> {
+                val oAuthTokenResponse: OAuthTokenResponse = oAuthRedditService.getToken(code = code!!)
+                var oAuthRedditUser: OAuthRedditUser = oAuthRedditService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                oAuthRedditUser = try {
+                    oAuthRedditService.getByIdOrThrowException(id = oAuthRedditUser.id!!)
+                } catch (e: Exception) {
+                    log.warn("oAuthRedditService is saved to db: $oAuthRedditUser")
+                    oAuthRedditService.save(entity = oAuthRedditUser)
+                }
+                val oAuthUserResponse: UserResponseWrapperDto = oAuthRedditService.authenticate(
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthRedditUser)
+
+                log.info("Finished processing auth for oAuthRedditService: $oAuthRedditUser")
                 return mapOf(
                     "code" to code,
                     "oAuthTokenResponse" to oAuthTokenResponse,

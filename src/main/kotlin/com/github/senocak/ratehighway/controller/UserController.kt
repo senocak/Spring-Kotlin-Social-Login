@@ -234,6 +234,13 @@ class UserController(
                 }
                 user.oAuthOktaUser!!.user = null
             }
+            OAuth2Services.REDDIT -> {
+                if (user.oAuthRedditUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthRedditUser!!.user = null
+            }
         }
         userService.save(user = user)
         return ResponseEntity.noContent().build()

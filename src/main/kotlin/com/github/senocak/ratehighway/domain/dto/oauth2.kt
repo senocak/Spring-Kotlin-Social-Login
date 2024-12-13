@@ -289,3 +289,16 @@ class OAuthOktaUserResponse: BaseDto() {
 
     override fun toString(): String = "OAuthOktaUserResponse(email=$email, name=$name, status=$status)"
 }
+
+class OAuthRedditUserResponse: BaseDto() {
+    @Schema(example = "lorem@ipsum.com", description = "Email of the user", required = true, name = "email", type = "String")
+    var email: String? = null
+
+    @Schema(description = "Name of the user", required = true, name = "name", type = "String")
+    var name: String? = null
+
+    @Schema(example = "true", description = "Verified of the user", required = true, name = "verified", type = "Boolean")
+    var verified: Boolean? = null
+
+    override fun toString(): String = "OAuthOktaUserResponse(email=$email, name=$name, verified=$verified)"
+}

@@ -57,3 +57,6 @@ interface OAuthDiscordUserRepository: JpaRepository<OAuthDiscordUser, String>, J
 
 @Repository
 interface OAuthOktaUserRepository: JpaRepository<OAuthOktaUser, String>, JpaSpecificationExecutor<OAuthOktaUser>
+
+@Repository
+interface OAuthRedditUserRepository: JpaRepository<OAuthRedditUser, String>, JpaSpecificationExecutor<OAuthRedditUser>
