@@ -248,6 +248,13 @@ class UserController(
                 }
                 user.oAuthTiktokUser!!.user = null
             }
+            OAuth2Services.BOX -> {
+                if (user.oAuthBoxUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthBoxUser!!.user = null
+            }
         }
         userService.save(user = user)
         return ResponseEntity.noContent().build()

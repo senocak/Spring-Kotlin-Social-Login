@@ -1,5 +1,6 @@
 package com.github.senocak.ratehighway.controller
 
+import com.github.senocak.ratehighway.domain.OAuthBoxUser
 import com.github.senocak.ratehighway.domain.OAuthDiscordUser
 import com.github.senocak.ratehighway.domain.OAuthDropboxUser
 import com.github.senocak.ratehighway.domain.dto.UserResponseWrapperDto
@@ -18,6 +19,7 @@ import com.github.senocak.ratehighway.domain.OAuthTwitchUser
 import com.github.senocak.ratehighway.domain.OAuthTwitterUser
 import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
 import com.github.senocak.ratehighway.exception.ServerException
+import com.github.senocak.ratehighway.service.oauth2.OAuthBoxService
 import com.github.senocak.ratehighway.service.oauth2.OAuthDiscordService
 import com.github.senocak.ratehighway.service.oauth2.OAuthDropboxService
 import com.github.senocak.ratehighway.service.oauth2.OAuthFacebookService
@@ -65,6 +67,7 @@ class OAuth2Controller(
     private val oAuthOktaService: OAuthOktaService,
     private val oAuthRedditService: OAuthRedditService,
     private val oAuthTiktokService: OAuthTiktokService,
+    private val oAuthBoxService: OAuthBoxService,
 ): BaseController() {
     private val log: Logger by logger()
 
@@ -85,6 +88,7 @@ class OAuth2Controller(
         "okta" to oAuthOktaService.link,
         "reddit" to oAuthRedditService.link,
         "tiktok" to oAuthTiktokService.link,
+        "box" to oAuthBoxService.link,
     )
 
     @GetMapping("/{service}")
@@ -419,6 +423,25 @@ class OAuth2Controller(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthTiktokUser)
 
                 log.info("Finished processing auth for oAuthTiktokService: $oAuthTiktokUser")
+                return mapOf(
+                    "code" to code,
+                    "oAuthTokenResponse" to oAuthTokenResponse,
+                    "oAuthUserResponse" to oAuthUserResponse
+                )
+            }
+            OAuth2Services.BOX -> {
+                val oAuthTokenResponse: OAuthTokenResponse = oAuthBoxService.getToken(code = code!!)
+                var oAuthTiktokUser: OAuthBoxUser = oAuthBoxService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                oAuthTiktokUser = try {
+                    oAuthBoxService.getByIdOrThrowException(id = oAuthTiktokUser.id!!)
+                } catch (e: Exception) {
+                    log.warn("oAuthBoxService is saved to db: $oAuthTiktokUser")
+                    oAuthBoxService.save(entity = oAuthTiktokUser)
+                }
+                val oAuthUserResponse: UserResponseWrapperDto = oAuthBoxService.authenticate(
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthTiktokUser)
+
+                log.info("Finished processing auth for oAuthBoxService: $oAuthTiktokUser")
                 return mapOf(
                     "code" to code,
                     "oAuthTokenResponse" to oAuthTokenResponse,

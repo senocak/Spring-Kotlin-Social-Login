@@ -19,9 +19,9 @@ data class OAuthTokenResponse(
     var uid: String? = null, // for dropbox
     var user_id: String? = null, // for instagram
     var permissions: List<String>? = null, // for instagram
+    var restricted_to: List<String>? = null, // for box
 )
 
-@JsonPropertyOrder("email", "name", "picture")
 class OAuthFacebookUserResponse: BaseDto() {
 
     @Schema(example = "lorem@ipsum.com", description = "Email of the user", required = true, name = "email", type = "String")
@@ -37,7 +37,6 @@ class OAuthFacebookUserResponse: BaseDto() {
     override fun toString(): String = "OAuthFacebookUserResponse(email=$email, name=$name, picture=$picture)"
 }
 
-@JsonPropertyOrder("name", "email")
 class OAuthGithubUserResponse: BaseDto() {
 
     @Schema(example = "Anıl", description = "Name of the user", required = true, name = "name", type = "String")
@@ -55,8 +54,6 @@ class OAuthGithubUserResponse: BaseDto() {
     override fun toString(): String = "OAuthGithubUserResponse(name=$name, email=$email, username=$username, url=$url)"
 }
 
-
-@JsonPropertyOrder("email", "verified_email", "name", "given_name", "link", "picture", "locale", "hd")
 class OAuthGoogleUserResponse: BaseDto() {
 
     @Schema(example = "lorem@ipsum.com", description = "Email of the user", required = true, name = "email", type = "String")
@@ -90,7 +87,6 @@ class OAuthGoogleUserResponse: BaseDto() {
             "given_name=$given_name, link=$link, picture=$picture, locale_user=$locale_user, hd=$hd)"
 }
 
-@JsonPropertyOrder("sub", "emailVerified", "localeData", "givenName", "picture", "name", "familyName", "email")
 class OAuthLinkedinUserResponse: BaseDto() {
 
     @Schema(example = "QQ01pihP4J", description = "Sub of the user", required = true, name = "sub", type = "String")
@@ -352,4 +348,21 @@ class OAuthTiktokUserResponse: BaseDto() {
 
     override fun toString(): String =
         "OAuthTiktokUserResponse(email=$email, avatar_large_url=$avatar_large_url, avatar_url_100=$avatar_url_100, follower_count=$follower_count, video_count=$video_count, avatar_url=$avatar_url, following_count=$following_count, is_verified=$is_verified, open_id=$open_id, profile_deep_link=$profile_deep_link, display_name=$display_name, union_id=$union_id, username=$username, bio_description=$bio_description, likes_count=$likes_count)"
+}
+
+class OAuthBoxUserResponse: BaseDto() {
+    @Schema(example = "lorem@ipsum.com", description = "Email of the user", required = true, name = "email", type = "String")
+    var email: String? = null
+
+    @Schema(description = "Type url of the user", required = true, name = "type", type = "String")
+    var type: String? = null
+
+    @Schema(example = "Anıl", description = "Name of the user", required = true, name = "name", type = "String")
+    var name: String? = null
+
+    @Schema(description = "Avatar url of the user", required = true, name = "avatar_url", type = "String")
+    var avatar_url: String? = null
+
+    override fun toString(): String =
+        "OAuthBoxUserResponse(email=$email, type=$type, name=$name, avatar_url=$avatar_url)"
 }

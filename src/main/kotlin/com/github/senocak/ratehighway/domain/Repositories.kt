@@ -63,3 +63,6 @@ interface OAuthRedditUserRepository: JpaRepository<OAuthRedditUser, String>, Jpa
 
 @Repository
 interface OAuthTiktokUserRepository: JpaRepository<OAuthTiktokUser, String>, JpaSpecificationExecutor<OAuthTiktokUser>
+
+@Repository
+interface OAuthBoxUserRepository: JpaRepository<OAuthBoxUser, String>, JpaSpecificationExecutor<OAuthBoxUser>

@@ -2,6 +2,7 @@ package com.github.senocak.ratehighway.util
 
 import ch.qos.logback.classic.Level
 import com.github.senocak.ratehighway.KotlinApplication
+import com.github.senocak.ratehighway.domain.OAuthBoxUser
 import com.github.senocak.ratehighway.domain.OAuthDiscordUser
 import com.github.senocak.ratehighway.domain.OAuthDropboxUser
 import com.github.senocak.ratehighway.domain.dto.RoleResponse
@@ -21,6 +22,7 @@ import com.github.senocak.ratehighway.domain.OAuthTwitchUser
 import com.github.senocak.ratehighway.domain.OAuthTwitterUser
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User
+import com.github.senocak.ratehighway.domain.dto.OAuthBoxUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthDiscordUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthDropboxUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthFacebookUserResponse
@@ -75,6 +77,7 @@ fun User.toDTO(roles: Boolean = true): UserResponseDto {
     if (this.oAuthOktaUser != null) dto.okta = this.oAuthOktaUser!!.toDTO()
     if (this.oAuthRedditUser != null) dto.reddit = this.oAuthRedditUser!!.toDTO()
     if (this.oAuthTiktokUser != null) dto.tiktok = this.oAuthTiktokUser!!.toDTO()
+    if (this.oAuthBoxUser != null) dto.box = this.oAuthBoxUser!!.toDTO()
     return dto
 }
 
@@ -233,7 +236,7 @@ fun OAuthOktaUser.toDTO(): OAuthOktaUserResponse =
 fun OAuthRedditUser.toDTO(): OAuthRedditUserResponse =
     OAuthRedditUserResponse()
         .also {
-            it.email = this.id
+            it.email = this.email
             it.name = this.name
             it.verified = this.verified
         }
@@ -241,7 +244,7 @@ fun OAuthRedditUser.toDTO(): OAuthRedditUserResponse =
 fun OAuthTiktokUser.toDTO(): OAuthTiktokUserResponse =
     OAuthTiktokUserResponse()
         .also {
-            it.email = this.id
+            it.email = this.email
             it.avatar_large_url = this.avatar_large_url
             it.avatar_url_100 = this.avatar_url_100
             it.follower_count = this.follower_count
@@ -256,6 +259,15 @@ fun OAuthTiktokUser.toDTO(): OAuthTiktokUserResponse =
             it.username = this.username
             it.bio_description = this.bio_description
             it.likes_count = this.likes_count
+        }
+
+fun OAuthBoxUser.toDTO(): OAuthBoxUserResponse =
+    OAuthBoxUserResponse()
+        .also {
+            it.email = this.email
+            it.type = this.type
+            it.name = this.name
+            it.avatar_url = this.avatar_url
         }
 
 fun String.toUUID(): UUID = UUID.fromString(this)
