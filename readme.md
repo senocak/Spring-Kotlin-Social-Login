@@ -97,6 +97,13 @@ Generate a new oauth application;
 - Put the `Client ID` and `Client secrets` to application.yml
 - Also: https://github.com/reddit-archive/reddit/wiki/oauth2
 
+### Pinterest
+Generate a new oauth application;
+- https://developers.pinterest.com/apps/connect/
+- For local use `http://localhost:8083/oauth2/pinterest/redirect` in `Authorization callback URL`
+- `8083` is your applications port
+- Put the `Client ID` and `Client secrets` to application.yml
+
 
 
 > Visit: `http://localhost:8083/oauth2/<service-name>`

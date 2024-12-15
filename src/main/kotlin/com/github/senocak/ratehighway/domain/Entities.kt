@@ -407,6 +407,27 @@ class OAuthRedditUser: OAuthBaseUser() {
 }
 
 @Entity
+@Table(name = "tiktokUsers", uniqueConstraints = [
+    UniqueConstraint(columnNames = ["email"])
+])
+class OAuthTiktokUser: OAuthBaseUser() {
+    @Column @Lob var avatar_large_url: String? = null
+    @Column @Lob var avatar_url_100: String? = null
+    @Column var follower_count: Int? = null
+    @Column var video_count: Int? = null
+    @Column @Lob var avatar_url: String? = null
+    @Column var following_count: Int? = null
+    @Column var is_verified: Boolean? = null
+    @Column var open_id: String? = null
+    @Column var profile_deep_link: String? = null
+    @Column var display_name: String? = null
+    @Column var union_id: String? = null
+    @Column var username: String? = null
+    @Column var bio_description: String? = null
+    @Column var likes_count: Int? = null
+}
+
+@Entity
 @Table(name = "roles")
 class Role(@Column @Enumerated(EnumType.STRING) var name: RoleName? = null): BaseDomain()
 
@@ -440,4 +461,5 @@ class User(
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthDiscordUser: OAuthDiscordUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthOktaUser: OAuthOktaUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthRedditUser: OAuthRedditUser? = null,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthTiktokUser: OAuthTiktokUser? = null,
 ): BaseDomain()

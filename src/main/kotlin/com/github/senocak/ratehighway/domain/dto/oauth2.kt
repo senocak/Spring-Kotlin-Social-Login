@@ -6,6 +6,7 @@ import com.github.senocak.ratehighway.domain.DropboxName
 import com.github.senocak.ratehighway.domain.LocaleResponse
 import com.github.senocak.ratehighway.domain.PayPalAddress
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.persistence.Column
 
 data class OAuthTokenResponse(
     var access_token: String? = null,
@@ -301,4 +302,54 @@ class OAuthRedditUserResponse: BaseDto() {
     var verified: Boolean? = null
 
     override fun toString(): String = "OAuthOktaUserResponse(email=$email, name=$name, verified=$verified)"
+}
+
+class OAuthTiktokUserResponse: BaseDto() {
+    @Schema(example = "lorem@ipsum.com", description = "Email of the user", required = true, name = "email", type = "String")
+    var email: String? = null
+
+    @Schema(description = "Avatar large url of the user", required = true, name = "avatar_large_url", type = "String")
+    var avatar_large_url: String? = null
+
+    @Schema(description = "Avatar large url 100x100 of the user", required = true, name = "avatar_url_100", type = "String")
+    var avatar_url_100: String? = null
+
+    @Schema(example = "1", description = "Follower count of the user", required = true, name = "follower_count", type = "Int")
+    var follower_count: Int? = null
+
+    @Schema(example = "1", description = "Video count of the user", required = true, name = "video_count", type = "String")
+    var video_count: Int? = null
+
+    @Schema(description = "Avatar url of the user", required = true, name = "avatar_url", type = "String")
+    var avatar_url: String? = null
+
+    @Schema(example = "1", description = "Following count of the user", required = true, name = "following_count", type = "String")
+    var following_count: Int? = null
+
+    @Schema(example = "true", description = "Is verified of the user", required = true, name = "is_verified", type = "Boolean")
+    var is_verified: Boolean? = null
+
+    @Schema(example = "dasda123sd", description = "Open id of the user", required = true, name = "open_id", type = "String")
+    var open_id: String? = null
+
+    @Schema(example = "https://vm.tiktok.com/ZMkY4msCg/", description = "Profile deep link of the user", required = true, name = "profile_deep_link", type = "String")
+    var profile_deep_link: String? = null
+
+    @Schema(example = "Lorem", description = "Display name of the user", required = true, name = "display_name", type = "String")
+    var display_name: String? = null
+
+    @Schema(example = "faed212fsa", description = "Union id of the user", required = true, name = "union_id", type = "String")
+    var union_id: String? = null
+
+    @Schema(example = "lorem", description = "Username of the user", required = true, name = "username", type = "String")
+    var username: String? = null
+
+    @Schema(example = "lorem ipsum", description = "Bio description of the user", required = true, name = "bio_description", type = "String")
+    var bio_description: String? = null
+
+    @Schema(example = "1", description = "Likes count of the user", required = true, name = "likes_count", type = "String")
+    var likes_count: Int? = null
+
+    override fun toString(): String =
+        "OAuthTiktokUserResponse(email=$email, avatar_large_url=$avatar_large_url, avatar_url_100=$avatar_url_100, follower_count=$follower_count, video_count=$video_count, avatar_url=$avatar_url, following_count=$following_count, is_verified=$is_verified, open_id=$open_id, profile_deep_link=$profile_deep_link, display_name=$display_name, union_id=$union_id, username=$username, bio_description=$bio_description, likes_count=$likes_count)"
 }

@@ -13,6 +13,7 @@ import com.github.senocak.ratehighway.domain.OAuthPaypalUser
 import com.github.senocak.ratehighway.domain.OAuthRedditUser
 import com.github.senocak.ratehighway.domain.OAuthSlackUser
 import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
+import com.github.senocak.ratehighway.domain.OAuthTiktokUser
 import com.github.senocak.ratehighway.domain.OAuthTwitchUser
 import com.github.senocak.ratehighway.domain.OAuthTwitterUser
 import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
@@ -29,6 +30,7 @@ import com.github.senocak.ratehighway.service.oauth2.OAuthPaypalService
 import com.github.senocak.ratehighway.service.oauth2.OAuthRedditService
 import com.github.senocak.ratehighway.service.oauth2.OAuthSlackService
 import com.github.senocak.ratehighway.service.oauth2.OAuthSpotifyService
+import com.github.senocak.ratehighway.service.oauth2.OAuthTiktokService
 import com.github.senocak.ratehighway.service.oauth2.OAuthTwitchService
 import com.github.senocak.ratehighway.service.oauth2.OAuthTwitterService
 import com.github.senocak.ratehighway.util.OAuth2Services
@@ -62,6 +64,7 @@ class OAuth2Controller(
     private val oAuthDiscordService: OAuthDiscordService,
     private val oAuthOktaService: OAuthOktaService,
     private val oAuthRedditService: OAuthRedditService,
+    private val oAuthTiktokService: OAuthTiktokService,
 ): BaseController() {
     private val log: Logger by logger()
 
@@ -81,6 +84,7 @@ class OAuth2Controller(
         "discord" to oAuthDiscordService.link,
         "okta" to oAuthOktaService.link,
         "reddit" to oAuthRedditService.link,
+        "tiktok" to oAuthTiktokService.link,
     )
 
     @GetMapping("/{service}")
@@ -396,6 +400,25 @@ class OAuth2Controller(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthRedditUser)
 
                 log.info("Finished processing auth for oAuthRedditService: $oAuthRedditUser")
+                return mapOf(
+                    "code" to code,
+                    "oAuthTokenResponse" to oAuthTokenResponse,
+                    "oAuthUserResponse" to oAuthUserResponse
+                )
+            }
+            OAuth2Services.TIKTOK -> {
+                val oAuthTokenResponse: OAuthTokenResponse = oAuthTiktokService.getToken(code = code!!)
+                var oAuthTiktokUser: OAuthTiktokUser = oAuthTiktokService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                oAuthTiktokUser = try {
+                    oAuthTiktokService.getByIdOrThrowException(id = oAuthTiktokUser.id!!)
+                } catch (e: Exception) {
+                    log.warn("oAuthTiktokService is saved to db: $oAuthTiktokUser")
+                    oAuthTiktokService.save(entity = oAuthTiktokUser)
+                }
+                val oAuthUserResponse: UserResponseWrapperDto = oAuthTiktokService.authenticate(
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthTiktokUser)
+
+                log.info("Finished processing auth for oAuthTiktokService: $oAuthTiktokUser")
                 return mapOf(
                     "code" to code,
                     "oAuthTokenResponse" to oAuthTokenResponse,

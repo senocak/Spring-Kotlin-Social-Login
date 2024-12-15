@@ -135,6 +135,12 @@ spring:
             authorization-grant-type: client_credentials
             redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/reddit/redirect}
             scope: identity, account
+          tiktok:
+            clientId: ${OKTA_CLIENT_ID}
+            clientSecret: ${OKTA_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/tiktok/redirect}
+            scope: user.info.basic, user.info.profile, user.info.stats
         provider:
           google:
             tokenUri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
@@ -182,6 +188,9 @@ spring:
           reddit:
             tokenUri: ${OKTA_TOKEN_URI:https://www.reddit.com/api/v1/access_token}
             userInfoUri: ${OKTA_USER_INFO_URI:https://oauth.reddit.com/api/v1/me}
+          tiktok:
+            tokenUri: ${OKTA_TOKEN_URI:https://open.tiktokapis.com/v2/oauth/token/}
+            userInfoUri: ${OKTA_USER_INFO_URI:https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,avatar_url_100,avatar_large_url,display_name,bio_description,profile_deep_link,is_verified,username,follower_count,following_count,likes_count,video_count}
 app:
   jwtSecret: ${JWT_SECRET:sTvHbWsBDSCwW5ZnxpPEx7B5ad2Zx60p}
   jwtExpirationInMs: '#{1 * 60 * 60}' # 1 hour in seconds

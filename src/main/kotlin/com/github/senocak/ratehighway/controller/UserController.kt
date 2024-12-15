@@ -241,6 +241,13 @@ class UserController(
                 }
                 user.oAuthRedditUser!!.user = null
             }
+            OAuth2Services.TIKTOK -> {
+                if (user.oAuthTiktokUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthTiktokUser!!.user = null
+            }
         }
         userService.save(user = user)
         return ResponseEntity.noContent().build()

@@ -16,6 +16,7 @@ import com.github.senocak.ratehighway.domain.OAuthPaypalUser
 import com.github.senocak.ratehighway.domain.OAuthRedditUser
 import com.github.senocak.ratehighway.domain.OAuthSlackUser
 import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
+import com.github.senocak.ratehighway.domain.OAuthTiktokUser
 import com.github.senocak.ratehighway.domain.OAuthTwitchUser
 import com.github.senocak.ratehighway.domain.OAuthTwitterUser
 import com.github.senocak.ratehighway.domain.Role
@@ -32,6 +33,7 @@ import com.github.senocak.ratehighway.domain.dto.OAuthPaypalUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthRedditUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthSlackUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthSpotifyUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthTiktokUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthTwitchUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthTwitterUserResponse
 import com.github.senocak.ratehighway.exception.ServerException
@@ -72,6 +74,7 @@ fun User.toDTO(roles: Boolean = true): UserResponseDto {
     if (this.oAuthDiscordUser != null) dto.discord = this.oAuthDiscordUser!!.toDTO()
     if (this.oAuthOktaUser != null) dto.okta = this.oAuthOktaUser!!.toDTO()
     if (this.oAuthRedditUser != null) dto.reddit = this.oAuthRedditUser!!.toDTO()
+    if (this.oAuthTiktokUser != null) dto.tiktok = this.oAuthTiktokUser!!.toDTO()
     return dto
 }
 
@@ -233,6 +236,26 @@ fun OAuthRedditUser.toDTO(): OAuthRedditUserResponse =
             it.email = this.id
             it.name = this.name
             it.verified = this.verified
+        }
+
+fun OAuthTiktokUser.toDTO(): OAuthTiktokUserResponse =
+    OAuthTiktokUserResponse()
+        .also {
+            it.email = this.id
+            it.avatar_large_url = this.avatar_large_url
+            it.avatar_url_100 = this.avatar_url_100
+            it.follower_count = this.follower_count
+            it.video_count = this.video_count
+            it.avatar_url = this.avatar_url
+            it.following_count = this.following_count
+            it.is_verified = this.is_verified
+            it.open_id = this.open_id
+            it.profile_deep_link = this.profile_deep_link
+            it.display_name = this.display_name
+            it.union_id = this.union_id
+            it.username = this.username
+            it.bio_description = this.bio_description
+            it.likes_count = this.likes_count
         }
 
 fun String.toUUID(): UUID = UUID.fromString(this)

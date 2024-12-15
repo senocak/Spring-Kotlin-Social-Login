@@ -65,10 +65,14 @@ class UserResponseDto: BaseDto() {
     @Schema(required = false)
     var reddit: OAuthRedditUserResponse? = null
 
+    @Schema(required = false)
+    var tiktok: OAuthTiktokUserResponse? = null
+
     override fun toString(): String =
         "UserResponseDto(name=$name, email=$email, createdAt=$createdAt, roles=$roles, google=$google, github=$github," +
                 "linkedin=$linkedin, facebook=$facebook, twitter=$twitter, spotify=$spotify, twitch=$twitch, slack=$slack," +
-                "dropbox=$dropbox, instagram=$instagram, paypal=$paypal, discord=$discord, okta=$okta, reddit=$reddit)"
+                "dropbox=$dropbox, instagram=$instagram, paypal=$paypal, discord=$discord, okta=$okta, reddit=$reddit," +
+                "tiktok=$tiktok)"
 }
 
 @JsonPropertyOrder("token", "refreshToken", "user")
