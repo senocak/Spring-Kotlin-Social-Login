@@ -17,6 +17,7 @@ import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
 import com.github.senocak.ratehighway.domain.OAuthTiktokUser
 import com.github.senocak.ratehighway.domain.OAuthTwitchUser
 import com.github.senocak.ratehighway.domain.OAuthTwitterUser
+import com.github.senocak.ratehighway.domain.OAuthVimeoUser
 import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
 import com.github.senocak.ratehighway.exception.ServerException
 import com.github.senocak.ratehighway.service.oauth2.OAuthBoxService
@@ -35,6 +36,7 @@ import com.github.senocak.ratehighway.service.oauth2.OAuthSpotifyService
 import com.github.senocak.ratehighway.service.oauth2.OAuthTiktokService
 import com.github.senocak.ratehighway.service.oauth2.OAuthTwitchService
 import com.github.senocak.ratehighway.service.oauth2.OAuthTwitterService
+import com.github.senocak.ratehighway.service.oauth2.OAuthVimeoService
 import com.github.senocak.ratehighway.util.OAuth2Services
 import com.github.senocak.ratehighway.util.OmaErrorMessageType
 import com.github.senocak.ratehighway.util.logger
@@ -68,6 +70,7 @@ class OAuth2Controller(
     private val oAuthRedditService: OAuthRedditService,
     private val oAuthTiktokService: OAuthTiktokService,
     private val oAuthBoxService: OAuthBoxService,
+    private val oAuthVimeoService: OAuthVimeoService,
 ): BaseController() {
     private val log: Logger by logger()
 
@@ -89,6 +92,7 @@ class OAuth2Controller(
         "reddit" to oAuthRedditService.link,
         "tiktok" to oAuthTiktokService.link,
         "box" to oAuthBoxService.link,
+        "vimeo" to oAuthVimeoService.link,
     )
 
     @GetMapping("/{service}")
@@ -431,17 +435,36 @@ class OAuth2Controller(
             }
             OAuth2Services.BOX -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthBoxService.getToken(code = code!!)
-                var oAuthTiktokUser: OAuthBoxUser = oAuthBoxService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
-                oAuthTiktokUser = try {
-                    oAuthBoxService.getByIdOrThrowException(id = oAuthTiktokUser.id!!)
+                var oAuthBoxUser: OAuthBoxUser = oAuthBoxService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                oAuthBoxUser = try {
+                    oAuthBoxService.getByIdOrThrowException(id = oAuthBoxUser.id!!)
                 } catch (e: Exception) {
-                    log.warn("oAuthBoxService is saved to db: $oAuthTiktokUser")
-                    oAuthBoxService.save(entity = oAuthTiktokUser)
+                    log.warn("oAuthBoxService is saved to db: $oAuthBoxUser")
+                    oAuthBoxService.save(entity = oAuthBoxUser)
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthBoxService.authenticate(
-                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthTiktokUser)
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthBoxUser)
 
-                log.info("Finished processing auth for oAuthBoxService: $oAuthTiktokUser")
+                log.info("Finished processing auth for oAuthBoxService: $oAuthBoxUser")
+                return mapOf(
+                    "code" to code,
+                    "oAuthTokenResponse" to oAuthTokenResponse,
+                    "oAuthUserResponse" to oAuthUserResponse
+                )
+            }
+            OAuth2Services.VIMEO -> {
+                val oAuthTokenResponse: OAuthTokenResponse = oAuthVimeoService.getToken(code = code!!)
+                var oAuthVimeoUser: OAuthVimeoUser = oAuthVimeoService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                oAuthVimeoUser = try {
+                    oAuthVimeoService.getByIdOrThrowException(id = oAuthVimeoUser.id!!)
+                } catch (e: Exception) {
+                    log.warn("oAuthVimeoService is saved to db: $oAuthVimeoUser")
+                    oAuthVimeoService.save(entity = oAuthVimeoUser)
+                }
+                val oAuthUserResponse: UserResponseWrapperDto = oAuthVimeoService.authenticate(
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthVimeoUser)
+
+                log.info("Finished processing auth for oAuthVimeoService: $oAuthVimeoUser")
                 return mapOf(
                     "code" to code,
                     "oAuthTokenResponse" to oAuthTokenResponse,

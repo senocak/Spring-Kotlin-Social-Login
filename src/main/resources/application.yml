@@ -147,6 +147,12 @@ spring:
             authorization-grant-type: client_credentials
             redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/box/redirect}
             scope: user.info.basic, user.info.profile, user.info.stats
+          vimeo:
+            clientId: ${VIMEO_CLIENT_ID}
+            clientSecret: ${VIMEO_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/vimeo/redirect}
+            scope: public, private
         provider:
           google:
             tokenUri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
@@ -200,6 +206,9 @@ spring:
           box:
             tokenUri: ${BOX_TOKEN_URI:https://api.box.com/oauth2/token}
             userInfoUri: ${BOX_USER_INFO_URI:https://api.box.com/2.0/users/me}
+          vimeo:
+            tokenUri: ${VIMEO_TOKEN_URI:https://api.vimeo.com/oauth/access_token}
+            userInfoUri: ${VIMEO_USER_INFO_URI:https://api.vimeo.com/me}
 app:
   jwtSecret: ${JWT_SECRET:sTvHbWsBDSCwW5ZnxpPEx7B5ad2Zx60p}
   jwtExpirationInMs: '#{1 * 60 * 60}' # 1 hour in seconds

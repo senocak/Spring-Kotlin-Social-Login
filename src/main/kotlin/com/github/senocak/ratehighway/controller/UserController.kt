@@ -255,6 +255,13 @@ class UserController(
                 }
                 user.oAuthBoxUser!!.user = null
             }
+            OAuth2Services.VIMEO -> {
+                if (user.oAuthVimeoUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthVimeoUser!!.user = null
+            }
         }
         userService.save(user = user)
         return ResponseEntity.noContent().build()

@@ -29,6 +29,7 @@ import jakarta.persistence.MappedSuperclass
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
+import org.hibernate.annotations.Type
 import java.io.Serializable
 import java.util.Date
 import java.util.UUID
@@ -451,6 +452,51 @@ class OAuthBoxUser: OAuthBaseUser() {
 }
 
 @Entity
+@Table(name = "vimeoUsers", uniqueConstraints = [
+    UniqueConstraint(columnNames = ["email"])
+])
+class OAuthVimeoUser: OAuthBaseUser() {
+    @Column var name: String? = null
+    @Column var link: String? = null
+    @Column var location: String? = null
+    @Column var gender: String? = null
+    @Column var bio: String? = null
+    @Column var short_bio: String? = null
+    @Column var created_time: String? = null
+    @Column var resource_key: String? = null
+    @Column var account: String? = null
+    @Column @Embedded var pictures: OAuthVimeoUserPictures? = null
+}
+class OAuthVimeoUserPictures{
+    var uri: String? = null
+    var active: String? = null
+    var type: String? = null
+    var base_link: String? = null
+    @JsonProperty("resource_key") var pictures_resource_key: String? = null
+    var default_picture: String? = null
+
+    @Convert(converter = OAuthVimeoUserPicturesConverter::class)
+    @Lob
+    var sizes: List<OAuthVimeoUserPicture>? = null
+}
+@Embeddable
+class OAuthVimeoUserPicture{
+    var width: String? = null
+    var height: String? = null
+    var link: String? = null
+}
+@Converter
+class OAuthVimeoUserPicturesConverter : AttributeConverter<List<OAuthVimeoUserPicture>, String> {
+    private val objectMapper: ObjectMapper = jacksonObjectMapper()
+
+    override fun convertToDatabaseColumn(attribute: List<OAuthVimeoUserPicture>?): String? =
+        attribute?.let { objectMapper.writeValueAsString(it) }
+
+    override fun convertToEntityAttribute(dbData: String): List<OAuthVimeoUserPicture>? =
+        objectMapper.readValue(dbData, object : TypeReference<List<OAuthVimeoUserPicture>?>() {})
+}
+
+@Entity
 @Table(name = "roles")
 class Role(@Column @Enumerated(EnumType.STRING) var name: RoleName? = null): BaseDomain()
 
@@ -486,4 +532,5 @@ class User(
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthRedditUser: OAuthRedditUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthTiktokUser: OAuthTiktokUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthBoxUser: OAuthBoxUser? = null,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthVimeoUser: OAuthVimeoUser? = null,
 ): BaseDomain()

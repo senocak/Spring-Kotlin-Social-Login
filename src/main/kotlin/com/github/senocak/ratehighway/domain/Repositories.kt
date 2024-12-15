@@ -66,3 +66,6 @@ interface OAuthTiktokUserRepository: JpaRepository<OAuthTiktokUser, String>, Jpa
 
 @Repository
 interface OAuthBoxUserRepository: JpaRepository<OAuthBoxUser, String>, JpaSpecificationExecutor<OAuthBoxUser>
+
+@Repository
+interface OAuthVimeoUserRepository: JpaRepository<OAuthVimeoUser, String>, JpaSpecificationExecutor<OAuthVimeoUser>

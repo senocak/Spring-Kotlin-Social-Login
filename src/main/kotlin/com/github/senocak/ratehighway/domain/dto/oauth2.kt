@@ -1,12 +1,11 @@
 package com.github.senocak.ratehighway.domain.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.github.senocak.ratehighway.domain.DropboxName
 import com.github.senocak.ratehighway.domain.LocaleResponse
+import com.github.senocak.ratehighway.domain.OAuthVimeoUserPictures
 import com.github.senocak.ratehighway.domain.PayPalAddress
 import io.swagger.v3.oas.annotations.media.Schema
-import jakarta.persistence.Column
 
 data class OAuthTokenResponse(
     var access_token: String? = null,
@@ -365,4 +364,20 @@ class OAuthBoxUserResponse: BaseDto() {
 
     override fun toString(): String =
         "OAuthBoxUserResponse(email=$email, type=$type, name=$name, avatar_url=$avatar_url)"
+}
+
+class OAuthVimeoUserResponse: BaseDto() {
+    @Schema(description = "Type url of the user", required = true, name = "account", type = "String")
+    var account: String? = null
+
+    @Schema(example = "Anıl", description = "Name of the user", required = true, name = "name", type = "String")
+    var name: String? = null
+
+    @Schema(description = "Url of the user", required = true, name = "link", type = "String")
+    var link: String? = null
+
+    @Schema(description = "Picture urls", required = true, name = "picture", type = "String")
+    var pictures: OAuthVimeoUserPictures? = null
+
+    override fun toString(): String = "OAuthBoxUserResponse(account=$account, name=$name, link=$link, pictures=$pictures)"
 }

@@ -20,6 +20,7 @@ import com.github.senocak.ratehighway.domain.OAuthSpotifyUser
 import com.github.senocak.ratehighway.domain.OAuthTiktokUser
 import com.github.senocak.ratehighway.domain.OAuthTwitchUser
 import com.github.senocak.ratehighway.domain.OAuthTwitterUser
+import com.github.senocak.ratehighway.domain.OAuthVimeoUser
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User
 import com.github.senocak.ratehighway.domain.dto.OAuthBoxUserResponse
@@ -38,6 +39,7 @@ import com.github.senocak.ratehighway.domain.dto.OAuthSpotifyUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthTiktokUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthTwitchUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthTwitterUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthVimeoUserResponse
 import com.github.senocak.ratehighway.exception.ServerException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -78,6 +80,7 @@ fun User.toDTO(roles: Boolean = true): UserResponseDto {
     if (this.oAuthRedditUser != null) dto.reddit = this.oAuthRedditUser!!.toDTO()
     if (this.oAuthTiktokUser != null) dto.tiktok = this.oAuthTiktokUser!!.toDTO()
     if (this.oAuthBoxUser != null) dto.box = this.oAuthBoxUser!!.toDTO()
+    if (this.oAuthVimeoUser != null) dto.vimeo = this.oAuthVimeoUser!!.toDTO()
     return dto
 }
 
@@ -268,6 +271,15 @@ fun OAuthBoxUser.toDTO(): OAuthBoxUserResponse =
             it.type = this.type
             it.name = this.name
             it.avatar_url = this.avatar_url
+        }
+
+fun OAuthVimeoUser.toDTO(): OAuthVimeoUserResponse =
+    OAuthVimeoUserResponse()
+        .also {
+            it.account = this.account
+            it.name = this.name
+            it.link = this.link
+            it.pictures = this.pictures
         }
 
 fun String.toUUID(): UUID = UUID.fromString(this)

@@ -111,5 +111,14 @@ Generate a new oauth application;
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
 
+### Vimeo
+Generate a new oauth application;
+- https://developer.vimeo.com/apps
+- For local use `http://localhost:8083/oauth2/tiktok/redirect` in `Authorization callback URL`
+- `8083` is your applications port
+- Put the `Client ID` and `Client secrets` to application.yml
+
 
 > Visit: `http://localhost:8083/oauth2/<service-name>`
+
+
