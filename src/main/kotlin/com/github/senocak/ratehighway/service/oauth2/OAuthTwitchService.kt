@@ -94,17 +94,16 @@ class OAuthTwitchService(
 
     /**
      * Retrieves user information from LinkedIn using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthLinkedinUser object containing the user's information.
      */
-    fun getUserInfo(accessToken: String): OAuthTwitchUser {
-        val headers: HttpHeaders = createHeaderForToken(accessToken = accessToken)
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthTwitchUser {
+        val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type, accessToken = oAuthTokenResponse.access_token!!)
             .also { h: HttpHeaders ->
                 h.add("client-id", registration.clientId)
             }
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(LinkedMultiValueMap(), headers)
         val response: ResponseEntity<OAuthTwitchUserWrapper> = restTemplate.exchange(provider.userInfoUri,
-            HttpMethod.GET, entity, OAuthTwitchUserWrapper::class.java)
+            HttpMethod.GET, HttpEntity(LinkedMultiValueMap<String, String>(), headers), OAuthTwitchUserWrapper::class.java)
         val body: OAuthTwitchUserWrapper = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))

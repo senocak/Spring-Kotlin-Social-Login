@@ -85,21 +85,18 @@ class OAuthFacebookService(
 
     /**
      * Retrieves user information from Facebook using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthLinkedinUser object containing the user's information.
      */
-    fun getFacebookUserInfo(accessToken: String): OAuthFacebookUser {
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(LinkedMultiValueMap(),
-            createHeaderForToken(accessToken = accessToken))
-
-        val response: ResponseEntity<JsonNode> = restTemplate.exchange(provider.userInfoUri,
-            HttpMethod.GET, entity, JsonNode::class.java)
-
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthFacebookUser {
+        val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type,
+            accessToken = oAuthTokenResponse.access_token!!)
+        val response: ResponseEntity<JsonNode> = restTemplate.exchange(provider.userInfoUri, HttpMethod.GET,
+            HttpEntity(LinkedMultiValueMap<String, String>(), headers), JsonNode::class.java)
         val body: JsonNode = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))
                 .also { log.error("Body is returned as null, throwing ServerException $it") }
-
         val oAuthFacebookUser = OAuthFacebookUser()
         oAuthFacebookUser.id = if(body.get("id") != null) body.get("id").asText() else null
         oAuthFacebookUser.name = if(body.get("name") != null) body.get("name").asText() else null

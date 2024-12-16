@@ -144,8 +144,7 @@ class OAuth2Controller(
         when (OAuth2Services.fromString(service = service)) {
             OAuth2Services.GOOGLE -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthGoogleService.getToken(code = code!!)
-                var oAuthGoogleUser: OAuthGoogleUser = oAuthGoogleService.getGoogleUserInfo(accessToken = oAuthTokenResponse.access_token!!)
-
+                var oAuthGoogleUser: OAuthGoogleUser = oAuthGoogleService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthGoogleUser = try {
                     oAuthGoogleService.getByIdOrThrowException(id = oAuthGoogleUser.id!!)
                 } catch (e: ServerException) {
@@ -154,7 +153,6 @@ class OAuth2Controller(
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthGoogleService.authenticate(
                     request.getHeader("Authorization"), oAuthGoogleUser)
-
                 return mapOf(
                     "state" to state,
                     "code" to code,
@@ -168,7 +166,7 @@ class OAuth2Controller(
             }
             OAuth2Services.GITHUB -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthGithubService.getToken(code = code!!)
-                var oAuthGithubUser: OAuthGithubUser = oAuthGithubService.getGithubUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                var oAuthGithubUser: OAuthGithubUser = oAuthGithubService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthGithubUser = try {
                     oAuthGithubService.getByIdOrThrowException(id = oAuthGithubUser.id!!)
                 } catch (e: ServerException) {
@@ -186,8 +184,7 @@ class OAuth2Controller(
             }
             OAuth2Services.LINKEDIN -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthLinkedinService.getToken(code = code!!)
-                var oAuthLinkedinUser: OAuthLinkedinUser = oAuthLinkedinService.getLinkedinUserInfo(accessToken = oAuthTokenResponse.access_token!!)
-
+                var oAuthLinkedinUser: OAuthLinkedinUser = oAuthLinkedinService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthLinkedinUser = try {
                     oAuthLinkedinService.getByIdOrEmailOrThrowException(id = oAuthLinkedinUser.id!!, email = oAuthLinkedinUser.email!!)
                 } catch (e: ServerException) {
@@ -196,7 +193,6 @@ class OAuth2Controller(
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthLinkedinService.authenticate(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthLinkedinUser)
-
                 log.info("Finished processing auth for linkedin")
                 return mapOf(
                     "state" to state,
@@ -207,7 +203,7 @@ class OAuth2Controller(
             }
             OAuth2Services.FACEBOOK -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthFacebookService.getToken(code = code!!)
-                var oAuthFacebookUser: OAuthFacebookUser = oAuthFacebookService.getFacebookUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                var oAuthFacebookUser: OAuthFacebookUser = oAuthFacebookService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthFacebookUser = try {
                     oAuthFacebookService.getByIdOrThrowException(id = oAuthFacebookUser.id!!)
                 } catch (e: Exception) {
@@ -216,7 +212,6 @@ class OAuth2Controller(
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthFacebookService.authenticate(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthFacebookUser)
-
                 log.info("Finished processing auth for OAuthFacebookUser: $oAuthFacebookUser")
                 return mapOf(
                     "state" to state,
@@ -227,8 +222,7 @@ class OAuth2Controller(
             }
             OAuth2Services.TWITTER -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthTwitterService.getToken(code = code!!)
-                var oAuthTwitterUser: OAuthTwitterUser = oAuthTwitterService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
-
+                var oAuthTwitterUser: OAuthTwitterUser = oAuthTwitterService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthTwitterUser = try {
                     oAuthTwitterService.getByIdOrThrowException(id = oAuthTwitterUser.id!!)
                 } catch (e: Exception) {
@@ -237,7 +231,6 @@ class OAuth2Controller(
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthTwitterService.authenticate(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthTwitterUser)
-
                 log.info("Finished processing auth for OAuthTwitterUser: $oAuthTwitterUser")
                 return mapOf(
                     "state" to state,
@@ -248,8 +241,7 @@ class OAuth2Controller(
             }
             OAuth2Services.SPOTIFY -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthSpotifyService.getToken(code = code!!)
-                var oAuthSpotifyUser: OAuthSpotifyUser = oAuthSpotifyService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
-
+                var oAuthSpotifyUser: OAuthSpotifyUser = oAuthSpotifyService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthSpotifyUser = try {
                     oAuthSpotifyService.getByIdOrThrowException(id = oAuthSpotifyUser.id!!)
                 } catch (e: Exception) {
@@ -258,7 +250,6 @@ class OAuth2Controller(
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthSpotifyService.authenticate(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthSpotifyUser)
-
                 log.info("Finished processing auth for OAuthSpotifyUser: $oAuthSpotifyUser")
                 return mapOf(
                     "state" to state,
@@ -269,8 +260,7 @@ class OAuth2Controller(
             }
             OAuth2Services.TWITCH -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthTwitchService.getToken(code = code!!)
-                var oAuthTwitchUser: OAuthTwitchUser = oAuthTwitchService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
-
+                var oAuthTwitchUser: OAuthTwitchUser = oAuthTwitchService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthTwitchUser = try {
                     oAuthTwitchService.getByIdOrThrowException(id = oAuthTwitchUser.id!!)
                 } catch (e: Exception) {
@@ -279,7 +269,6 @@ class OAuth2Controller(
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthTwitchService.authenticate(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthTwitchUser)
-
                 log.info("Finished processing auth for OAuthTwitchUser: $oAuthTwitchUser")
                 return mapOf(
                     "state" to state,
@@ -290,8 +279,7 @@ class OAuth2Controller(
             }
             OAuth2Services.SLACK -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthSlackService.getToken(code = code!!)
-                var oAuthSlackUser: OAuthSlackUser = oAuthSlackService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
-
+                var oAuthSlackUser: OAuthSlackUser = oAuthSlackService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthSlackUser = try {
                     oAuthSlackService.getByIdOrThrowException(id = oAuthSlackUser.id!!)
                 } catch (e: Exception) {
@@ -300,7 +288,6 @@ class OAuth2Controller(
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthSlackService.authenticate(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthSlackUser)
-
                 log.info("Finished processing auth for oAuthSlackService: $oAuthSlackUser")
                 return mapOf(
                     "state" to state,
@@ -311,8 +298,7 @@ class OAuth2Controller(
             }
             OAuth2Services.DROPBOX -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthDropboxService.getToken(code = code!!)
-                var oAuthDropboxUser: OAuthDropboxUser = oAuthDropboxService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
-
+                var oAuthDropboxUser: OAuthDropboxUser = oAuthDropboxService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthDropboxUser = try {
                     oAuthDropboxService.getByIdOrThrowException(id = oAuthDropboxUser.id!!)
                 } catch (e: Exception) {
@@ -321,7 +307,6 @@ class OAuth2Controller(
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthDropboxService.authenticate(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthDropboxUser)
-
                 log.info("Finished processing auth for oAuthDropboxService: $oAuthDropboxUser")
                 return mapOf(
                     "state" to state,
@@ -332,7 +317,7 @@ class OAuth2Controller(
             }
             OAuth2Services.INSTAGRAM -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthInstagramService.getToken(code = code!!)
-                var oAuthInstagramUser: OAuthInstagramUser = oAuthInstagramService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                var oAuthInstagramUser: OAuthInstagramUser = oAuthInstagramService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthInstagramUser = try {
                     oAuthInstagramService.getByIdOrThrowException(id = oAuthInstagramUser.id!!)
                 } catch (e: Exception) {
@@ -352,7 +337,7 @@ class OAuth2Controller(
             OAuth2Services.PAYPAL -> {
                 var oAuthTokenResponse: OAuthTokenResponse = oAuthPaypalService.getToken(code = code!!)
                 oAuthTokenResponse = oAuthPaypalService.getTokenByRefreshToken(refreshToken = oAuthTokenResponse.refresh_token!!)
-                var oAuthInstagramUser: OAuthPaypalUser = oAuthPaypalService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                var oAuthInstagramUser: OAuthPaypalUser = oAuthPaypalService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthInstagramUser = try {
                     oAuthPaypalService.getByIdOrThrowException(id = oAuthInstagramUser.id!!)
                 } catch (e: Exception) {
@@ -361,7 +346,6 @@ class OAuth2Controller(
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthPaypalService.authenticate(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthInstagramUser)
-
                 log.info("Finished processing auth for oAuthPaypalService: $oAuthInstagramUser")
                 return mapOf(
                     "code" to code,
@@ -371,7 +355,7 @@ class OAuth2Controller(
             }
             OAuth2Services.DISCORD -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthDiscordService.getToken(code = code!!)
-                var oAuthDiscordUser: OAuthDiscordUser = oAuthDiscordService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                var oAuthDiscordUser: OAuthDiscordUser = oAuthDiscordService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthDiscordUser = try {
                     oAuthDiscordService.getByIdOrThrowException(id = oAuthDiscordUser.id!!)
                 } catch (e: Exception) {
@@ -380,7 +364,6 @@ class OAuth2Controller(
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthDiscordService.authenticate(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthDiscordUser)
-
                 log.info("Finished processing auth for oAuthDiscordService: $oAuthDiscordUser")
                 return mapOf(
                     "code" to code,
@@ -390,7 +373,7 @@ class OAuth2Controller(
             }
             OAuth2Services.OKTA -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthOktaService.getToken(code = code!!)
-                var oAuthOktaUser: OAuthOktaUser = oAuthOktaService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                var oAuthOktaUser: OAuthOktaUser = oAuthOktaService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthOktaUser = try {
                     oAuthOktaService.getByIdOrThrowException(id = oAuthOktaUser.id!!)
                 } catch (e: Exception) {
@@ -409,7 +392,7 @@ class OAuth2Controller(
             }
             OAuth2Services.REDDIT -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthRedditService.getToken(code = code!!)
-                var oAuthRedditUser: OAuthRedditUser = oAuthRedditService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                var oAuthRedditUser: OAuthRedditUser = oAuthRedditService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthRedditUser = try {
                     oAuthRedditService.getByIdOrThrowException(id = oAuthRedditUser.id!!)
                 } catch (e: Exception) {
@@ -418,7 +401,6 @@ class OAuth2Controller(
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthRedditService.authenticate(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthRedditUser)
-
                 log.info("Finished processing auth for oAuthRedditService: $oAuthRedditUser")
                 return mapOf(
                     "code" to code,
@@ -428,7 +410,7 @@ class OAuth2Controller(
             }
             OAuth2Services.TIKTOK -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthTiktokService.getToken(code = code!!)
-                var oAuthTiktokUser: OAuthTiktokUser = oAuthTiktokService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                var oAuthTiktokUser: OAuthTiktokUser = oAuthTiktokService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthTiktokUser = try {
                     oAuthTiktokService.getByIdOrThrowException(id = oAuthTiktokUser.id!!)
                 } catch (e: Exception) {
@@ -437,7 +419,6 @@ class OAuth2Controller(
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthTiktokService.authenticate(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthTiktokUser)
-
                 log.info("Finished processing auth for oAuthTiktokService: $oAuthTiktokUser")
                 return mapOf(
                     "code" to code,
@@ -447,7 +428,7 @@ class OAuth2Controller(
             }
             OAuth2Services.BOX -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthBoxService.getToken(code = code!!)
-                var oAuthBoxUser: OAuthBoxUser = oAuthBoxService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                var oAuthBoxUser: OAuthBoxUser = oAuthBoxService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthBoxUser = try {
                     oAuthBoxService.getByIdOrThrowException(id = oAuthBoxUser.id!!)
                 } catch (e: Exception) {
@@ -456,7 +437,6 @@ class OAuth2Controller(
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthBoxService.authenticate(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthBoxUser)
-
                 log.info("Finished processing auth for oAuthBoxService: $oAuthBoxUser")
                 return mapOf(
                     "code" to code,
@@ -466,7 +446,7 @@ class OAuth2Controller(
             }
             OAuth2Services.VIMEO -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthVimeoService.getToken(code = code!!)
-                var oAuthVimeoUser: OAuthVimeoUser = oAuthVimeoService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                var oAuthVimeoUser: OAuthVimeoUser = oAuthVimeoService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthVimeoUser = try {
                     oAuthVimeoService.getByIdOrThrowException(id = oAuthVimeoUser.id!!)
                 } catch (e: Exception) {
@@ -475,7 +455,6 @@ class OAuth2Controller(
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthVimeoService.authenticate(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthVimeoUser)
-
                 log.info("Finished processing auth for oAuthVimeoService: $oAuthVimeoUser")
                 return mapOf(
                     "code" to code,
@@ -485,7 +464,7 @@ class OAuth2Controller(
             }
             OAuth2Services.GITLAB -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthGitlabService.getToken(code = code!!)
-                var oAuthGitlabUser: OAuthGitlabUser = oAuthGitlabService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                var oAuthGitlabUser: OAuthGitlabUser = oAuthGitlabService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
                 oAuthGitlabUser = try {
                     oAuthGitlabService.getByIdOrThrowException(id = oAuthGitlabUser.id!!)
                 } catch (e: Exception) {

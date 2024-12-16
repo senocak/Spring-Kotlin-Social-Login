@@ -88,13 +88,13 @@ class OAuthPaypalService(
 
     /**
      * Retrieves user information from PayPal using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthPaypalUser object containing the user's information.
      */
-    fun getUserInfo(accessToken: String): OAuthPaypalUser {
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(null, createHeaderForToken(accessToken = accessToken))
-        val response: ResponseEntity<OAuthPaypalUser> = restTemplate.exchange("${provider.userInfoUri}&access_token=$accessToken",
-            HttpMethod.GET, entity, OAuthPaypalUser::class.java)
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthPaypalUser {
+        val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type, accessToken = oAuthTokenResponse.access_token!!)
+        val response: ResponseEntity<OAuthPaypalUser> = restTemplate.exchange("${provider.userInfoUri}&access_token=${oAuthTokenResponse.access_token}",
+            HttpMethod.GET, HttpEntity(null, headers), OAuthPaypalUser::class.java)
         val body: OAuthPaypalUser = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))

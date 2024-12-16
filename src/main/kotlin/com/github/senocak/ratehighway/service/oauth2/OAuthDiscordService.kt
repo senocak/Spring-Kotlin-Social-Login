@@ -84,13 +84,13 @@ class OAuthDiscordService(
 
     /**
      * Retrieves user information from Discord using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthDiscordUser object containing the user's information.
      */
-    fun getUserInfo(accessToken: String): OAuthDiscordUser {
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(null, createHeaderForToken(accessToken = accessToken))
-        val response: ResponseEntity<OAuthDiscordUser> = restTemplate.exchange("${provider.userInfoUri}&access_token=$accessToken",
-            HttpMethod.GET, entity, OAuthDiscordUser::class.java)
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthDiscordUser {
+        val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type, accessToken = oAuthTokenResponse.access_token!!)
+        val response: ResponseEntity<OAuthDiscordUser> = restTemplate.exchange("${provider.userInfoUri}&access_token=${oAuthTokenResponse.access_token}",
+            HttpMethod.GET, HttpEntity(null, headers), OAuthDiscordUser::class.java)
         return response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))

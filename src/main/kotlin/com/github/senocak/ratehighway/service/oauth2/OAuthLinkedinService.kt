@@ -83,13 +83,13 @@ class OAuthLinkedinService(
 
     /**
      * Retrieves user information from LinkedIn using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthLinkedinUser object containing the user's information.
      */
-    fun getLinkedinUserInfo(accessToken: String): OAuthLinkedinUser {
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(LinkedMultiValueMap(), createHeaderForToken(accessToken = accessToken))
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthLinkedinUser {
+        val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type, accessToken = oAuthTokenResponse.access_token!!)
         val response: ResponseEntity<OAuthLinkedinUser> = restTemplate.exchange(provider.userInfoUri,
-            HttpMethod.GET, entity, OAuthLinkedinUser::class.java)
+            HttpMethod.GET, HttpEntity(LinkedMultiValueMap<String, String>(), headers), OAuthLinkedinUser::class.java)
         val body: OAuthLinkedinUser = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))

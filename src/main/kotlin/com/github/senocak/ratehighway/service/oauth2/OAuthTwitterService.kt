@@ -87,13 +87,13 @@ class OAuthTwitterService(
 
     /**
      * Retrieves user information from Twitter using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthTwitterUser object containing the user's information.
      */
-    fun getUserInfo(accessToken: String): OAuthTwitterUser {
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(LinkedMultiValueMap(), createHeaderForToken(accessToken = accessToken))
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthTwitterUser {
+        val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type, accessToken = oAuthTokenResponse.access_token!!)
         val response: ResponseEntity<OAuthTwitterUserWrapper> = restTemplate.exchange(provider.userInfoUri,
-            HttpMethod.GET, entity, OAuthTwitterUserWrapper::class.java)
+            HttpMethod.GET, HttpEntity(LinkedMultiValueMap<String, String>(), headers), OAuthTwitterUserWrapper::class.java)
         val body: OAuthTwitterUser = response.body?.data
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))

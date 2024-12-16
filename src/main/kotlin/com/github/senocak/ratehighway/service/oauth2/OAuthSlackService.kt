@@ -105,13 +105,13 @@ class OAuthSlackService(
 
     /**
      * Retrieves user information from Slack using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthSlackUser object containing the user's information.
      */
-    fun getUserInfo(accessToken: String): OAuthSlackUser {
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(LinkedMultiValueMap(), createHeaderForToken(accessToken = accessToken))
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthSlackUser {
+        val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type, accessToken = oAuthTokenResponse.access_token!!)
         val response: ResponseEntity<OAuthSlackUser> = restTemplate.exchange(provider.userInfoUri,
-            HttpMethod.GET, entity, OAuthSlackUser::class.java)
+            HttpMethod.GET, HttpEntity(LinkedMultiValueMap<String, String>(), headers), OAuthSlackUser::class.java)
         val body: OAuthSlackUser = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))

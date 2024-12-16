@@ -84,13 +84,13 @@ class OAuthTiktokService(
 
     /**
      * Retrieves user information from Tiktok using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthTiktokUser object containing the user's information.
      */
-    fun getUserInfo(accessToken: String): OAuthTiktokUser {
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(null, createHeaderForToken(accessToken = accessToken))
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthTiktokUser {
+        val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type, accessToken = oAuthTokenResponse.access_token!!)
         val response: ResponseEntity<TiktokRoot> = restTemplate.exchange(provider.userInfoUri,
-            HttpMethod.GET, entity, TiktokRoot::class.java)
+            HttpMethod.GET, HttpEntity(null, headers), TiktokRoot::class.java)
         val body: TiktokRoot = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))

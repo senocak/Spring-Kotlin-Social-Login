@@ -83,13 +83,13 @@ class OAuthRedditService(
 
     /**
      * Retrieves user information from Reddit using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthRedditUser object containing the user's information.
      */
-    fun getUserInfo(accessToken: String): OAuthRedditUser {
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(null, createHeaderForToken(accessToken = accessToken))
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthRedditUser {
+        val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type, accessToken = oAuthTokenResponse.access_token!!)
         val response: ResponseEntity<OAuthRedditUser> = restTemplate.exchange(provider.userInfoUri,
-            HttpMethod.GET, entity, OAuthRedditUser::class.java)
+            HttpMethod.GET, HttpEntity(null, headers), OAuthRedditUser::class.java)
         val body: OAuthRedditUser = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))

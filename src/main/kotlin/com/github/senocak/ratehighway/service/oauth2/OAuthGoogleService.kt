@@ -85,12 +85,12 @@ class OAuthGoogleService(
 
     /**
      * Retrieves user information from Google using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthGoogleUser object containing the user's information.
      */
-    fun getGoogleUserInfo(accessToken: String): OAuthGoogleUser {
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthGoogleUser {
         val response: ResponseEntity<OAuthGoogleUser> = restTemplate.getForEntity(
-            "${provider.userInfoUri}?alt=json&access_token=$accessToken", OAuthGoogleUser::class.java)
+            "${provider.userInfoUri}?alt=json&access_token=${oAuthTokenResponse.access_token}", OAuthGoogleUser::class.java)
         return response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))

@@ -84,13 +84,14 @@ class OAuthVimeoService(
 
     /**
      * Retrieves user information from Vimeo using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthVimeoUser object containing the user's information.
      */
-    fun getUserInfo(accessToken: String): OAuthVimeoUser {
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(null, createHeaderForToken(accessToken = accessToken))
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthVimeoUser {
+        val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type,
+            accessToken = oAuthTokenResponse.access_token!!)
         val response: ResponseEntity<OAuthVimeoUser> = restTemplate.exchange(provider.userInfoUri,
-            HttpMethod.GET, entity, OAuthVimeoUser::class.java)
+            HttpMethod.GET, HttpEntity(null, headers), OAuthVimeoUser::class.java)
         val body: OAuthVimeoUser = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))

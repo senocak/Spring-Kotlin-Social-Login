@@ -83,13 +83,12 @@ class OAuthInstagramService(
 
     /**
      * Retrieves user information from Instagram using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthInstagramUser object containing the user's information.
      */
-    fun getUserInfo(accessToken: String): OAuthInstagramUser {
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(LinkedMultiValueMap(), null)
-        val response: ResponseEntity<OAuthInstagramUser> = restTemplate.exchange("${provider.userInfoUri}&access_token=$accessToken",
-            HttpMethod.GET, entity, OAuthInstagramUser::class.java)
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthInstagramUser {
+        val response: ResponseEntity<OAuthInstagramUser> = restTemplate.exchange("${provider.userInfoUri}&access_token=${oAuthTokenResponse.access_token}",
+            HttpMethod.GET, HttpEntity(LinkedMultiValueMap<String, String>(), null), OAuthInstagramUser::class.java)
         val body: OAuthInstagramUser = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))

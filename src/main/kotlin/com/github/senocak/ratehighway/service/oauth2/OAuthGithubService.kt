@@ -92,19 +92,18 @@ class OAuthGithubService(
 
     /**
      * Retrieves user information from GitHub using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthGithubUser object containing the user's information.
      */
-    fun getGithubUserInfo(accessToken: String): OAuthGithubUser {
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthGithubUser {
+        val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type, accessToken = oAuthTokenResponse.access_token!!)
         val response: ResponseEntity<OAuthGithubUser> = restTemplate.exchange(provider.userInfoUri,
-            HttpMethod.GET, HttpEntity(LinkedMultiValueMap<String, String>(),
-                createHeaderForToken(accessToken = accessToken)), OAuthGithubUser::class.java)
-
+            HttpMethod.GET, HttpEntity(LinkedMultiValueMap<String, String>(), headers), OAuthGithubUser::class.java)
         val body: OAuthGithubUser = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))
                 .also { log.error("Body is returned as null, throwing ServerException $it") }
-        body.email = getGithubUserEmail(accessToken = accessToken)
+        body.email = getGithubUserEmail(accessToken = oAuthTokenResponse.access_token!!)
         return body
     }
 

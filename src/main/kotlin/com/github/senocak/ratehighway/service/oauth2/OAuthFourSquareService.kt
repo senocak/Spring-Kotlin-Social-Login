@@ -45,8 +45,10 @@ class OAuthFourSquareService(
     roleService = roleService,
     passwordEncoder = passwordEncoder
 ) {
-    private val registration: OAuth2ClientProperties.Registration = oAuth2ClientProperties.registration["foursquare"] ?: throw Exception("Registration not found")
-    private val provider: OAuth2ClientProperties.Provider = oAuth2ClientProperties.provider["foursquare"] ?: throw Exception("Provider not found")
+    final val service: String = "foursquare"
+
+    private val registration: OAuth2ClientProperties.Registration = oAuth2ClientProperties.registration[service] ?: throw Exception("Registration not found")
+    private val provider: OAuth2ClientProperties.Provider = oAuth2ClientProperties.provider[service] ?: throw Exception("Provider not found")
 
     override fun getClassName(): String? = OAuthFoursquareUser::class.simpleName
 
@@ -83,10 +85,10 @@ class OAuthFourSquareService(
 
     /**
      * Retrieves user information from Foursquare using the provided access token.
-     * @param oAuthTokenResponse The token object to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthFoursquareUser object containing the user's information.
      */
-    fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthFoursquareUser {
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthFoursquareUser {
         val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type, accessToken = oAuthTokenResponse.access_token!!)
         val response: ResponseEntity<OAuthFoursquareUserWrapper> = restTemplate.exchange(provider.userInfoUri,
             HttpMethod.GET, HttpEntity(null, headers), OAuthFoursquareUserWrapper::class.java)
@@ -97,6 +99,7 @@ class OAuthFourSquareService(
         data.email = data.contact!!.contact_email
         return data
     }
+
     val link: String = "https://foursquare.com/oauth2/authenticate?client_id=${registration.clientId}&response_type=code&redirect_uri=${registration.redirectUri}"
 }
 private class OAuthFoursquareUserWrapper {

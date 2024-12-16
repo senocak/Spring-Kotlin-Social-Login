@@ -70,10 +70,10 @@ class OAuthAsanaService(
 
     /**
      * Retrieves user information from Asana using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthAsanaUser object containing the user's information.
      */
-    fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthAsanaUser {
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthAsanaUser {
         val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type!!, accessToken = oAuthTokenResponse.access_token!!)
         val response: ResponseEntity<AsanaUserRoot> = restTemplate.exchange(provider.userInfoUri,
             HttpMethod.GET, HttpEntity(null, headers), AsanaUserRoot::class.java)

@@ -2,6 +2,7 @@ package com.github.senocak.ratehighway.service.oauth2
 
 import com.github.senocak.ratehighway.domain.dto.UserResponseWrapperDto
 import com.github.senocak.ratehighway.domain.OAuthBaseUser
+import com.github.senocak.ratehighway.domain.OAuthGoogleUser
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User
 import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
@@ -279,25 +280,32 @@ abstract class OAuthUserServiceImpl<E, R>(
 
     abstract fun getToken(code: String): OAuthTokenResponse
 
+    abstract fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): E
+
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    // TODO: implement other users
     open fun authenticate(jwtToken: String?, oAuthUser: E): UserResponseWrapperDto {
         val user: User?
         if (jwtToken != null) {
             jwtTokenProvider.validateToken(token = jwtToken)
             user = userService.findByEmail(email = jwtTokenProvider.getSubjectFromJWT(token = jwtToken))
             MDC.put("userId", "${user.id}")
-            if(user.oAuthGoogleUser != null) {
-                if(user.oAuthGoogleUser!!.id != oAuthUser.id) {
-                    val message: String = messageSourceService.get(code = "this_account_is_linked_to_another_account")
-                    log.error(message)
-                    throw ServerException(omaErrorMessageType = OmaErrorMessageType.BASIC_INVALID_INPUT,
-                        statusCode = HttpStatus.FORBIDDEN, variables = arrayOf(message))
+            when(oAuthUser) {
+                // TODO: implement other users
+                is OAuthGoogleUser -> {
+                    log.info("OAuthGoogleUser")
+                    if(user.oAuthGoogleUser != null) {
+                        if(user.oAuthGoogleUser!!.id != oAuthUser.id) {
+                            val message: String = messageSourceService.get(code = "this_account_is_linked_to_another_account")
+                            log.error(message)
+                            throw ServerException(omaErrorMessageType = OmaErrorMessageType.BASIC_INVALID_INPUT,
+                                statusCode = HttpStatus.FORBIDDEN, variables = arrayOf(message))
+                        }
+                        val message: String = messageSourceService.get(code = "this_account_is_already_linked")
+                        log.error(message)
+                        throw ServerException(omaErrorMessageType = OmaErrorMessageType.BASIC_INVALID_INPUT,
+                            statusCode = HttpStatus.FORBIDDEN, variables = arrayOf(message))
+                    }
                 }
-                val message: String = messageSourceService.get(code = "this_account_is_already_linked")
-                log.error(message)
-                throw ServerException(omaErrorMessageType = OmaErrorMessageType.BASIC_INVALID_INPUT,
-                    statusCode = HttpStatus.FORBIDDEN, variables = arrayOf(message))
             }
             if (oAuthUser.user != user) {
                 oAuthUser.user = user

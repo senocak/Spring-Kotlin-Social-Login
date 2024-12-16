@@ -82,13 +82,13 @@ class OAuthBoxService(
 
     /**
      * Retrieves user information from Box using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthBoxUser object containing the user's information.
      */
-    fun getUserInfo(accessToken: String): OAuthBoxUser {
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(null, createHeaderForToken(accessToken = accessToken))
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthBoxUser {
+        val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type, accessToken = oAuthTokenResponse.access_token!!)
         val response: ResponseEntity<OAuthBoxUser> = restTemplate.exchange(provider.userInfoUri,
-            HttpMethod.GET, entity, OAuthBoxUser::class.java)
+            HttpMethod.GET, HttpEntity(null, headers), OAuthBoxUser::class.java)
         val body: OAuthBoxUser = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))

@@ -83,18 +83,17 @@ class OAuthSpotifyService(
 
     /**
      * Retrieves user information from LinkedIn using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthLinkedinUser object containing the user's information.
      */
-    fun getUserInfo(accessToken: String): OAuthSpotifyUser {
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(LinkedMultiValueMap(), createHeaderForToken(accessToken = accessToken))
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthSpotifyUser {
+        val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type, accessToken = oAuthTokenResponse.access_token!!)
         val response: ResponseEntity<OAuthSpotifyUser> = restTemplate.exchange(provider.userInfoUri,
-            HttpMethod.GET, entity, OAuthSpotifyUser::class.java)
-        val body: OAuthSpotifyUser = response.body
+            HttpMethod.GET, HttpEntity(LinkedMultiValueMap<String, String>(), headers), OAuthSpotifyUser::class.java)
+        return response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))
                 .also { log.error("Body is returned as null, throwing ServerException, $it") }
-        return body
     }
 
     val link: String = "https://accounts.spotify.com/authorize?response_type=code&scope=${registration.scope.joinToString(separator = " ")}&client_id=${registration.clientId}&client_secret=${registration.clientSecret}&redirect_uri=${registration.redirectUri}&state=${UUID.randomUUID()}"

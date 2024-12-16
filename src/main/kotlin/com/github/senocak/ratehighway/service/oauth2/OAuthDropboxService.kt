@@ -85,13 +85,13 @@ class OAuthDropboxService(
 
     /**
      * Retrieves user information from Dropbox using the provided access token.
-     * @param accessToken The access token to use for user info retrieval.
+     * @param oAuthTokenResponse The access token and token type to use for user info retrieval.
      * @return An OAuthDropboxUser object containing the user's information.
      */
-    fun getUserInfo(accessToken: String): OAuthDropboxUser {
-        val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(null, createHeaderForToken(accessToken = accessToken))
+    override fun getUserInfo(oAuthTokenResponse: OAuthTokenResponse): OAuthDropboxUser {
+        val headers: HttpHeaders = createHeaderForToken(token_type = oAuthTokenResponse.token_type, accessToken = oAuthTokenResponse.access_token!!)
         val response: ResponseEntity<OAuthDropboxUser> = restTemplate.exchange(provider.userInfoUri,
-            HttpMethod.POST, entity, OAuthDropboxUser::class.java)
+            HttpMethod.POST, HttpEntity(null, headers), OAuthDropboxUser::class.java)
         val body: OAuthDropboxUser = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))
