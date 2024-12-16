@@ -276,6 +276,13 @@ class UserController(
                 }
                 user.oAuthAsanaUser!!.user = null
             }
+            OAuth2Services.FOURSQUARE -> {
+                if (user.oAuthFoursquareUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthFoursquareUser!!.user = null
+            }
         }
         userService.save(user = user)
         return ResponseEntity.noContent().build()

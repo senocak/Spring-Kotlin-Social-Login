@@ -9,6 +9,7 @@ import com.github.senocak.ratehighway.domain.OAuthDropboxUser
 import com.github.senocak.ratehighway.domain.dto.RoleResponse
 import com.github.senocak.ratehighway.domain.dto.UserResponseDto
 import com.github.senocak.ratehighway.domain.OAuthFacebookUser
+import com.github.senocak.ratehighway.domain.OAuthFoursquareUser
 import com.github.senocak.ratehighway.domain.OAuthGithubUser
 import com.github.senocak.ratehighway.domain.OAuthGitlabUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
@@ -30,6 +31,7 @@ import com.github.senocak.ratehighway.domain.dto.OAuthBoxUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthDiscordUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthDropboxUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthFacebookUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthFoursquareUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthGithubUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthGitlabUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthGoogleUserResponse
@@ -87,6 +89,7 @@ fun User.toDTO(roles: Boolean = true): UserResponseDto {
     if (this.oAuthVimeoUser != null) dto.vimeo = this.oAuthVimeoUser!!.toDTO()
     if (this.oAuthGitlabUser != null) dto.gitlab = this.oAuthGitlabUser!!.toDTO()
     if (this.oAuthAsanaUser != null) dto.asana = this.oAuthAsanaUser!!.toDTO()
+    if (this.oAuthFoursquareUser != null) dto.foursquare = this.oAuthFoursquareUser!!.toDTO()
     return dto
 }
 
@@ -306,6 +309,15 @@ fun OAuthAsanaUser.toDTO(): OAuthAsanaUserResponse =
             it.photo = this.photo
             it.resource_type = this.resource_type
             it.workspaces = this.workspaces
+        }
+
+fun OAuthFoursquareUser.toDTO(): OAuthFoursquareUserResponse =
+    OAuthFoursquareUserResponse()
+        .also {
+            it.email = this.email
+            it.name = "${this.firstName} ${this.lastName}"
+            it.photo = this.photo
+            it.type = this.type
         }
 
 fun String.toUUID(): UUID = UUID.fromString(this)

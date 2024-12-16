@@ -5,6 +5,7 @@ import com.github.senocak.ratehighway.domain.DropboxName
 import com.github.senocak.ratehighway.domain.LocaleResponse
 import com.github.senocak.ratehighway.domain.OAuthAsanaUserPhotos
 import com.github.senocak.ratehighway.domain.OAuthAsanaUserWorkspaces
+import com.github.senocak.ratehighway.domain.OAuthFoursquareUserPhoto
 import com.github.senocak.ratehighway.domain.OAuthVimeoUserPictures
 import com.github.senocak.ratehighway.domain.PayPalAddress
 import io.swagger.v3.oas.annotations.media.Schema
@@ -418,7 +419,7 @@ class OAuthAsanaUserResponse: BaseDto() {
     @Schema(example = "Anıl", description = "Name of the user", required = true, name = "name", type = "String")
     var name: String? = null
 
-    @Schema(description = "State of the user", required = true, name = "photo", type = "String")
+    @Schema(description = "Photo of the user", required = true, name = "photo", type = "String")
     var photo: OAuthAsanaUserPhotos? = null
 
     @Schema(description = "Resource type", required = true, name = "resource_type", type = "String")
@@ -426,4 +427,18 @@ class OAuthAsanaUserResponse: BaseDto() {
 
     @Schema(description = "Workspaces", required = true, name = "workspaces", type = "List")
     var workspaces: List<OAuthAsanaUserWorkspaces>? = null
+}
+
+class OAuthFoursquareUserResponse: BaseDto() {
+    @Schema(description = "Email of the user", required = true, name = "email", type = "String")
+    var email: String? = null
+
+    @Schema(example = "Anıl", description = "Name of the user", required = true, name = "name", type = "String")
+    var name: String? = null
+
+    @Schema(description = "Photo of the user", required = true, name = "photo", type = "String")
+    var photo: OAuthFoursquareUserPhoto? = null
+
+    @Schema(description = "Resource type", required = true, name = "resource_type", type = "String")
+    var type: String? = null
 }

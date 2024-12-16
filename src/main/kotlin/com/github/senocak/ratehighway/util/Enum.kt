@@ -50,7 +50,8 @@ enum class OAuth2Services(val service: String) {
     BOX(service = "box"),
     VIMEO(service = "vimeo"),
     GITLAB(service = "gitlab"),
-    ASANA(service = "asana");
+    ASANA(service = "asana"),
+    FOURSQUARE(service = "foursquare");
 
     companion object {
         fun fromString(service: String): OAuth2Services {

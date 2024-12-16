@@ -75,3 +75,6 @@ interface OAuthGitlabUserRepository: JpaRepository<OAuthGitlabUser, String>, Jpa
 
 @Repository
 interface OAuthAsanaUserRepository: JpaRepository<OAuthAsanaUser, String>, JpaSpecificationExecutor<OAuthAsanaUser>
+
+@Repository
+interface OAuthFoursquareUserRepository: JpaRepository<OAuthFoursquareUser, String>, JpaSpecificationExecutor<OAuthFoursquareUser>

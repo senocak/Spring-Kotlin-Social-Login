@@ -6,6 +6,7 @@ import com.github.senocak.ratehighway.domain.OAuthDiscordUser
 import com.github.senocak.ratehighway.domain.OAuthDropboxUser
 import com.github.senocak.ratehighway.domain.dto.UserResponseWrapperDto
 import com.github.senocak.ratehighway.domain.OAuthFacebookUser
+import com.github.senocak.ratehighway.domain.OAuthFoursquareUser
 import com.github.senocak.ratehighway.domain.OAuthGithubUser
 import com.github.senocak.ratehighway.domain.OAuthGitlabUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
@@ -27,6 +28,7 @@ import com.github.senocak.ratehighway.service.oauth2.OAuthBoxService
 import com.github.senocak.ratehighway.service.oauth2.OAuthDiscordService
 import com.github.senocak.ratehighway.service.oauth2.OAuthDropboxService
 import com.github.senocak.ratehighway.service.oauth2.OAuthFacebookService
+import com.github.senocak.ratehighway.service.oauth2.OAuthFourSquareService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGithubService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGitlabService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGoogleService
@@ -77,6 +79,7 @@ class OAuth2Controller(
     private val oAuthVimeoService: OAuthVimeoService,
     private val oAuthGitlabService: OAuthGitlabService,
     private val oAuthAsanaService: OAuthAsanaService,
+    private val oAuthFourSquareService: OAuthFourSquareService,
 ): BaseController() {
     private val log: Logger by logger()
 
@@ -101,6 +104,7 @@ class OAuth2Controller(
         "vimeo" to oAuthVimeoService.link,
         "gitlab" to oAuthGitlabService.link,
         "asana" to oAuthAsanaService.link,
+        "foursquare" to oAuthFourSquareService.link,
     )
 
     @GetMapping("/{service}")
@@ -481,17 +485,17 @@ class OAuth2Controller(
             }
             OAuth2Services.GITLAB -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthGitlabService.getToken(code = code!!)
-                var oAuthVimeoUser: OAuthGitlabUser = oAuthGitlabService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
-                oAuthVimeoUser = try {
-                    oAuthGitlabService.getByIdOrThrowException(id = oAuthVimeoUser.id!!)
+                var oAuthGitlabUser: OAuthGitlabUser = oAuthGitlabService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                oAuthGitlabUser = try {
+                    oAuthGitlabService.getByIdOrThrowException(id = oAuthGitlabUser.id!!)
                 } catch (e: Exception) {
-                    log.warn("oAuthGitlabService is saved to db: $oAuthVimeoUser")
-                    oAuthGitlabService.save(entity = oAuthVimeoUser)
+                    log.warn("oAuthGitlabService is saved to db: $oAuthGitlabUser")
+                    oAuthGitlabService.save(entity = oAuthGitlabUser)
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthGitlabService.authenticate(
-                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthVimeoUser)
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthGitlabUser)
 
-                log.info("Finished processing auth for oAuthGitlabService: $oAuthVimeoUser")
+                log.info("Finished processing auth for oAuthGitlabService: $oAuthGitlabUser")
                 return mapOf(
                     "code" to code,
                     "oAuthTokenResponse" to oAuthTokenResponse,
@@ -500,17 +504,36 @@ class OAuth2Controller(
             }
             OAuth2Services.ASANA -> {
                 val oAuthTokenResponse: OAuthTokenResponse = oAuthAsanaService.getToken(code = code!!)
-                var oAuthVimeoUser: OAuthAsanaUser = oAuthAsanaService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
-                oAuthVimeoUser = try {
-                    oAuthAsanaService.getByIdOrThrowException(id = oAuthVimeoUser.id!!)
+                var oAuthAsanaUser: OAuthAsanaUser = oAuthAsanaService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
+                oAuthAsanaUser = try {
+                    oAuthAsanaService.getByIdOrThrowException(id = oAuthAsanaUser.id!!)
                 } catch (e: Exception) {
-                    log.warn("oAuthAsanaService is saved to db: $oAuthVimeoUser")
-                    oAuthAsanaService.save(entity = oAuthVimeoUser)
+                    log.warn("oAuthAsanaService is saved to db: $oAuthAsanaUser")
+                    oAuthAsanaService.save(entity = oAuthAsanaUser)
                 }
                 val oAuthUserResponse: UserResponseWrapperDto = oAuthAsanaService.authenticate(
-                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthVimeoUser)
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthAsanaUser)
 
-                log.info("Finished processing auth for oAuthAsanaService: $oAuthVimeoUser")
+                log.info("Finished processing auth for oAuthAsanaService: $oAuthAsanaUser")
+                return mapOf(
+                    "code" to code,
+                    "oAuthTokenResponse" to oAuthTokenResponse,
+                    "oAuthUserResponse" to oAuthUserResponse
+                )
+            }
+            OAuth2Services.FOURSQUARE -> {
+                val oAuthTokenResponse: OAuthTokenResponse = oAuthFourSquareService.getToken(code = code!!)
+                var oAuthFoursquareUser: OAuthFoursquareUser = oAuthFourSquareService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
+                oAuthFoursquareUser = try {
+                    oAuthFourSquareService.getByIdOrThrowException(id = oAuthFoursquareUser.id!!)
+                } catch (e: Exception) {
+                    log.warn("oAuthFourSquareService is saved to db: $oAuthFoursquareUser")
+                    oAuthFourSquareService.save(entity = oAuthFoursquareUser)
+                }
+                val oAuthUserResponse: UserResponseWrapperDto = oAuthFourSquareService.authenticate(
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthFoursquareUser)
+
+                log.info("Finished processing auth for oAuthFourSquareService: $oAuthFoursquareUser")
                 return mapOf(
                     "code" to code,
                     "oAuthTokenResponse" to oAuthTokenResponse,

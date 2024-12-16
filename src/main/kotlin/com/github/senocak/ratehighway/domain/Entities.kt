@@ -570,6 +570,36 @@ class OAuthAsanaUserWorkspacesConverter : AttributeConverter<List<OAuthAsanaUser
     override fun convertToEntityAttribute(dbData: String): List<OAuthAsanaUserWorkspaces>? =
         objectMapper.readValue(dbData, object : TypeReference<List<OAuthAsanaUserWorkspaces>?>() {})
 }
+@Entity
+@Table(name = "foursquareUsers", uniqueConstraints = [
+    UniqueConstraint(columnNames = ["email"])
+])
+class OAuthFoursquareUser: OAuthBaseUser() {
+    @Column var firstName: String? = null
+    @Column var lastName: String? = null
+    @Column var privateProfile: Boolean? = null
+    @Column var gender: String? = null
+    @Column var countryCode: String? = null
+    @Column var relationship: String? = null
+    @Column var canonicalUrl: String? = null
+    @Column @Embedded var photo: OAuthFoursquareUserPhoto? = null
+    @Column var birthday: Int? = null
+    @Column var homeCity: String? = null
+    @Column var bio: String? = null
+    @Column @Embedded var contact: OAuthFoursquareUserContact? = null
+    @Column var type: String? = null
+    @Column var createdAt: Int? = null
+}
+class OAuthFoursquareUserPhoto {
+    var prefix: String? = null
+    var suffix: String? = null
+    var default: String? = null
+}
+class OAuthFoursquareUserContact {
+    var verifiedPhone: String? = null
+    @JsonProperty("email") var contact_email: String? = null
+    var verifiedEmail: String? = null
+}
 
 @Entity
 @Table(name = "roles")
@@ -610,4 +640,5 @@ class User(
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthVimeoUser: OAuthVimeoUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthGitlabUser: OAuthGitlabUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthAsanaUser: OAuthAsanaUser? = null,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthFoursquareUser: OAuthFoursquareUser? = null,
 ): BaseDomain()

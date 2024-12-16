@@ -132,7 +132,12 @@ Generate a new oauth application;
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
 
+### Foursquare
+Generate a new oauth application;
+- https://foursquare.com/developers/home
+- For local use `http://localhost:8083/oauth2/foursquare/redirect` in `Authorization callback URL`
+- `8083` is your applications port
+- Put the `Client ID` and `Client secrets` to application.yml
+
 
 > Visit: `http://localhost:8083/oauth2/<service-name>`
-
-

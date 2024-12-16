@@ -80,11 +80,14 @@ class UserResponseDto: BaseDto() {
     @Schema(required = false)
     var asana: OAuthAsanaUserResponse? = null
 
+    @Schema(required = false)
+    var foursquare: OAuthFoursquareUserResponse? = null
+
     override fun toString(): String =
         "UserResponseDto(name=$name, email=$email, createdAt=$createdAt, roles=$roles, google=$google, github=$github," +
                 "linkedin=$linkedin, facebook=$facebook, twitter=$twitter, spotify=$spotify, twitch=$twitch, slack=$slack," +
                 "dropbox=$dropbox, instagram=$instagram, paypal=$paypal, discord=$discord, okta=$okta, reddit=$reddit," +
-                "tiktok=$tiktok, box=$box, vimeo=$vimeo, gitlab=$gitlab, asana=$asana)"
+                "tiktok=$tiktok, box=$box, vimeo=$vimeo, gitlab=$gitlab, asana=$asana, foursquare=$foursquare)"
 }
 
 @JsonPropertyOrder("token", "refreshToken", "user")
