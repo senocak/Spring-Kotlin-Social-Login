@@ -90,7 +90,7 @@ class OAuthFacebookService(
      */
     fun getFacebookUserInfo(accessToken: String): OAuthFacebookUser {
         val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(LinkedMultiValueMap(),
-            createHeaderForToken(accessToken))
+            createHeaderForToken(accessToken = accessToken))
 
         val response: ResponseEntity<JsonNode> = restTemplate.exchange(provider.userInfoUri,
             HttpMethod.GET, entity, JsonNode::class.java)

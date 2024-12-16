@@ -72,3 +72,6 @@ interface OAuthVimeoUserRepository: JpaRepository<OAuthVimeoUser, String>, JpaSp
 
 @Repository
 interface OAuthGitlabUserRepository: JpaRepository<OAuthGitlabUser, String>, JpaSpecificationExecutor<OAuthGitlabUser>
+
+@Repository
+interface OAuthAsanaUserRepository: JpaRepository<OAuthAsanaUser, String>, JpaSpecificationExecutor<OAuthAsanaUser>

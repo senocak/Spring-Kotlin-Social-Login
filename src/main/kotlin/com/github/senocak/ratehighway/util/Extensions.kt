@@ -2,6 +2,7 @@ package com.github.senocak.ratehighway.util
 
 import ch.qos.logback.classic.Level
 import com.github.senocak.ratehighway.KotlinApplication
+import com.github.senocak.ratehighway.domain.OAuthAsanaUser
 import com.github.senocak.ratehighway.domain.OAuthBoxUser
 import com.github.senocak.ratehighway.domain.OAuthDiscordUser
 import com.github.senocak.ratehighway.domain.OAuthDropboxUser
@@ -24,6 +25,7 @@ import com.github.senocak.ratehighway.domain.OAuthTwitterUser
 import com.github.senocak.ratehighway.domain.OAuthVimeoUser
 import com.github.senocak.ratehighway.domain.Role
 import com.github.senocak.ratehighway.domain.User
+import com.github.senocak.ratehighway.domain.dto.OAuthAsanaUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthBoxUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthDiscordUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthDropboxUserResponse
@@ -84,6 +86,7 @@ fun User.toDTO(roles: Boolean = true): UserResponseDto {
     if (this.oAuthBoxUser != null) dto.box = this.oAuthBoxUser!!.toDTO()
     if (this.oAuthVimeoUser != null) dto.vimeo = this.oAuthVimeoUser!!.toDTO()
     if (this.oAuthGitlabUser != null) dto.gitlab = this.oAuthGitlabUser!!.toDTO()
+    if (this.oAuthAsanaUser != null) dto.asana = this.oAuthAsanaUser!!.toDTO()
     return dto
 }
 
@@ -293,6 +296,16 @@ fun OAuthGitlabUser.toDTO(): OAuthGitlabUserResponse =
             it.name = this.name
             it.state = this.state
             it.avatar_url = this.avatar_url
+        }
+
+fun OAuthAsanaUser.toDTO(): OAuthAsanaUserResponse =
+    OAuthAsanaUserResponse()
+        .also {
+            it.email = this.email
+            it.name = this.name
+            it.photo = this.photo
+            it.resource_type = this.resource_type
+            it.workspaces = this.workspaces
         }
 
 fun String.toUUID(): UUID = UUID.fromString(this)

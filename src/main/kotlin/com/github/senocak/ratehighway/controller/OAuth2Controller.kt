@@ -1,5 +1,6 @@
 package com.github.senocak.ratehighway.controller
 
+import com.github.senocak.ratehighway.domain.OAuthAsanaUser
 import com.github.senocak.ratehighway.domain.OAuthBoxUser
 import com.github.senocak.ratehighway.domain.OAuthDiscordUser
 import com.github.senocak.ratehighway.domain.OAuthDropboxUser
@@ -21,6 +22,7 @@ import com.github.senocak.ratehighway.domain.OAuthTwitterUser
 import com.github.senocak.ratehighway.domain.OAuthVimeoUser
 import com.github.senocak.ratehighway.domain.dto.OAuthTokenResponse
 import com.github.senocak.ratehighway.exception.ServerException
+import com.github.senocak.ratehighway.service.oauth2.OAuthAsanaService
 import com.github.senocak.ratehighway.service.oauth2.OAuthBoxService
 import com.github.senocak.ratehighway.service.oauth2.OAuthDiscordService
 import com.github.senocak.ratehighway.service.oauth2.OAuthDropboxService
@@ -74,6 +76,7 @@ class OAuth2Controller(
     private val oAuthBoxService: OAuthBoxService,
     private val oAuthVimeoService: OAuthVimeoService,
     private val oAuthGitlabService: OAuthGitlabService,
+    private val oAuthAsanaService: OAuthAsanaService,
 ): BaseController() {
     private val log: Logger by logger()
 
@@ -97,6 +100,7 @@ class OAuth2Controller(
         "box" to oAuthBoxService.link,
         "vimeo" to oAuthVimeoService.link,
         "gitlab" to oAuthGitlabService.link,
+        "asana" to oAuthAsanaService.link,
     )
 
     @GetMapping("/{service}")
@@ -488,6 +492,25 @@ class OAuth2Controller(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthVimeoUser)
 
                 log.info("Finished processing auth for oAuthGitlabService: $oAuthVimeoUser")
+                return mapOf(
+                    "code" to code,
+                    "oAuthTokenResponse" to oAuthTokenResponse,
+                    "oAuthUserResponse" to oAuthUserResponse
+                )
+            }
+            OAuth2Services.ASANA -> {
+                val oAuthTokenResponse: OAuthTokenResponse = oAuthAsanaService.getToken(code = code!!)
+                var oAuthVimeoUser: OAuthAsanaUser = oAuthAsanaService.getUserInfo(oAuthTokenResponse = oAuthTokenResponse)
+                oAuthVimeoUser = try {
+                    oAuthAsanaService.getByIdOrThrowException(id = oAuthVimeoUser.id!!)
+                } catch (e: Exception) {
+                    log.warn("oAuthAsanaService is saved to db: $oAuthVimeoUser")
+                    oAuthAsanaService.save(entity = oAuthVimeoUser)
+                }
+                val oAuthUserResponse: UserResponseWrapperDto = oAuthAsanaService.authenticate(
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthVimeoUser)
+
+                log.info("Finished processing auth for oAuthAsanaService: $oAuthVimeoUser")
                 return mapOf(
                     "code" to code,
                     "oAuthTokenResponse" to oAuthTokenResponse,

@@ -159,6 +159,12 @@ spring:
             authorization-grant-type: client_credentials
             redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/gitlab/redirect}
             scope: openid, api, read_api, read_user, profile, email
+          asana:
+            clientId: ${ASANA_CLIENT_ID}
+            clientSecret: ${ASANA_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/asana/redirect}
+            scope: default, openid, email, profile
         provider:
           google:
             tokenUri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
@@ -218,6 +224,9 @@ spring:
           gitlab:
             tokenUri: ${GITLAB_TOKEN_URI:https://gitlab.com/oauth/token}
             userInfoUri: ${GITLAB_USER_INFO_URI:https://gitlab.com/api/v4/user}
+          asana:
+            tokenUri: ${ASANA_TOKEN_URI:https://app.asana.com/-/oauth_token}
+            userInfoUri: ${ASANA_USER_INFO_URI:https://app.asana.com/api/1.0/users/me}
 app:
   jwtSecret: ${JWT_SECRET:sTvHbWsBDSCwW5ZnxpPEx7B5ad2Zx60p}
   jwtExpirationInMs: '#{1 * 60 * 60}' # 1 hour in seconds

@@ -259,10 +259,10 @@ abstract class OAuthUserServiceImpl<E, R>(
      * @param accessToken The access token to be added to the "Authorization" header.
      * @return The HttpHeaders object with the "Authorization" header containing the access token.
      */
-    protected fun createHeaderForToken(accessToken: String): HttpHeaders =
+    protected fun createHeaderForToken(token_type: String = "Bearer", accessToken: String): HttpHeaders =
         HttpHeaders()
             .also { h: HttpHeaders ->
-                h.add("Authorization", "Bearer $accessToken")
+                h.add("Authorization", "$token_type $accessToken")
             }
 
     /**

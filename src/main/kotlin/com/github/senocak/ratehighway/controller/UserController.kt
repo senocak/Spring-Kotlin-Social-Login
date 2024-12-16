@@ -269,6 +269,13 @@ class UserController(
                 }
                 user.oAuthGitlabUser!!.user = null
             }
+            OAuth2Services.ASANA -> {
+                if (user.oAuthAsanaUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthAsanaUser!!.user = null
+            }
         }
         userService.save(user = user)
         return ResponseEntity.noContent().build()

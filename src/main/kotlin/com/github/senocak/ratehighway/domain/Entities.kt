@@ -538,6 +538,40 @@ class OAuthGitlabUser: OAuthBaseUser() {
 }
 
 @Entity
+@Table(name = "asanaUsers", uniqueConstraints = [
+    UniqueConstraint(columnNames = ["email"])
+])
+class OAuthAsanaUser: OAuthBaseUser() {
+    @Column var gid: String? = null
+    @Column var name: String? = null
+    @Column @Embedded var photo: OAuthAsanaUserPhotos? = null
+    @Column var resource_type: String? = null
+    @Column @Convert(converter = OAuthAsanaUserWorkspacesConverter::class) var workspaces: List<OAuthAsanaUserWorkspaces>? = null
+}
+class OAuthAsanaUserPhotos {
+    var image_21x21: String? = null
+    var image_27x27: String? = null
+    var image_36x36: String? = null
+    var image_60x60: String? = null
+    var image_128x128: String? = null
+}
+class OAuthAsanaUserWorkspaces {
+    var gid: String? = null
+    @JsonProperty("name") var workspace_name: String? = null
+    var resource_type: String? = null
+}
+@Converter
+class OAuthAsanaUserWorkspacesConverter : AttributeConverter<List<OAuthAsanaUserWorkspaces>, String> {
+    private val objectMapper: ObjectMapper = jacksonObjectMapper()
+
+    override fun convertToDatabaseColumn(attribute: List<OAuthAsanaUserWorkspaces>?): String? =
+        attribute?.let { objectMapper.writeValueAsString(it) }
+
+    override fun convertToEntityAttribute(dbData: String): List<OAuthAsanaUserWorkspaces>? =
+        objectMapper.readValue(dbData, object : TypeReference<List<OAuthAsanaUserWorkspaces>?>() {})
+}
+
+@Entity
 @Table(name = "roles")
 class Role(@Column @Enumerated(EnumType.STRING) var name: RoleName? = null): BaseDomain()
 
@@ -575,4 +609,5 @@ class User(
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthBoxUser: OAuthBoxUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthVimeoUser: OAuthVimeoUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthGitlabUser: OAuthGitlabUser? = null,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthAsanaUser: OAuthAsanaUser? = null,
 ): BaseDomain()

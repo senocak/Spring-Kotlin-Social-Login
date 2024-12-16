@@ -98,13 +98,13 @@ class OAuthGithubService(
     fun getGithubUserInfo(accessToken: String): OAuthGithubUser {
         val response: ResponseEntity<OAuthGithubUser> = restTemplate.exchange(provider.userInfoUri,
             HttpMethod.GET, HttpEntity(LinkedMultiValueMap<String, String>(),
-                createHeaderForToken(accessToken)), OAuthGithubUser::class.java)
+                createHeaderForToken(accessToken = accessToken)), OAuthGithubUser::class.java)
 
         val body: OAuthGithubUser = response.body
             ?: throw ServerException(omaErrorMessageType = OmaErrorMessageType.GENERIC_SERVICE_ERROR,
                 statusCode = HttpStatus.FORBIDDEN, variables = arrayOf("ex"))
                 .also { log.error("Body is returned as null, throwing ServerException $it") }
-        body.email = getGithubUserEmail(accessToken)
+        body.email = getGithubUserEmail(accessToken = accessToken)
         return body
     }
 
@@ -115,7 +115,7 @@ class OAuthGithubService(
      */
     private fun getGithubUserEmail(accessToken: String): String? {
         val entity: HttpEntity<MultiValueMap<String, String>> = HttpEntity(LinkedMultiValueMap(),
-            createHeaderForToken(accessToken))
+            createHeaderForToken(accessToken = accessToken))
 
         val response: ResponseEntity<JsonNode> = restTemplate.exchange(githubEmailUri,
             HttpMethod.GET, entity, JsonNode::class.java)
