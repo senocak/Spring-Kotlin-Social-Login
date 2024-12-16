@@ -262,6 +262,13 @@ class UserController(
                 }
                 user.oAuthVimeoUser!!.user = null
             }
+            OAuth2Services.GITLAB -> {
+                if (user.oAuthGitlabUser == null) {
+                    log.error(oauth2NotFound)
+                    throw NotFoundException(variables = arrayOf(oauth2NotFound))
+                }
+                user.oAuthGitlabUser!!.user = null
+            }
         }
         userService.save(user = user)
         return ResponseEntity.noContent().build()

@@ -19,6 +19,7 @@ data class OAuthTokenResponse(
     var user_id: String? = null, // for instagram
     var permissions: List<String>? = null, // for instagram
     var restricted_to: List<String>? = null, // for box
+    var created_at: String? = null, // for gitlab
 )
 
 class OAuthFacebookUserResponse: BaseDto() {
@@ -376,8 +377,27 @@ class OAuthVimeoUserResponse: BaseDto() {
     @Schema(description = "Url of the user", required = true, name = "link", type = "String")
     var link: String? = null
 
-    @Schema(description = "Picture urls", required = true, name = "picture", type = "String")
+    @Schema(description = "Picture urls", required = true, name = "picture", type = "OAuthVimeoUserPictures")
     var pictures: OAuthVimeoUserPictures? = null
 
     override fun toString(): String = "OAuthBoxUserResponse(account=$account, name=$name, link=$link, pictures=$pictures)"
+}
+
+class OAuthGitlabUserResponse: BaseDto() {
+    @Schema(description = "Username of the user", required = true, name = "username", type = "String")
+    var username: String? = null
+
+    @Schema(description = "Email of the user", required = true, name = "email", type = "String")
+    var email: String? = null
+
+    @Schema(example = "Anıl", description = "Name of the user", required = true, name = "name", type = "String")
+    var name: String? = null
+
+    @Schema(description = "State of the user", required = true, name = "state", type = "String")
+    var state: String? = null
+
+    @Schema(description = "Avatar urls", required = true, name = "avatar_url", type = "String")
+    var avatar_url: String? = null
+
+    override fun toString(): String = "OAuthGitlabUserResponse(username=$username, name=$name, state=$state, avatar_url=$avatar_url)"
 }

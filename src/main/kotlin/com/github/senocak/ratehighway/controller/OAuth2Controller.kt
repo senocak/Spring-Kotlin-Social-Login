@@ -6,6 +6,7 @@ import com.github.senocak.ratehighway.domain.OAuthDropboxUser
 import com.github.senocak.ratehighway.domain.dto.UserResponseWrapperDto
 import com.github.senocak.ratehighway.domain.OAuthFacebookUser
 import com.github.senocak.ratehighway.domain.OAuthGithubUser
+import com.github.senocak.ratehighway.domain.OAuthGitlabUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
 import com.github.senocak.ratehighway.domain.OAuthInstagramUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
@@ -25,6 +26,7 @@ import com.github.senocak.ratehighway.service.oauth2.OAuthDiscordService
 import com.github.senocak.ratehighway.service.oauth2.OAuthDropboxService
 import com.github.senocak.ratehighway.service.oauth2.OAuthFacebookService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGithubService
+import com.github.senocak.ratehighway.service.oauth2.OAuthGitlabService
 import com.github.senocak.ratehighway.service.oauth2.OAuthGoogleService
 import com.github.senocak.ratehighway.service.oauth2.OAuthInstagramService
 import com.github.senocak.ratehighway.service.oauth2.OAuthLinkedinService
@@ -71,6 +73,7 @@ class OAuth2Controller(
     private val oAuthTiktokService: OAuthTiktokService,
     private val oAuthBoxService: OAuthBoxService,
     private val oAuthVimeoService: OAuthVimeoService,
+    private val oAuthGitlabService: OAuthGitlabService,
 ): BaseController() {
     private val log: Logger by logger()
 
@@ -93,6 +96,7 @@ class OAuth2Controller(
         "tiktok" to oAuthTiktokService.link,
         "box" to oAuthBoxService.link,
         "vimeo" to oAuthVimeoService.link,
+        "gitlab" to oAuthGitlabService.link,
     )
 
     @GetMapping("/{service}")
@@ -465,6 +469,25 @@ class OAuth2Controller(
                     jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthVimeoUser)
 
                 log.info("Finished processing auth for oAuthVimeoService: $oAuthVimeoUser")
+                return mapOf(
+                    "code" to code,
+                    "oAuthTokenResponse" to oAuthTokenResponse,
+                    "oAuthUserResponse" to oAuthUserResponse
+                )
+            }
+            OAuth2Services.GITLAB -> {
+                val oAuthTokenResponse: OAuthTokenResponse = oAuthGitlabService.getToken(code = code!!)
+                var oAuthVimeoUser: OAuthGitlabUser = oAuthGitlabService.getUserInfo(accessToken = oAuthTokenResponse.access_token!!)
+                oAuthVimeoUser = try {
+                    oAuthGitlabService.getByIdOrThrowException(id = oAuthVimeoUser.id!!)
+                } catch (e: Exception) {
+                    log.warn("oAuthGitlabService is saved to db: $oAuthVimeoUser")
+                    oAuthGitlabService.save(entity = oAuthVimeoUser)
+                }
+                val oAuthUserResponse: UserResponseWrapperDto = oAuthGitlabService.authenticate(
+                    jwtToken = request.getHeader("Authorization"), oAuthUser = oAuthVimeoUser)
+
+                log.info("Finished processing auth for oAuthGitlabService: $oAuthVimeoUser")
                 return mapOf(
                     "code" to code,
                     "oAuthTokenResponse" to oAuthTokenResponse,

@@ -9,6 +9,7 @@ import com.github.senocak.ratehighway.domain.dto.RoleResponse
 import com.github.senocak.ratehighway.domain.dto.UserResponseDto
 import com.github.senocak.ratehighway.domain.OAuthFacebookUser
 import com.github.senocak.ratehighway.domain.OAuthGithubUser
+import com.github.senocak.ratehighway.domain.OAuthGitlabUser
 import com.github.senocak.ratehighway.domain.OAuthGoogleUser
 import com.github.senocak.ratehighway.domain.OAuthInstagramUser
 import com.github.senocak.ratehighway.domain.OAuthLinkedinUser
@@ -28,6 +29,7 @@ import com.github.senocak.ratehighway.domain.dto.OAuthDiscordUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthDropboxUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthFacebookUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthGithubUserResponse
+import com.github.senocak.ratehighway.domain.dto.OAuthGitlabUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthGoogleUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthInstagramUserResponse
 import com.github.senocak.ratehighway.domain.dto.OAuthLinkedinUserResponse
@@ -81,6 +83,7 @@ fun User.toDTO(roles: Boolean = true): UserResponseDto {
     if (this.oAuthTiktokUser != null) dto.tiktok = this.oAuthTiktokUser!!.toDTO()
     if (this.oAuthBoxUser != null) dto.box = this.oAuthBoxUser!!.toDTO()
     if (this.oAuthVimeoUser != null) dto.vimeo = this.oAuthVimeoUser!!.toDTO()
+    if (this.oAuthGitlabUser != null) dto.gitlab = this.oAuthGitlabUser!!.toDTO()
     return dto
 }
 
@@ -280,6 +283,16 @@ fun OAuthVimeoUser.toDTO(): OAuthVimeoUserResponse =
             it.name = this.name
             it.link = this.link
             it.pictures = this.pictures
+        }
+
+fun OAuthGitlabUser.toDTO(): OAuthGitlabUserResponse =
+    OAuthGitlabUserResponse()
+        .also {
+            it.username = this.username
+            it.email = this.email
+            it.name = this.name
+            it.state = this.state
+            it.avatar_url = this.avatar_url
         }
 
 fun String.toUUID(): UUID = UUID.fromString(this)

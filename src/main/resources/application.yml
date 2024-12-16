@@ -153,6 +153,12 @@ spring:
             authorization-grant-type: client_credentials
             redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/vimeo/redirect}
             scope: public, private
+          gitlab:
+            clientId: ${GITLAB_CLIENT_ID}
+            clientSecret: ${GITLAB_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            redirectUri: ${SERVER_FQDN:http://localhost:${server.port}/oauth2/gitlab/redirect}
+            scope: openid, api, read_api, read_user, profile, email
         provider:
           google:
             tokenUri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
@@ -209,6 +215,9 @@ spring:
           vimeo:
             tokenUri: ${VIMEO_TOKEN_URI:https://api.vimeo.com/oauth/access_token}
             userInfoUri: ${VIMEO_USER_INFO_URI:https://api.vimeo.com/me}
+          gitlab:
+            tokenUri: ${GITLAB_TOKEN_URI:https://gitlab.com/oauth/token}
+            userInfoUri: ${GITLAB_USER_INFO_URI:https://gitlab.com/api/v4/user}
 app:
   jwtSecret: ${JWT_SECRET:sTvHbWsBDSCwW5ZnxpPEx7B5ad2Zx60p}
   jwtExpirationInMs: '#{1 * 60 * 60}' # 1 hour in seconds

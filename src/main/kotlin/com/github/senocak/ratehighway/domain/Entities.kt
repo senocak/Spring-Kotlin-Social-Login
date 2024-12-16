@@ -497,6 +497,47 @@ class OAuthVimeoUserPicturesConverter : AttributeConverter<List<OAuthVimeoUserPi
 }
 
 @Entity
+@Table(name = "gitlabUsers", uniqueConstraints = [
+    UniqueConstraint(columnNames = ["email"])
+])
+class OAuthGitlabUser: OAuthBaseUser() {
+    @Column var username: String? = null
+    @Column var name: String? = null
+    @Column var state: String? = null
+    @Column var locked: Boolean? = null
+    @Column var avatar_url: String? = null
+    @Column var web_url: String? = null
+    @Column var created_at: String? = null
+    @Column var bio: String? = null
+    @Column var location: String? = null
+    @Column var public_email: String? = null
+    @Column var skype: String? = null
+    @Column var linkedin: String? = null
+    @Column var twitter: String? = null
+    @Column var discord: String? = null
+    @Column var website_url: String? = null
+    @Column var organization: String? = null
+    @Column var job_title: String? = null
+    @Column var pronouns: String? = null
+    @Column var bot: Boolean? = null
+    @Column var work_information: String? = null
+    @Column var local_time: String? = null
+    @Column var last_sign_in_at: String? = null
+    @Column var confirmed_at: String? = null
+    @Column var last_activity_on: String? = null
+    @Column var theme_id: Int? = null
+    @Column var color_scheme_id: Int? = null
+    @Column var projects_limit: Int? = null
+    @Column var current_sign_in_at: String? = null
+    @Column var can_create_group: Boolean? = null
+    @Column var can_create_project: Boolean? = null
+    @Column var two_factor_enabled: Boolean? = null
+    @Column var external: Boolean? = null
+    @Column var private_profile: Boolean? = null
+    @Column var commit_email: String? = null
+}
+
+@Entity
 @Table(name = "roles")
 class Role(@Column @Enumerated(EnumType.STRING) var name: RoleName? = null): BaseDomain()
 
@@ -533,4 +574,5 @@ class User(
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthTiktokUser: OAuthTiktokUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthBoxUser: OAuthBoxUser? = null,
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthVimeoUser: OAuthVimeoUser? = null,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY) var oAuthGitlabUser: OAuthGitlabUser? = null,
 ): BaseDomain()

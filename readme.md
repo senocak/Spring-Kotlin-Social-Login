@@ -107,14 +107,21 @@ Generate a new oauth application;
 ### Box
 Generate a new oauth application;
 - https://app.box.com/developers/console
-- For local use `http://localhost:8083/oauth2/tiktok/redirect` in `Authorization callback URL`
+- For local use `http://localhost:8083/oauth2/box/redirect` in `Authorization callback URL`
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
 
 ### Vimeo
 Generate a new oauth application;
 - https://developer.vimeo.com/apps
-- For local use `http://localhost:8083/oauth2/tiktok/redirect` in `Authorization callback URL`
+- For local use `http://localhost:8083/oauth2/vimeo/redirect` in `Authorization callback URL`
+- `8083` is your applications port
+- Put the `Client ID` and `Client secrets` to application.yml
+
+### Gitlab
+Generate a new oauth application;
+- https://gitlab.com/-/user_settings/applications
+- For local use `http://localhost:8083/oauth2/gitlab/redirect` in `Authorization callback URL`
 - `8083` is your applications port
 - Put the `Client ID` and `Client secrets` to application.yml
 
